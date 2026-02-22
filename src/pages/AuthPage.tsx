@@ -3,19 +3,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import authHero from "@/assets/auth-hero.jpg";
+import authBg from "@/assets/auth-bg.jpg";
 
 const AuthPage = () => {
   const [agreed, setAgreed] = useState(false);
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center bg-background p-4 overflow-hidden">
-      {/* Background decoration */}
-      <div className="absolute inset-0 opacity-30">
-        <div className="absolute -top-1/4 -left-1/4 h-[600px] w-[600px] rounded-full bg-primary/20 blur-[120px]" />
-        <div className="absolute -bottom-1/4 -right-1/4 h-[500px] w-[500px] rounded-full bg-accent/20 blur-[120px]" />
-        <div className="absolute top-1/2 left-1/2 h-[400px] w-[400px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/10 blur-[100px]" />
-      </div>
-      <div className="flex w-full max-w-5xl overflow-hidden rounded-2xl border border-border shadow-2xl">
+    <div className="relative flex min-h-screen items-center justify-center p-4 overflow-hidden">
+      {/* Full-page background wallpaper */}
+      <img src={authBg} alt="" className="absolute inset-0 h-full w-full object-cover" />
+      <div className="absolute inset-0 bg-background/40" />
+      <div className="relative z-10 flex w-full max-w-5xl overflow-hidden rounded-2xl border border-border/50 shadow-2xl backdrop-blur-sm bg-card/80">
         {/* Left Panel - Form */}
         <div className="flex w-full flex-col justify-between bg-card p-10 md:w-[45%]">
           <div>
