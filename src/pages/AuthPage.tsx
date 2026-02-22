@@ -9,11 +9,13 @@ const AuthPage = () => {
   const [agreed, setAgreed] = useState(false);
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center p-4 overflow-hidden">
-      {/* Full-page background wallpaper */}
+    <div className="relative flex min-h-screen items-center justify-center p-6 overflow-hidden">
+      {/* Full-page background wallpaper with dark tint */}
       <img src={authBg} alt="" className="absolute inset-0 h-full w-full object-cover" />
-      <div className="absolute inset-0 bg-background/40" />
-      <div className="relative z-10 flex w-full max-w-5xl overflow-hidden rounded-2xl border border-border/50 shadow-2xl backdrop-blur-sm bg-card/80">
+      <div className="absolute inset-0 bg-black/60" />
+      {/* Outer white/light frame */}
+      <div className="relative z-10 w-full max-w-6xl rounded-3xl border border-white/20 bg-white/10 p-2 shadow-2xl backdrop-blur-md">
+        <div className="flex w-full overflow-hidden rounded-2xl bg-card/90 backdrop-blur-sm">
         {/* Left Panel - Form */}
         <div className="flex w-full flex-col justify-between bg-card p-10 md:w-[45%]">
           <div>
@@ -88,6 +90,7 @@ const AuthPage = () => {
             className="h-full w-full object-cover"
           />
         </div>
+      </div>
       </div>
     </div>
   );
