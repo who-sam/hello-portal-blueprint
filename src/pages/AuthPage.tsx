@@ -13,7 +13,7 @@ const AuthPage = () => {
       {/* Full-page background wallpaper with dark tint */}
       <img src={authBg} alt="" className="absolute inset-0 h-full w-full object-cover" />
       <div className="absolute inset-0 bg-black/60" />
-      <div className="relative z-10 flex w-full max-w-6xl min-h-[75vh] overflow-hidden rounded-2xl border border-white/15 shadow-2xl bg-card/90 backdrop-blur-sm">
+      <div className="relative z-10 flex w-full max-w-6xl min-h-[70vh] overflow-hidden rounded-2xl border border-white/15 shadow-2xl bg-card/90 backdrop-blur-sm">
         {/* Left Panel - Form */}
         <div className="flex w-full flex-col justify-between bg-card p-10 md:w-[45%]">
           <div>
