@@ -8,7 +8,13 @@ const AuthPage = () => {
   const [agreed, setAgreed] = useState(false);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background p-4">
+    <div className="relative flex min-h-screen items-center justify-center bg-background p-4 overflow-hidden">
+      {/* Background decoration */}
+      <div className="absolute inset-0 opacity-30">
+        <div className="absolute -top-1/4 -left-1/4 h-[600px] w-[600px] rounded-full bg-primary/20 blur-[120px]" />
+        <div className="absolute -bottom-1/4 -right-1/4 h-[500px] w-[500px] rounded-full bg-accent/20 blur-[120px]" />
+        <div className="absolute top-1/2 left-1/2 h-[400px] w-[400px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/10 blur-[100px]" />
+      </div>
       <div className="flex w-full max-w-5xl overflow-hidden rounded-2xl border border-border shadow-2xl">
         {/* Left Panel - Form */}
         <div className="flex w-full flex-col justify-between bg-card p-10 md:w-[45%]">
