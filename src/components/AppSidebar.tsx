@@ -1,100 +1,115 @@
 import {
+  BarChart3,
   BookOpen,
   ClipboardCheck,
-  BarChart3,
   Play,
   Settings,
   LogOut,
   Code2,
+  HelpCircle,
+  Phone,
+  Users,
+  Mail,
+  Calendar,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarFooter,
-} from "@/components/ui/sidebar";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+
+const topItems = [
+  { icon: Settings, url: "/dashboard/config", label: "Config" },
+  { icon: Phone, url: "/dashboard/contact", label: "Contact" },
+];
 
 const mainItems = [
-  { title: "Dashboard", url: "/dashboard", icon: BarChart3 },
-  { title: "Upcoming Exams", url: "/dashboard/upcoming", icon: BookOpen },
-  { title: "Past Results", url: "/dashboard/results", icon: ClipboardCheck },
-  { title: "Quick Start", url: "/dashboard/start", icon: Play },
+  { icon: BarChart3, url: "/dashboard", label: "Dashboard" },
+  { icon: Calendar, url: "/dashboard/upcoming", label: "Upcoming" },
+  { icon: ClipboardCheck, url: "/dashboard/results", label: "Results" },
+  { icon: Mail, url: "/dashboard/messages", label: "Messages" },
 ];
 
 const bottomItems = [
-  { title: "Settings", url: "/dashboard/settings", icon: Settings },
+  { icon: Users, url: "/dashboard/team", label: "Team" },
+  { icon: Settings, url: "/dashboard/settings", label: "Settings" },
 ];
+
+const footerItems = [
+  { icon: HelpCircle, url: "/dashboard/help", label: "Help" },
+];
+
+function SidebarIcon({
+  icon: Icon,
+  url,
+  label,
+  end,
+}: {
+  icon: React.ElementType;
+  url: string;
+  label: string;
+  end?: boolean;
+}) {
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <NavLink
+          to={url}
+          end={end}
+          className="flex h-10 w-10 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+          activeClassName="bg-primary/15 text-primary"
+        >
+          <Icon className="h-5 w-5" />
+        </NavLink>
+      </TooltipTrigger>
+      <TooltipContent side="right" className="text-xs">
+        {label}
+      </TooltipContent>
+    </Tooltip>
+  );
+}
 
 export function AppSidebar() {
   return (
-    <Sidebar className="border-r border-border bg-card">
-      <div className="flex items-center gap-2 px-6 py-5">
-        <Code2 className="h-6 w-6 text-primary" />
-        <span className="text-lg font-bold text-foreground tracking-tight">
-          Exam<span className="text-muted-foreground">.dev</span>
-        </span>
-      </div>
+    <aside className="fixed left-4 top-1/2 z-40 flex -translate-y-1/2 flex-col items-center gap-1 rounded-2xl border border-border bg-card/80 px-1.5 py-3 shadow-xl backdrop-blur-md">
+      {/* Top section */}
+      {topItems.map((item) => (
+        <SidebarIcon key={item.label} {...item} />
+      ))}
 
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel className="text-xs uppercase tracking-wider text-muted-foreground/60">
-            Menu
-          </SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {mainItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <NavLink
-                      to={item.url}
-                      end
-                      className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-                      activeClassName="bg-primary/10 text-primary font-medium"
-                    >
-                      <item.icon className="h-4 w-4" />
-                      <span>{item.title}</span>
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
+      <div className="my-1.5 h-px w-6 bg-border" />
 
-      <SidebarFooter className="border-t border-border p-4">
-        <SidebarMenu>
-          {bottomItems.map((item) => (
-            <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton asChild>
-                <NavLink
-                  to={item.url}
-                  end
-                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-                  activeClassName="bg-primary/10 text-primary font-medium"
-                >
-                  <item.icon className="h-4 w-4" />
-                  <span>{item.title}</span>
-                </NavLink>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))}
-          <SidebarMenuItem>
-            <SidebarMenuButton asChild>
-              <button className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive">
-                <LogOut className="h-4 w-4" />
-                <span>Logout</span>
-              </button>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarFooter>
-    </Sidebar>
+      {/* Main nav */}
+      {mainItems.map((item) => (
+        <SidebarIcon
+          key={item.label}
+          {...item}
+          end={item.url === "/dashboard"}
+        />
+      ))}
+
+      <div className="my-1.5 h-px w-6 bg-border" />
+
+      {/* Bottom nav */}
+      {bottomItems.map((item) => (
+        <SidebarIcon key={item.label} {...item} />
+      ))}
+
+      <div className="flex-1" />
+      <div className="my-1.5 h-px w-6 bg-border" />
+
+      {/* Footer */}
+      {footerItems.map((item) => (
+        <SidebarIcon key={item.label} {...item} />
+      ))}
+
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <button className="flex h-10 w-10 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive">
+            <LogOut className="h-5 w-5" />
+          </button>
+        </TooltipTrigger>
+        <TooltipContent side="right" className="text-xs">
+          Logout
+        </TooltipContent>
+      </Tooltip>
+    </aside>
   );
 }
