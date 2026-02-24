@@ -1,24 +1,17 @@
 import {
   BarChart3,
   BookOpen,
-  ClipboardCheck,
-  Play,
-  Settings,
-  LogOut,
-  Code2,
-  HelpCircle,
-  Phone,
-  Users,
-  Mail,
   Calendar,
+  ClipboardCheck,
+  HelpCircle,
+  LogOut,
+  Mail,
+  Settings,
+  Users,
+  Code2,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-
-const topItems = [
-  { icon: Settings, url: "/dashboard/config", label: "Config" },
-  { icon: Phone, url: "/dashboard/contact", label: "Contact" },
-];
 
 const mainItems = [
   { icon: BarChart3, url: "/dashboard", label: "Dashboard" },
@@ -27,13 +20,9 @@ const mainItems = [
   { icon: Mail, url: "/dashboard/messages", label: "Messages" },
 ];
 
-const bottomItems = [
+const secondaryItems = [
   { icon: Users, url: "/dashboard/team", label: "Team" },
   { icon: Settings, url: "/dashboard/settings", label: "Settings" },
-];
-
-const footerItems = [
-  { icon: HelpCircle, url: "/dashboard/help", label: "Help" },
 ];
 
 function SidebarIcon({
@@ -68,48 +57,42 @@ function SidebarIcon({
 
 export function AppSidebar() {
   return (
-    <aside className="fixed left-4 top-1/2 z-40 flex -translate-y-1/2 flex-col items-center gap-1 rounded-2xl border border-border bg-card/80 px-1.5 py-3 shadow-xl backdrop-blur-md">
-      {/* Top section */}
-      {topItems.map((item) => (
-        <SidebarIcon key={item.label} {...item} />
-      ))}
+    <aside className="fixed left-4 top-20 bottom-6 z-40 flex flex-col items-center gap-3 w-14">
+      {/* Logo — standalone rounded pill */}
+      <div className="flex items-center justify-center rounded-2xl border border-border bg-card/80 p-2 shadow-lg backdrop-blur-md">
+        <Code2 className="h-6 w-6 text-primary" />
+      </div>
 
-      <div className="my-1.5 h-px w-6 bg-border" />
+      {/* Main nav group */}
+      <div className="flex flex-col items-center gap-1 rounded-2xl border border-border bg-card/80 px-1.5 py-2 shadow-lg backdrop-blur-md">
+        {mainItems.map((item) => (
+          <SidebarIcon key={item.label} {...item} end={item.url === "/dashboard"} />
+        ))}
+      </div>
 
-      {/* Main nav */}
-      {mainItems.map((item) => (
-        <SidebarIcon
-          key={item.label}
-          {...item}
-          end={item.url === "/dashboard"}
-        />
-      ))}
-
-      <div className="my-1.5 h-px w-6 bg-border" />
-
-      {/* Bottom nav */}
-      {bottomItems.map((item) => (
-        <SidebarIcon key={item.label} {...item} />
-      ))}
+      {/* Secondary nav group */}
+      <div className="flex flex-col items-center gap-1 rounded-2xl border border-border bg-card/80 px-1.5 py-2 shadow-lg backdrop-blur-md">
+        {secondaryItems.map((item) => (
+          <SidebarIcon key={item.label} {...item} />
+        ))}
+      </div>
 
       <div className="flex-1" />
-      <div className="my-1.5 h-px w-6 bg-border" />
 
-      {/* Footer */}
-      {footerItems.map((item) => (
-        <SidebarIcon key={item.label} {...item} />
-      ))}
-
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <button className="flex h-10 w-10 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive">
-            <LogOut className="h-5 w-5" />
-          </button>
-        </TooltipTrigger>
-        <TooltipContent side="right" className="text-xs">
-          Logout
-        </TooltipContent>
-      </Tooltip>
+      {/* Footer group — Help & Logout */}
+      <div className="flex flex-col items-center gap-1 rounded-2xl border border-border bg-card/80 px-1.5 py-2 shadow-lg backdrop-blur-md">
+        <SidebarIcon icon={HelpCircle} url="/dashboard/help" label="Help" />
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button className="flex h-10 w-10 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive">
+              <LogOut className="h-5 w-5" />
+            </button>
+          </TooltipTrigger>
+          <TooltipContent side="right" className="text-xs">
+            Logout
+          </TooltipContent>
+        </Tooltip>
+      </div>
     </aside>
   );
 }
