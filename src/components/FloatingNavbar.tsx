@@ -13,13 +13,6 @@ const navTabs = [
 export function FloatingNavbar() {
   return (
     <header className="fixed left-20 right-6 top-4 z-50 flex items-center gap-3 h-12">
-      {/* Logo — standalone pill */}
-      <div className="flex items-center rounded-2xl border border-border bg-card/80 px-4 py-1.5 shadow-lg backdrop-blur-md">
-        <span className="text-lg font-bold tracking-tight text-foreground">
-          Exam<span className="text-muted-foreground">.dev</span>
-        </span>
-      </div>
-
       <div className="flex-1" />
 
       {/* Nav tabs — centered pill */}

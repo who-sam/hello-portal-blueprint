@@ -58,9 +58,12 @@ function SidebarIcon({
 export function AppSidebar() {
   return (
     <aside className="fixed left-4 top-20 bottom-6 z-40 flex flex-col items-center gap-3 w-14">
-      {/* Logo — standalone rounded pill */}
-      <div className="flex items-center justify-center rounded-2xl border border-border bg-card/80 p-2 shadow-lg backdrop-blur-md">
+      {/* Logo + brand — standalone rounded pill */}
+      <div className="flex items-center justify-center gap-2 rounded-2xl border border-border bg-card/80 px-3 py-2 shadow-lg backdrop-blur-md">
         <Code2 className="h-6 w-6 text-primary" />
+        <span className="text-sm font-bold tracking-tight text-foreground">
+          Exam<span className="text-muted-foreground">.dev</span>
+        </span>
       </div>
 
       {/* Main nav group */}
