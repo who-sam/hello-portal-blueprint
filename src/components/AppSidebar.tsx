@@ -3,6 +3,7 @@ import {
   BarChart3,
   Calendar,
   ClipboardCheck,
+  Code2,
   HelpCircle,
   LogOut,
   Mail,
@@ -16,6 +17,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 
 const mainItems = [
 { icon: BarChart3, url: "/dashboard", label: "Dashboard" },
+{ icon: Code2, url: "/dashboard/editor", label: "Code Editor" },
 { icon: Calendar, url: "/dashboard/upcoming", label: "Upcoming" },
 { icon: ClipboardCheck, url: "/dashboard/results", label: "Results" },
 { icon: Mail, url: "/dashboard/messages", label: "Messages" }];
