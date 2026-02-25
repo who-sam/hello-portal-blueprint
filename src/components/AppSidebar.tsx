@@ -43,7 +43,7 @@ function SidebarIcon({
         <NavLink
           to={url}
           end={end}
-          className="flex h-10 w-10 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+          className="flex h-10 w-10 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
           activeClassName="bg-primary/15 text-primary">
 
           <Icon className="h-5 w-5" />
@@ -72,7 +72,7 @@ export function AppSidebar() {
           <TooltipTrigger asChild>
             <button
               onClick={toggleTheme}
-              className="flex h-10 w-10 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground">
+              className="flex h-10 w-10 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground">
 
               {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </button>
@@ -93,7 +93,7 @@ export function AppSidebar() {
       </div>
 
       {/* Secondary nav group — centered */}
-      <div className="flex flex-col items-center gap-1 rounded-2xl border border-border bg-card/80 px-1.5 py-2 shadow-lg backdrop-blur-md">
+      <div className="flex flex-col items-center gap-1 rounded-full border border-border bg-card/80 px-1.5 py-2 shadow-lg backdrop-blur-md">
         {secondaryItems.map((item) =>
         <SidebarIcon key={item.label} {...item} />
         )}
@@ -106,7 +106,7 @@ export function AppSidebar() {
         <SidebarIcon icon={HelpCircle} url="/dashboard/help" label="Help" />
         <Tooltip>
           <TooltipTrigger asChild>
-            <button className="flex h-10 w-10 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive">
+            <button className="flex h-10 w-10 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive">
               <LogOut className="h-5 w-5" />
             </button>
           </TooltipTrigger>
