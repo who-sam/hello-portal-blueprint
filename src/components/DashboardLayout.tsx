@@ -1,14 +1,13 @@
 import { AppSidebar } from "@/components/AppSidebar";
 import { FloatingNavbar } from "@/components/FloatingNavbar";
 import { Outlet } from "react-router-dom";
-import authBg from "@/assets/auth-bg.jpg";
 
 export default function DashboardLayout() {
   return (
     <div className="relative min-h-screen w-full bg-background">
-      {/* Background wallpaper with dark tint */}
-      <img src={authBg} alt="" className="fixed inset-0 h-full w-full object-cover" />
-      <div className="fixed inset-0 bg-background/85" />
+      {/* Themed geometric pattern background */}
+      <div className="fixed inset-0 bg-pattern opacity-[0.07]" />
+      <div className="fixed inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/10" />
 
       {/* Floating top navbar */}
       <FloatingNavbar />

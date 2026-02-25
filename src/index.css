@@ -54,3 +54,14 @@
     @apply bg-background text-foreground;
   }
 }
+
+.bg-pattern {
+  background-image:
+    radial-gradient(circle at 1px 1px, hsl(20 90% 52%) 1px, transparent 0),
+    linear-gradient(135deg, hsl(20 90% 52% / 0.15) 25%, transparent 25%),
+    linear-gradient(225deg, hsl(30 80% 55% / 0.1) 25%, transparent 25%);
+  background-size:
+    32px 32px,
+    64px 64px,
+    64px 64px;
+}
