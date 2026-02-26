@@ -16,9 +16,7 @@ export function FloatingNavbar() {
       {/* Logo — left pill */}
       <div className="flex items-center gap-2 border border-border bg-card/80 px-4 py-1.5 shadow-lg backdrop-blur-md rounded-full">
         <Code2 className="h-5 w-5 text-primary" />
-        <span className="text-lg font-bold tracking-tight text-foreground">
-          Exam<span className="text-muted-foreground">.dev</span>
-        </span>
+        <span className="text-lg font-bold tracking-tight text-foreground">Kernel</span>
       </div>
 
       <div className="flex-1" />
