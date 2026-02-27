@@ -1,24 +1,141 @@
-import { Settings } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState } from "react";
+import { Settings, User, Bell, Palette, Shield } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
 
 export default function SettingsPage() {
+  const { toast } = useToast();
+  const [profile, setProfile] = useState({ name: "John Doe", email: "john@kernel.dev", bio: "Full-stack developer passionate about clean code." });
+  const [notifications, setNotifications] = useState({ email: true, push: true, examReminders: true, results: false, marketing: false });
+
+  const handleSave = () => {
+    toast({ title: "Settings saved", description: "Your preferences have been updated." });
+  };
+
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight text-foreground">Settings</h1>
         <p className="mt-1 text-muted-foreground">Manage your account and preferences.</p>
       </div>
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Settings className="h-5 w-5 text-primary" />
-            Preferences
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground">Settings coming soon.</p>
-        </CardContent>
-      </Card>
+
+      <Tabs defaultValue="profile" className="space-y-6">
+        <TabsList className="bg-secondary/50">
+          <TabsTrigger value="profile" className="gap-2"><User className="h-4 w-4" /> Profile</TabsTrigger>
+          <TabsTrigger value="notifications" className="gap-2"><Bell className="h-4 w-4" /> Notifications</TabsTrigger>
+          <TabsTrigger value="appearance" className="gap-2"><Palette className="h-4 w-4" /> Appearance</TabsTrigger>
+          <TabsTrigger value="security" className="gap-2"><Shield className="h-4 w-4" /> Security</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="profile">
+          <Card className="border-border/50">
+            <CardHeader>
+              <CardTitle className="text-lg">Profile Information</CardTitle>
+              <CardDescription>Update your personal details.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="name">Full Name</Label>
+                  <Input id="name" value={profile.name} onChange={(e) => setProfile({ ...profile, name: e.target.value })} />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input id="email" type="email" value={profile.email} onChange={(e) => setProfile({ ...profile, email: e.target.value })} />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="bio">Bio</Label>
+                <Textarea id="bio" value={profile.bio} onChange={(e) => setProfile({ ...profile, bio: e.target.value })} rows={3} />
+              </div>
+              <Button onClick={handleSave} className="gap-2">
+                <Settings className="h-4 w-4" /> Save Changes
+              </Button>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="notifications">
+          <Card className="border-border/50">
+            <CardHeader>
+              <CardTitle className="text-lg">Notification Preferences</CardTitle>
+              <CardDescription>Choose what you want to be notified about.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {[
+                { key: "email" as const, label: "Email Notifications", desc: "Receive updates via email" },
+                { key: "push" as const, label: "Push Notifications", desc: "Browser push notifications" },
+                { key: "examReminders" as const, label: "Exam Reminders", desc: "Get reminded before upcoming exams" },
+                { key: "results" as const, label: "Result Alerts", desc: "Notify when results are published" },
+                { key: "marketing" as const, label: "Marketing Emails", desc: "Tips, product updates, and offers" },
+              ].map((item) => (
+                <div key={item.key} className="flex items-center justify-between">
+                  <div>
+                    <p className="font-medium text-foreground">{item.label}</p>
+                    <p className="text-sm text-muted-foreground">{item.desc}</p>
+                  </div>
+                  <Switch
+                    checked={notifications[item.key]}
+                    onCheckedChange={(v) => setNotifications({ ...notifications, [item.key]: v })}
+                  />
+                </div>
+              ))}
+              <Separator />
+              <Button onClick={handleSave}>Save Preferences</Button>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="appearance">
+          <Card className="border-border/50">
+            <CardHeader>
+              <CardTitle className="text-lg">Appearance</CardTitle>
+              <CardDescription>Customize the look and feel.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium text-foreground">Dark Mode</p>
+                  <p className="text-sm text-muted-foreground">Toggle between light and dark themes</p>
+                </div>
+                <Switch
+                  checked={document.documentElement.classList.contains("dark")}
+                  onCheckedChange={() => document.documentElement.classList.toggle("dark")}
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="security">
+          <Card className="border-border/50">
+            <CardHeader>
+              <CardTitle className="text-lg">Security</CardTitle>
+              <CardDescription>Manage your password and security settings.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="current-pw">Current Password</Label>
+                  <Input id="current-pw" type="password" placeholder="••••••••" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="new-pw">New Password</Label>
+                  <Input id="new-pw" type="password" placeholder="••••••••" />
+                </div>
+              </div>
+              <Button onClick={handleSave}>Update Password</Button>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
