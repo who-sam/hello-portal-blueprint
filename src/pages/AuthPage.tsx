@@ -1,102 +1,270 @@
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import authHero from "@/assets/auth-hero.jpg";
+import { GraduationCap, BookOpen, ArrowLeft, Eye, EyeOff } from "lucide-react";
 import authBg from "@/assets/auth-bg.jpg";
 import KernelLogo from "@/components/KernelLogo";
 
+type Role = "teacher" | "student";
+type AuthMode = "select" | "signup" | "login";
+
+const signupSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters").max(100),
+  email: z.string().email("Invalid email address").max(255),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+  confirmPassword: z.string(),
+}).refine((d) => d.password === d.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
+});
+
+const loginSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(1, "Password is required"),
+});
+
+type SignupData = z.infer<typeof signupSchema>;
+type LoginData = z.infer<typeof loginSchema>;
+
 const AuthPage = () => {
-  const [agreed, setAgreed] = useState(false);
+  const [mode, setMode] = useState<AuthMode>("select");
+  const [role, setRole] = useState<Role>("student");
+  const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+
+  const signupForm = useForm<SignupData>({ resolver: zodResolver(signupSchema) });
+  const loginForm = useForm<LoginData>({ resolver: zodResolver(loginSchema) });
+
+  const selectRole = (r: Role) => {
+    setRole(r);
+    setMode("signup");
+  };
+
+  const onSignup = (data: SignupData) => {
+    console.log("Signup:", { ...data, role });
+  };
+
+  const onLogin = (data: LoginData) => {
+    console.log("Login:", data);
+  };
 
   return (
     <div className="relative flex min-h-screen items-center justify-center p-6 overflow-hidden">
-      {/* Full-page background wallpaper with dark tint */}
       <img src={authBg} alt="" className="absolute inset-0 h-full w-full object-cover" />
-      <div className="absolute inset-0 bg-black/60" />
-      <div className="relative z-10 flex w-full max-w-6xl min-h-[70vh] overflow-hidden rounded-2xl border border-white/15 shadow-2xl bg-card/90 backdrop-blur-sm">
-        {/* Left Panel - Form */}
-        <div className="flex w-full flex-col justify-between bg-card p-10 md:w-[45%]">
-          <div>
-            <div className="flex items-center gap-2">
-              <KernelLogo className="h-7 w-7" />
-              <h2 className="text-lg font-bold tracking-tight text-foreground">Kernel</h2>
-            </div>
-          </div>
+      <div className="absolute inset-0 bg-black/65" />
 
-          <div className="my-auto space-y-6">
-            <div>
-              <h1 className="text-3xl font-bold text-foreground">Sign up</h1>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Create your Kernel account and start your learning journey.
+      <div className="relative z-10 w-full max-w-xl">
+        {/* Logo */}
+        <div className="flex items-center justify-center gap-2 mb-8">
+          <KernelLogo className="h-8 w-8" />
+          <span className="text-2xl font-bold tracking-tight text-white">Kernel</span>
+        </div>
+
+        {/* Card */}
+        <div className="rounded-2xl border border-white/15 bg-card/90 backdrop-blur-xl shadow-2xl p-8 transition-all duration-300">
+          {/* Role Selection */}
+          {mode === "select" && (
+            <div className="space-y-6">
+              <div className="text-center">
+                <h1 className="text-2xl font-bold text-foreground">Welcome to Kernel</h1>
+                <p className="mt-2 text-sm text-muted-foreground">Choose your role to get started</p>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <button
+                  onClick={() => selectRole("teacher")}
+                  className="group flex flex-col items-center gap-3 rounded-xl border border-border/50 bg-card/60 backdrop-blur-md p-6 transition-all hover:border-primary/50 hover:bg-primary/10"
+                >
+                  <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/15 text-primary transition-colors group-hover:bg-primary/25">
+                    <GraduationCap className="h-7 w-7" />
+                  </div>
+                  <span className="text-base font-semibold text-foreground">I'm a Teacher</span>
+                  <span className="text-xs text-muted-foreground text-center">Create exams, manage classes, and grade students</span>
+                </button>
+                <button
+                  onClick={() => selectRole("student")}
+                  className="group flex flex-col items-center gap-3 rounded-xl border border-border/50 bg-card/60 backdrop-blur-md p-6 transition-all hover:border-primary/50 hover:bg-primary/10"
+                >
+                  <div className="flex h-14 w-14 items-center justify-center rounded-full bg-accent/15 text-accent transition-colors group-hover:bg-accent/25">
+                    <BookOpen className="h-7 w-7" />
+                  </div>
+                  <span className="text-base font-semibold text-foreground">I'm a Student</span>
+                  <span className="text-xs text-muted-foreground text-center">Take exams, track progress, and improve skills</span>
+                </button>
+              </div>
+              <p className="text-center text-sm text-muted-foreground">
+                Already have an account?{" "}
+                <button onClick={() => setMode("login")} className="font-medium text-primary hover:underline">
+                  Log in
+                </button>
               </p>
             </div>
+          )}
 
-            <div className="space-y-4">
-              <Input type="email" placeholder="Enter Email" className="h-12" />
-              <Input type="password" placeholder="Create Password" className="h-12" />
-            </div>
+          {/* Signup Form */}
+          {mode === "signup" && (
+            <form onSubmit={signupForm.handleSubmit(onSignup)} className="space-y-5">
+              <div className="flex items-center gap-3">
+                <button type="button" onClick={() => setMode("select")} className="text-muted-foreground hover:text-foreground">
+                  <ArrowLeft className="h-5 w-5" />
+                </button>
+                <div>
+                  <h1 className="text-2xl font-bold text-foreground">Create Account</h1>
+                  <p className="text-sm text-muted-foreground">
+                    Sign up as a <span className="capitalize text-primary font-medium">{role}</span>
+                  </p>
+                </div>
+              </div>
 
-            <div className="flex items-center gap-2">
-              <Checkbox
-                id="terms"
-                checked={agreed}
-                onCheckedChange={(v) => setAgreed(v === true)}
-              />
-              <label htmlFor="terms" className="text-sm text-muted-foreground cursor-pointer">
-                I Agree To The Terms & Privacy Policy
-              </label>
-            </div>
+              <div className="space-y-3">
+                <div>
+                  <Input placeholder="Full Name" className="h-11" {...signupForm.register("name")} />
+                  {signupForm.formState.errors.name && (
+                    <p className="mt-1 text-xs text-destructive">{signupForm.formState.errors.name.message}</p>
+                  )}
+                </div>
+                <div>
+                  <Input type="email" placeholder="Email Address" className="h-11" {...signupForm.register("email")} />
+                  {signupForm.formState.errors.email && (
+                    <p className="mt-1 text-xs text-destructive">{signupForm.formState.errors.email.message}</p>
+                  )}
+                </div>
+                <div className="relative">
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Password"
+                    className="h-11 pr-10"
+                    {...signupForm.register("password")}
+                  />
+                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-3 text-muted-foreground hover:text-foreground">
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                  {signupForm.formState.errors.password && (
+                    <p className="mt-1 text-xs text-destructive">{signupForm.formState.errors.password.message}</p>
+                  )}
+                </div>
+                <div>
+                  <Input type="password" placeholder="Confirm Password" className="h-11" {...signupForm.register("confirmPassword")} />
+                  {signupForm.formState.errors.confirmPassword && (
+                    <p className="mt-1 text-xs text-destructive">{signupForm.formState.errors.confirmPassword.message}</p>
+                  )}
+                </div>
+              </div>
 
-            <Button className="h-12 w-full text-base font-semibold" disabled={!agreed}>
-              Create Account
-            </Button>
-
-            <div className="flex items-center gap-3">
-              <div className="h-px flex-1 bg-border" />
-              <span className="text-xs text-muted-foreground">or sign up via</span>
-              <div className="h-px flex-1 bg-border" />
-            </div>
-
-            <div className="grid grid-cols-3 gap-3">
-              <Button variant="social" className="h-11 gap-2">
-                <GoogleIcon />
-                Google
+              <Button type="submit" className="h-11 w-full text-base font-semibold">
+                Create Account
               </Button>
-              <Button variant="social" className="h-11 gap-2">
-                <AppleIcon />
-                Apple
-              </Button>
-              <Button variant="social" className="h-11 gap-2">
-                <TwitterIcon />
-                Twitter
-              </Button>
-            </div>
-          </div>
 
-          <p className="mt-8 text-center text-sm text-muted-foreground">
-            Already Have An Account?{" "}
-            <a href="#" className="font-medium text-accent hover:underline">
-              Login
-            </a>
-          </p>
+              <div className="flex items-center gap-3">
+                <div className="h-px flex-1 bg-border" />
+                <span className="text-xs text-muted-foreground">or sign up with</span>
+                <div className="h-px flex-1 bg-border" />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <Button type="button" variant="social" className="h-10 gap-2">
+                  <GoogleIcon /> Google
+                </Button>
+                <Button type="button" variant="social" className="h-10 gap-2">
+                  <GithubIcon /> GitHub
+                </Button>
+              </div>
+
+              <p className="text-center text-sm text-muted-foreground">
+                Already have an account?{" "}
+                <button type="button" onClick={() => setMode("login")} className="font-medium text-primary hover:underline">
+                  Log in
+                </button>
+              </p>
+            </form>
+          )}
+
+          {/* Login Form */}
+          {mode === "login" && (
+            <form onSubmit={loginForm.handleSubmit(onLogin)} className="space-y-5">
+              <div className="flex items-center gap-3">
+                <button type="button" onClick={() => setMode("select")} className="text-muted-foreground hover:text-foreground">
+                  <ArrowLeft className="h-5 w-5" />
+                </button>
+                <div>
+                  <h1 className="text-2xl font-bold text-foreground">Welcome Back</h1>
+                  <p className="text-sm text-muted-foreground">Log in to your account</p>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <div>
+                  <Input type="email" placeholder="Email Address" className="h-11" {...loginForm.register("email")} />
+                  {loginForm.formState.errors.email && (
+                    <p className="mt-1 text-xs text-destructive">{loginForm.formState.errors.email.message}</p>
+                  )}
+                </div>
+                <div className="relative">
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Password"
+                    className="h-11 pr-10"
+                    {...loginForm.register("password")}
+                  />
+                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-3 text-muted-foreground hover:text-foreground">
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                  {loginForm.formState.errors.password && (
+                    <p className="mt-1 text-xs text-destructive">{loginForm.formState.errors.password.message}</p>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Checkbox id="remember" checked={rememberMe} onCheckedChange={(v) => setRememberMe(v === true)} />
+                  <label htmlFor="remember" className="text-sm text-muted-foreground cursor-pointer">Remember me</label>
+                </div>
+                <button type="button" className="text-sm text-primary hover:underline">Forgot Password?</button>
+              </div>
+
+              <Button type="submit" className="h-11 w-full text-base font-semibold">
+                Log In
+              </Button>
+
+              <div className="flex items-center gap-3">
+                <div className="h-px flex-1 bg-border" />
+                <span className="text-xs text-muted-foreground">or continue with</span>
+                <div className="h-px flex-1 bg-border" />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <Button type="button" variant="social" className="h-10 gap-2">
+                  <GoogleIcon /> Google
+                </Button>
+                <Button type="button" variant="social" className="h-10 gap-2">
+                  <GithubIcon /> GitHub
+                </Button>
+              </div>
+
+              <p className="text-center text-sm text-muted-foreground">
+                Don't have an account?{" "}
+                <button type="button" onClick={() => setMode("select")} className="font-medium text-primary hover:underline">
+                  Sign up
+                </button>
+              </p>
+            </form>
+          )}
         </div>
 
-        {/* Right Panel - Hero Image */}
-        <div className="relative hidden md:block md:w-[55%]">
-          <img
-            src={authHero}
-            alt="Retro computer on hillside at sunset"
-            className="h-full w-full object-cover"
-          />
-        </div>
+        <p className="mt-6 text-center text-xs text-white/40">
+          By continuing, you agree to our <a href="#" className="underline hover:text-white/60">Terms of Service</a> and <a href="#" className="underline hover:text-white/60">Privacy Policy</a>
+        </p>
       </div>
     </div>
   );
 };
 
 const GoogleIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
     <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
     <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18A11.96 11.96 0 0 0 0 12c0 1.94.46 3.77 1.28 5.4l3.56-2.77.01-.54z" fill="#FBBC05"/>
@@ -104,15 +272,9 @@ const GoogleIcon = () => (
   </svg>
 );
 
-const AppleIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-    <path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
-  </svg>
-);
-
-const TwitterIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+const GithubIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>
   </svg>
 );
 

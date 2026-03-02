@@ -1,0 +1,201 @@
+import { useNavigate } from "react-router-dom";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  Users, FileText, GraduationCap, TrendingUp, TrendingDown,
+  Plus, School, BarChart3, BookOpen, Clock, MoreHorizontal,
+} from "lucide-react";
+import { format } from "date-fns";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+
+const stats = [
+  { label: "Total Students", value: "248", icon: Users, trend: "+12%", up: true },
+  { label: "Active Exams", value: "5", icon: FileText, trend: "+2", up: true },
+  { label: "Classes", value: "8", icon: GraduationCap, trend: "0", up: true },
+  { label: "Average Score", value: "76%", icon: BarChart3, trend: "-3%", up: false },
+];
+
+const quickActions = [
+  { label: "Create Exam", desc: "Build a new exam", icon: Plus, route: "/dashboard/exam-builder" },
+  { label: "Create Class", desc: "Start a new class", icon: School, route: "/dashboard/team" },
+  { label: "View Results", desc: "Check submissions", icon: BarChart3, route: "/dashboard/results" },
+  { label: "Question Bank", desc: "Manage questions", icon: BookOpen, route: "/dashboard/results" },
+];
+
+const activeExams = [
+  { name: "Midterm — Data Structures", className: "CS201-A", started: 18, total: 32, remaining: "1h 23m", status: "active" },
+  { name: "Quiz 3 — Algorithms", className: "CS301-B", started: 25, total: 28, remaining: "45m", status: "active" },
+  { name: "Final — OOP Concepts", className: "CS101-A", started: 0, total: 45, remaining: "Starts in 2d", status: "scheduled" },
+];
+
+const recentActivity = [
+  { avatar: "AS", text: "Ahmed S. submitted Midterm — Data Structures", time: "5 min ago" },
+  { avatar: "MK", text: "New student Maria K. joined CS201-A", time: "12 min ago" },
+  { avatar: "JD", text: "Quiz 3 grading completed for CS301-B", time: "1 hour ago" },
+  { avatar: "LP", text: "Liam P. flagged question 4 in Quiz 3", time: "2 hours ago" },
+  { avatar: "SR", text: "Sara R. achieved perfect score on Quiz 2", time: "3 hours ago" },
+];
+
+const classPerformance = [
+  { name: "CS101-A", avg: 72 },
+  { name: "CS201-A", avg: 78 },
+  { name: "CS201-B", avg: 65 },
+  { name: "CS301-A", avg: 81 },
+  { name: "CS301-B", avg: 74 },
+  { name: "CS401-A", avg: 88 },
+];
+
+export default function TeacherDashboard() {
+  const navigate = useNavigate();
+
+  return (
+    <div className="space-y-6">
+      {/* Welcome */}
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight text-foreground">Welcome back, Dr. Smith</h1>
+        <p className="text-muted-foreground">{format(new Date(), "EEEE, MMMM d, yyyy")}</p>
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {stats.map((s) => (
+          <Card key={s.label} className="bg-card/80 backdrop-blur-md border-border/50">
+            <CardContent className="p-5 flex items-center gap-4">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/15 text-primary">
+                <s.icon className="h-5 w-5" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm text-muted-foreground">{s.label}</p>
+                <div className="flex items-center gap-2">
+                  <span className="text-2xl font-bold text-foreground">{s.value}</span>
+                  <span className={`flex items-center text-xs font-medium ${s.up ? "text-green-400" : "text-red-400"}`}>
+                    {s.up ? <TrendingUp className="h-3 w-3 mr-0.5" /> : <TrendingDown className="h-3 w-3 mr-0.5" />}
+                    {s.trend}
+                  </span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* Quick Actions */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {quickActions.map((a) => (
+          <button
+            key={a.label}
+            onClick={() => navigate(a.route)}
+            className="flex items-center gap-3 rounded-lg border border-border/50 bg-card/80 backdrop-blur-md p-4 text-left transition-all hover:border-primary/50 hover:bg-primary/5"
+          >
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/15 text-primary">
+              <a.icon className="h-5 w-5" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-foreground">{a.label}</p>
+              <p className="text-xs text-muted-foreground">{a.desc}</p>
+            </div>
+          </button>
+        ))}
+      </div>
+
+      {/* Active Exams + Activity */}
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+        {/* Active Exams */}
+        <Card className="lg:col-span-3 bg-card/80 backdrop-blur-md border-border/50">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base font-semibold">Active Exams</CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-border/50 text-muted-foreground">
+                    <th className="px-5 py-2 text-left font-medium">Exam</th>
+                    <th className="px-3 py-2 text-left font-medium">Class</th>
+                    <th className="px-3 py-2 text-left font-medium">Progress</th>
+                    <th className="px-3 py-2 text-left font-medium">Time</th>
+                    <th className="px-3 py-2 text-left font-medium">Status</th>
+                    <th className="px-3 py-2" />
+                  </tr>
+                </thead>
+                <tbody>
+                  {activeExams.map((e, i) => (
+                    <tr key={i} className="border-b border-border/30 hover:bg-muted/30 transition-colors">
+                      <td className="px-5 py-3 font-medium text-foreground">{e.name}</td>
+                      <td className="px-3 py-3 text-muted-foreground">{e.className}</td>
+                      <td className="px-3 py-3 text-muted-foreground">{e.started}/{e.total}</td>
+                      <td className="px-3 py-3">
+                        <span className="flex items-center gap-1 text-muted-foreground">
+                          <Clock className="h-3 w-3" /> {e.remaining}
+                        </span>
+                      </td>
+                      <td className="px-3 py-3">
+                        <Badge variant={e.status === "active" ? "default" : "secondary"} className="rounded-full text-xs capitalize">
+                          {e.status}
+                        </Badge>
+                      </td>
+                      <td className="px-3 py-3">
+                        <Button variant="ghost" size="icon" className="h-7 w-7">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Recent Activity */}
+        <Card className="lg:col-span-2 bg-card/80 backdrop-blur-md border-border/50">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base font-semibold">Recent Activity</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {recentActivity.map((a, i) => (
+              <div key={i} className="flex items-start gap-3">
+                <Avatar className="h-8 w-8 shrink-0">
+                  <AvatarFallback className="bg-primary/15 text-xs font-semibold text-primary">{a.avatar}</AvatarFallback>
+                </Avatar>
+                <div className="min-w-0">
+                  <p className="text-sm text-foreground leading-snug">{a.text}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">{a.time}</p>
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Class Performance Chart */}
+      <Card className="bg-card/80 backdrop-blur-md border-border/50">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base font-semibold">Class Performance</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={classPerformance}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(20 12% 22%)" />
+                <XAxis dataKey="name" tick={{ fill: "hsl(20 10% 55%)", fontSize: 12 }} />
+                <YAxis tick={{ fill: "hsl(20 10% 55%)", fontSize: 12 }} domain={[0, 100]} />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "hsl(20 12% 12%)",
+                    border: "1px solid hsl(20 12% 22%)",
+                    borderRadius: "8px",
+                    color: "hsl(30 20% 90%)",
+                  }}
+                />
+                <Bar dataKey="avg" fill="hsl(20, 90%, 52%)" radius={[6, 6, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
