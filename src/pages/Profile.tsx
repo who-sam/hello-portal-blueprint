@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -6,12 +7,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useNavigate } from "react-router-dom";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import {
   BookOpen, Flame, FileText, Award, Lock, CheckCircle,
   Zap, Globe, Target, Trophy, Star, Settings,
 } from "lucide-react";
+import { useUser } from "@/contexts/UserContext";
 import type { Achievement } from "@/types/exam";
 
 const performanceData = [
@@ -40,11 +41,11 @@ const recentActivity = [
 ];
 
 const submissions = [
-  { exam: "Midterm CS201", score: 88, language: "Python", date: "2026-02-28", status: "graded" },
-  { exam: "Quiz 3 - Arrays", score: 95, language: "JavaScript", date: "2026-02-20", status: "graded" },
-  { exam: "Practice Set #12", score: 72, language: "C++", date: "2026-02-18", status: "graded" },
-  { exam: "Pop Quiz - Strings", score: 60, language: "Python", date: "2026-02-10", status: "graded" },
-  { exam: "Final CS101", score: 91, language: "Java", date: "2026-01-15", status: "graded" },
+  { id: "mid-cs201", exam: "Midterm CS201", score: 88, language: "Python", date: "2026-02-28", status: "graded" },
+  { id: "quiz-3", exam: "Quiz 3 - Arrays", score: 95, language: "JavaScript", date: "2026-02-20", status: "graded" },
+  { id: "practice-12", exam: "Practice Set #12", score: 72, language: "C++", date: "2026-02-18", status: "graded" },
+  { id: "pop-strings", exam: "Pop Quiz - Strings", score: 60, language: "Python", date: "2026-02-10", status: "graded" },
+  { id: "final-cs101", exam: "Final CS101", score: 91, language: "Java", date: "2026-01-15", status: "graded" },
 ];
 
 const achievements: Achievement[] = [
@@ -64,7 +65,10 @@ const iconMap: Record<string, React.ElementType> = {
 
 export default function Profile() {
   const navigate = useNavigate();
+  const { name, email } = useUser();
   const [tab, setTab] = useState("overview");
+
+  const initials = name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
 
   return (
     <div className="space-y-6">
@@ -72,14 +76,14 @@ export default function Profile() {
       <Card className="bg-card/80 backdrop-blur-md border-border/50">
         <CardContent className="flex flex-col sm:flex-row items-start sm:items-center gap-6 pt-6">
           <Avatar className="h-20 w-20">
-            <AvatarFallback className="bg-primary/20 text-2xl font-bold text-primary">JD</AvatarFallback>
+            <AvatarFallback className="bg-primary/20 text-2xl font-bold text-primary">{initials}</AvatarFallback>
           </Avatar>
           <div className="flex-1 space-y-1">
             <div className="flex items-center gap-3">
-              <h1 className="text-2xl font-bold text-foreground">John Doe</h1>
+              <h1 className="text-2xl font-bold text-foreground">{name}</h1>
               <Badge variant="secondary">Student</Badge>
             </div>
-            <p className="text-sm text-muted-foreground">john@kernel.dev</p>
+            <p className="text-sm text-muted-foreground">{email}</p>
             <p className="text-sm text-muted-foreground">Member since September 2025</p>
             <p className="text-sm text-foreground/80 mt-2">Passionate about algorithms and competitive programming. Currently studying CS at MIT.</p>
           </div>
@@ -121,7 +125,6 @@ export default function Profile() {
 
         <TabsContent value="overview" className="space-y-6 mt-4">
           <div className="grid lg:grid-cols-2 gap-6">
-            {/* Performance Chart */}
             <Card className="bg-card/80 backdrop-blur-md border-border/50">
               <CardHeader><CardTitle className="text-base">Performance Trend</CardTitle></CardHeader>
               <CardContent>
@@ -137,7 +140,6 @@ export default function Profile() {
               </CardContent>
             </Card>
 
-            {/* Skills */}
             <Card className="bg-card/80 backdrop-blur-md border-border/50">
               <CardHeader><CardTitle className="text-base">Skill Breakdown</CardTitle></CardHeader>
               <CardContent className="space-y-4">
@@ -155,7 +157,6 @@ export default function Profile() {
           </div>
 
           <div className="grid lg:grid-cols-2 gap-6">
-            {/* Recent Activity */}
             <Card className="bg-card/80 backdrop-blur-md border-border/50">
               <CardHeader><CardTitle className="text-base">Recent Activity</CardTitle></CardHeader>
               <CardContent>
@@ -173,7 +174,6 @@ export default function Profile() {
               </CardContent>
             </Card>
 
-            {/* Classes */}
             <Card className="bg-card/80 backdrop-blur-md border-border/50">
               <CardHeader><CardTitle className="text-base">Classes Enrolled</CardTitle></CardHeader>
               <CardContent className="flex flex-wrap gap-2">
@@ -200,7 +200,11 @@ export default function Profile() {
                 </TableHeader>
                 <TableBody>
                   {submissions.map((s) => (
-                    <TableRow key={s.exam} className="cursor-pointer hover:bg-muted/50">
+                    <TableRow
+                      key={s.id}
+                      className="cursor-pointer hover:bg-muted/50"
+                      onClick={() => navigate(`/dashboard/exam/${s.id}/review`)}
+                    >
                       <TableCell className="font-medium text-foreground">{s.exam}</TableCell>
                       <TableCell className="text-foreground">{s.score}%</TableCell>
                       <TableCell className="text-muted-foreground">{s.language}</TableCell>

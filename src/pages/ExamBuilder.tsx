@@ -4,7 +4,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Save } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 import type { Question, QuestionType, MCQQuestion, WrittenQuestion, CodingQuestion } from "@/types/exam";
 import QuestionTypeDialog from "@/components/exam-builder/QuestionTypeDialog";
 import QuestionList from "@/components/exam-builder/QuestionList";
@@ -40,6 +42,7 @@ function createQuestion(type: QuestionType): Question {
 }
 
 export default function ExamBuilder() {
+  const { toast } = useToast();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [duration, setDuration] = useState(60);
@@ -49,6 +52,7 @@ export default function ExamBuilder() {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [typeDialogOpen, setTypeDialogOpen] = useState(false);
+  const [deleteIdx, setDeleteIdx] = useState<number | null>(null);
 
   const addQuestion = (type: QuestionType) => {
     const q = createQuestion(type);
@@ -56,13 +60,30 @@ export default function ExamBuilder() {
     setSelectedIdx(questions.length);
   };
 
-  const deleteQuestion = (idx: number) => {
-    setQuestions((prev) => prev.filter((_, i) => i !== idx));
-    setSelectedIdx((prev) => Math.max(0, prev >= idx ? prev - 1 : prev));
+  const confirmDelete = () => {
+    if (deleteIdx !== null) {
+      setQuestions((prev) => prev.filter((_, i) => i !== deleteIdx));
+      setSelectedIdx((prev) => Math.max(0, prev >= deleteIdx ? prev - 1 : prev));
+      setDeleteIdx(null);
+    }
   };
 
   const updateQuestion = (q: Question) => {
     setQuestions((prev) => prev.map((old, i) => (i === selectedIdx ? q : old)));
+  };
+
+  const handleSave = () => {
+    if (!title.trim()) {
+      toast({ title: "Validation error", description: "Please enter an exam title.", variant: "destructive" });
+      return;
+    }
+    if (questions.length === 0) {
+      toast({ title: "Validation error", description: "Add at least one question.", variant: "destructive" });
+      return;
+    }
+    const examData = { title, description, duration, passingScore, shuffle, showResults, questions };
+    console.log("Exam saved:", examData);
+    toast({ title: "Exam saved!", description: `"${title}" with ${questions.length} question(s) has been saved.` });
   };
 
   const selected = questions[selectedIdx];
@@ -71,8 +92,8 @@ export default function ExamBuilder() {
     <div className="h-[calc(100vh-5.5rem)] flex flex-col gap-4">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold tracking-tight text-foreground">Exam Builder</h1>
-        <Button className="gap-2 rounded-full">
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">Exam Builder</h1>
+        <Button className="gap-2 rounded-full" onClick={handleSave}>
           <Save className="h-4 w-4" /> Save Exam
         </Button>
       </div>
@@ -115,7 +136,7 @@ export default function ExamBuilder() {
             selectedIndex={selectedIdx}
             onSelect={setSelectedIdx}
             onAdd={() => setTypeDialogOpen(true)}
-            onDelete={deleteQuestion}
+            onDelete={(idx) => setDeleteIdx(idx)}
           />
         </ResizablePanel>
         <ResizableHandle withHandle />
@@ -137,6 +158,24 @@ export default function ExamBuilder() {
       </ResizablePanelGroup>
 
       <QuestionTypeDialog open={typeDialogOpen} onClose={() => setTypeDialogOpen(false)} onSelect={addQuestion} />
+
+      {/* Delete confirmation */}
+      <AlertDialog open={deleteIdx !== null} onOpenChange={() => setDeleteIdx(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete question?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently remove this question from the exam.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

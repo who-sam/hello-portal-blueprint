@@ -1,8 +1,20 @@
 import { AppSidebar } from "@/components/AppSidebar";
 import { FloatingNavbar } from "@/components/FloatingNavbar";
-import { Outlet } from "react-router-dom";
+import { Outlet, Navigate } from "react-router-dom";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { useState } from "react";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
 
 export default function DashboardLayout() {
+  const isMobile = useIsMobile();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Route guard: redirect to /auth if no role set
+  const hasRole = localStorage.getItem("kernel-role");
+  if (!hasRole) {
+    return <Navigate to="/auth" replace />;
+  }
+
   return (
     <div className="relative min-h-screen w-full bg-background">
       {/* Themed geometric pattern background */}
@@ -10,13 +22,22 @@ export default function DashboardLayout() {
       <div className="fixed inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/10" />
 
       {/* Floating top navbar */}
-      <FloatingNavbar />
+      <FloatingNavbar onMobileMenuToggle={() => setMobileMenuOpen(!mobileMenuOpen)} />
 
-      {/* Floating icon sidebar */}
-      <AppSidebar />
+      {/* Sidebar - desktop */}
+      {!isMobile && <AppSidebar />}
+
+      {/* Sidebar - mobile slide-out */}
+      {isMobile && (
+        <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+          <SheetContent side="left" className="w-72 p-4 bg-background border-border">
+            <AppSidebar mobile onNavigate={() => setMobileMenuOpen(false)} />
+          </SheetContent>
+        </Sheet>
+      )}
 
       {/* Page content — offset for sidebar + navbar */}
-      <main className="relative z-10 ml-20 pt-20 pr-6 pb-6">
+      <main className={`relative z-10 pt-20 pr-6 pb-6 ${isMobile ? "ml-4" : "ml-20"}`}>
         <Outlet />
       </main>
     </div>

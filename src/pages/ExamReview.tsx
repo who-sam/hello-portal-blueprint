@@ -6,6 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ArrowLeft, CheckCircle, XCircle, Check, X } from "lucide-react";
 import Editor from "@monaco-editor/react";
+import { useTheme } from "next-themes";
 
 const mockReview = {
   examTitle: "Midterm CS201 - Data Structures",
@@ -21,10 +22,8 @@ const mockReview = {
       id: "1", type: "mcq" as const, text: "Which data structure uses FIFO ordering?",
       points: 5, earned: 5,
       options: [
-        { id: "a", text: "Stack" },
-        { id: "b", text: "Queue" },
-        { id: "c", text: "Tree" },
-        { id: "d", text: "Graph" },
+        { id: "a", text: "Stack" }, { id: "b", text: "Queue" },
+        { id: "c", text: "Tree" }, { id: "d", text: "Graph" },
       ],
       selected: ["b"], correct: ["b"],
       explanation: "A Queue follows First-In-First-Out (FIFO) ordering.",
@@ -33,10 +32,8 @@ const mockReview = {
       id: "2", type: "mcq" as const, text: "What is the time complexity of binary search?",
       points: 5, earned: 0,
       options: [
-        { id: "a", text: "O(n)" },
-        { id: "b", text: "O(n²)" },
-        { id: "c", text: "O(log n)" },
-        { id: "d", text: "O(1)" },
+        { id: "a", text: "O(n)" }, { id: "b", text: "O(n²)" },
+        { id: "c", text: "O(log n)" }, { id: "d", text: "O(1)" },
       ],
       selected: ["a"], correct: ["c"],
       explanation: "Binary search divides the search space in half each step, giving O(log n).",
@@ -69,10 +66,8 @@ const mockReview = {
       id: "6", type: "mcq" as const, text: "Which traversal visits the root node first?",
       points: 5, earned: 5,
       options: [
-        { id: "a", text: "Inorder" },
-        { id: "b", text: "Preorder" },
-        { id: "c", text: "Postorder" },
-        { id: "d", text: "Level-order" },
+        { id: "a", text: "Inorder" }, { id: "b", text: "Preorder" },
+        { id: "c", text: "Postorder" }, { id: "d", text: "Level-order" },
       ],
       selected: ["b"], correct: ["b"],
       explanation: "Preorder traversal visits root, then left subtree, then right subtree.",
@@ -83,6 +78,7 @@ const mockReview = {
 export default function ExamReview() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { theme } = useTheme();
   const r = mockReview;
 
   return (
@@ -180,7 +176,7 @@ export default function ExamReview() {
                       height="200px"
                       language={q.language}
                       value={q.code}
-                      theme="vs-dark"
+                      theme={theme === "dark" ? "vs-dark" : "light"}
                       options={{ readOnly: true, minimap: { enabled: false }, scrollBeyondLastLine: false, fontSize: 13 }}
                     />
                   </div>

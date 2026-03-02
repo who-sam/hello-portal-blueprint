@@ -37,11 +37,17 @@ export default function Notifications() {
 
   const markAllRead = () => setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
 
+  const handleNotificationClick = (n: AppNotification) => {
+    // Mark as read first, then navigate
+    setNotifications((prev) => prev.map((notif) => notif.id === n.id ? { ...notif, read: true } : notif));
+    navigate(n.linkTo);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-bold text-foreground">Notifications</h1>
+          <h1 className="text-3xl font-bold text-foreground">Notifications</h1>
           {unreadCount > 0 && (
             <span className="rounded-full bg-primary px-2 py-0.5 text-xs font-medium text-primary-foreground">{unreadCount}</span>
           )}
@@ -55,6 +61,7 @@ export default function Notifications() {
           <TabsTrigger value="exam">Exams</TabsTrigger>
           <TabsTrigger value="class">Classes</TabsTrigger>
           <TabsTrigger value="result">Results</TabsTrigger>
+          <TabsTrigger value="submission">Submissions</TabsTrigger>
           <TabsTrigger value="system">System</TabsTrigger>
         </TabsList>
 
@@ -76,7 +83,7 @@ export default function Notifications() {
                   <Card
                     key={n.id}
                     className={`bg-card/80 backdrop-blur-md border-border/50 cursor-pointer transition-all hover:bg-secondary/30 ${!n.read ? "border-l-2 border-l-primary" : ""}`}
-                    onClick={() => navigate(n.linkTo)}
+                    onClick={() => handleNotificationClick(n)}
                   >
                     <CardContent className="flex items-center gap-4 py-4">
                       <div className={`rounded-full p-2.5 shrink-0 ${config.color}`}>

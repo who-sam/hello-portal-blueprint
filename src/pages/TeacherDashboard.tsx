@@ -4,11 +4,19 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   Users, FileText, GraduationCap, TrendingUp, TrendingDown,
-  Plus, School, BarChart3, BookOpen, Clock, MoreHorizontal,
+  Plus, School, BarChart3, BookOpen, Clock, MoreHorizontal, Eye, Pencil, Trash2,
 } from "lucide-react";
 import { format } from "date-fns";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { useUser } from "@/contexts/UserContext";
+import { useToast } from "@/hooks/use-toast";
 
 const stats = [
   { label: "Total Students", value: "248", icon: Users, trend: "+12%", up: true },
@@ -21,13 +29,13 @@ const quickActions = [
   { label: "Create Exam", desc: "Build a new exam", icon: Plus, route: "/dashboard/exam-builder" },
   { label: "Create Class", desc: "Start a new class", icon: School, route: "/dashboard/team" },
   { label: "View Results", desc: "Check submissions", icon: BarChart3, route: "/dashboard/results" },
-  { label: "Question Bank", desc: "Manage questions", icon: BookOpen, route: "/dashboard/results" },
+  { label: "Question Bank", desc: "Manage questions", icon: BookOpen, route: "/dashboard/exam-builder" },
 ];
 
 const activeExams = [
-  { name: "Midterm — Data Structures", className: "CS201-A", started: 18, total: 32, remaining: "1h 23m", status: "active" },
-  { name: "Quiz 3 — Algorithms", className: "CS301-B", started: 25, total: 28, remaining: "45m", status: "active" },
-  { name: "Final — OOP Concepts", className: "CS101-A", started: 0, total: 45, remaining: "Starts in 2d", status: "scheduled" },
+  { id: "mid-ds", name: "Midterm — Data Structures", className: "CS201-A", started: 18, total: 32, remaining: "1h 23m", status: "active" },
+  { id: "quiz-alg", name: "Quiz 3 — Algorithms", className: "CS301-B", started: 25, total: 28, remaining: "45m", status: "active" },
+  { id: "final-oop", name: "Final — OOP Concepts", className: "CS101-A", started: 0, total: 45, remaining: "Starts in 2d", status: "scheduled" },
 ];
 
 const recentActivity = [
@@ -49,12 +57,14 @@ const classPerformance = [
 
 export default function TeacherDashboard() {
   const navigate = useNavigate();
+  const { name } = useUser();
+  const { toast } = useToast();
 
   return (
     <div className="space-y-6">
       {/* Welcome */}
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-foreground">Welcome back, Dr. Smith</h1>
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">Welcome back, {name}</h1>
         <p className="text-muted-foreground">{format(new Date(), "EEEE, MMMM d, yyyy")}</p>
       </div>
 
@@ -121,8 +131,8 @@ export default function TeacherDashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  {activeExams.map((e, i) => (
-                    <tr key={i} className="border-b border-border/30 hover:bg-muted/30 transition-colors">
+                  {activeExams.map((e) => (
+                    <tr key={e.id} className="border-b border-border/30 hover:bg-muted/30 transition-colors">
                       <td className="px-5 py-3 font-medium text-foreground">{e.name}</td>
                       <td className="px-3 py-3 text-muted-foreground">{e.className}</td>
                       <td className="px-3 py-3 text-muted-foreground">{e.started}/{e.total}</td>
@@ -137,9 +147,27 @@ export default function TeacherDashboard() {
                         </Badge>
                       </td>
                       <td className="px-3 py-3">
-                        <Button variant="ghost" size="icon" className="h-7 w-7">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-7 w-7" aria-label="More options">
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => navigate(`/dashboard/exam/${e.id}`)} className="gap-2">
+                              <Eye className="h-4 w-4" /> View
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => navigate("/dashboard/exam-builder")} className="gap-2">
+                              <Pencil className="h-4 w-4" /> Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => navigate("/dashboard/results")} className="gap-2">
+                              <BarChart3 className="h-4 w-4" /> View Results
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => toast({ title: "Exam deleted", description: `${e.name} has been deleted.` })} className="gap-2 text-destructive focus:text-destructive">
+                              <Trash2 className="h-4 w-4" /> Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </td>
                     </tr>
                   ))}
@@ -179,18 +207,18 @@ export default function TeacherDashboard() {
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={classPerformance}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(20 12% 22%)" />
-                <XAxis dataKey="name" tick={{ fill: "hsl(20 10% 55%)", fontSize: 12 }} />
-                <YAxis tick={{ fill: "hsl(20 10% 55%)", fontSize: 12 }} domain={[0, 100]} />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                <XAxis dataKey="name" tick={{ fill: "var(--muted-foreground)", fontSize: 12 }} />
+                <YAxis tick={{ fill: "var(--muted-foreground)", fontSize: 12 }} domain={[0, 100]} />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: "hsl(20 12% 12%)",
-                    border: "1px solid hsl(20 12% 22%)",
+                    backgroundColor: "hsl(var(--card))",
+                    border: "1px solid hsl(var(--border))",
                     borderRadius: "8px",
-                    color: "hsl(30 20% 90%)",
+                    color: "hsl(var(--foreground))",
                   }}
                 />
-                <Bar dataKey="avg" fill="hsl(20, 90%, 52%)" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="avg" fill="hsl(var(--primary))" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>

@@ -5,14 +5,17 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import { GraduationCap, BookOpen, ArrowLeft, Eye, EyeOff } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { GraduationCap, BookOpen, ArrowLeft, Eye, EyeOff, Loader2 } from "lucide-react";
 import authBg from "@/assets/auth-bg.jpg";
 import KernelLogo from "@/components/KernelLogo";
 import { useRole } from "@/contexts/RoleContext";
+import { useUser } from "@/contexts/UserContext";
 import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 
 type Role = "teacher" | "student";
-type AuthMode = "select" | "signup" | "login";
+type AuthMode = "select" | "signup" | "login" | "forgot" | "login-role";
 
 const signupSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters").max(100),
@@ -37,8 +40,13 @@ const AuthPage = () => {
   const [role, setLocalRole] = useState<Role>("student");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  const [termsOpen, setTermsOpen] = useState(false);
+  const [privacyOpen, setPrivacyOpen] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState("");
   const { setRole } = useRole();
+  const { setUser } = useUser();
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const signupForm = useForm<SignupData>({ resolver: zodResolver(signupSchema) });
   const loginForm = useForm<LoginData>({ resolver: zodResolver(loginSchema) });
@@ -48,16 +56,36 @@ const AuthPage = () => {
     setMode("signup");
   };
 
-  const onSignup = (data: SignupData) => {
+  const selectLoginRole = (r: Role) => {
+    setLocalRole(r);
+    setMode("login");
+  };
+
+  const onSignup = async (data: SignupData) => {
+    // Simulate async
+    await new Promise((r) => setTimeout(r, 500));
     console.log("Signup:", { ...data, role });
     setRole(role);
+    setUser(data.name, data.email);
     navigate("/dashboard");
   };
 
-  const onLogin = (data: LoginData) => {
+  const onLogin = async (data: LoginData) => {
+    await new Promise((r) => setTimeout(r, 500));
     console.log("Login:", data);
     setRole(role);
+    setUser(role === "teacher" ? "Dr. Smith" : "John Doe", data.email);
     navigate("/dashboard");
+  };
+
+  const handleSocialLogin = () => {
+    toast({ title: "Coming soon", description: "Social login will be available soon." });
+  };
+
+  const handleForgotPassword = () => {
+    if (!forgotEmail) return;
+    toast({ title: "Reset link sent", description: `Check ${forgotEmail} for a password reset link.` });
+    setMode("login");
   };
 
   return (
@@ -105,8 +133,49 @@ const AuthPage = () => {
               </div>
               <p className="text-center text-sm text-muted-foreground">
                 Already have an account?{" "}
-                <button onClick={() => setMode("login")} className="font-medium text-primary hover:underline">
+                <button onClick={() => setMode("login-role")} className="font-medium text-primary hover:underline">
                   Log in
+                </button>
+              </p>
+            </div>
+          )}
+
+          {/* Login Role Selection */}
+          {mode === "login-role" && (
+            <div className="space-y-6">
+              <div className="flex items-center gap-3">
+                <button type="button" onClick={() => setMode("select")} className="text-muted-foreground hover:text-foreground">
+                  <ArrowLeft className="h-5 w-5" />
+                </button>
+                <div>
+                  <h1 className="text-2xl font-bold text-foreground">Log In</h1>
+                  <p className="text-sm text-muted-foreground">Select your role to continue</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <button
+                  onClick={() => selectLoginRole("teacher")}
+                  className="group flex flex-col items-center gap-3 rounded-xl border border-border/50 bg-card/60 backdrop-blur-md p-6 transition-all hover:border-primary/50 hover:bg-primary/10"
+                >
+                  <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/15 text-primary transition-colors group-hover:bg-primary/25">
+                    <GraduationCap className="h-7 w-7" />
+                  </div>
+                  <span className="text-base font-semibold text-foreground">Teacher</span>
+                </button>
+                <button
+                  onClick={() => selectLoginRole("student")}
+                  className="group flex flex-col items-center gap-3 rounded-xl border border-border/50 bg-card/60 backdrop-blur-md p-6 transition-all hover:border-primary/50 hover:bg-primary/10"
+                >
+                  <div className="flex h-14 w-14 items-center justify-center rounded-full bg-accent/15 text-accent transition-colors group-hover:bg-accent/25">
+                    <BookOpen className="h-7 w-7" />
+                  </div>
+                  <span className="text-base font-semibold text-foreground">Student</span>
+                </button>
+              </div>
+              <p className="text-center text-sm text-muted-foreground">
+                Don't have an account?{" "}
+                <button onClick={() => setMode("select")} className="font-medium text-primary hover:underline">
+                  Sign up
                 </button>
               </p>
             </div>
@@ -162,7 +231,8 @@ const AuthPage = () => {
                 </div>
               </div>
 
-              <Button type="submit" className="h-11 w-full text-base font-semibold">
+              <Button type="submit" className="h-11 w-full text-base font-semibold" disabled={signupForm.formState.isSubmitting}>
+                {signupForm.formState.isSubmitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
                 Create Account
               </Button>
 
@@ -173,17 +243,17 @@ const AuthPage = () => {
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <Button type="button" variant="social" className="h-10 gap-2">
+                <Button type="button" variant="outline" className="h-10 gap-2" onClick={handleSocialLogin}>
                   <GoogleIcon /> Google
                 </Button>
-                <Button type="button" variant="social" className="h-10 gap-2">
+                <Button type="button" variant="outline" className="h-10 gap-2" onClick={handleSocialLogin}>
                   <GithubIcon /> GitHub
                 </Button>
               </div>
 
               <p className="text-center text-sm text-muted-foreground">
                 Already have an account?{" "}
-                <button type="button" onClick={() => setMode("login")} className="font-medium text-primary hover:underline">
+                <button type="button" onClick={() => setMode("login-role")} className="font-medium text-primary hover:underline">
                   Log in
                 </button>
               </p>
@@ -194,12 +264,14 @@ const AuthPage = () => {
           {mode === "login" && (
             <form onSubmit={loginForm.handleSubmit(onLogin)} className="space-y-5">
               <div className="flex items-center gap-3">
-                <button type="button" onClick={() => setMode("select")} className="text-muted-foreground hover:text-foreground">
+                <button type="button" onClick={() => setMode("login-role")} className="text-muted-foreground hover:text-foreground">
                   <ArrowLeft className="h-5 w-5" />
                 </button>
                 <div>
                   <h1 className="text-2xl font-bold text-foreground">Welcome Back</h1>
-                  <p className="text-sm text-muted-foreground">Log in to your account</p>
+                  <p className="text-sm text-muted-foreground">
+                    Log in as a <span className="capitalize text-primary font-medium">{role}</span>
+                  </p>
                 </div>
               </div>
 
@@ -231,10 +303,11 @@ const AuthPage = () => {
                   <Checkbox id="remember" checked={rememberMe} onCheckedChange={(v) => setRememberMe(v === true)} />
                   <label htmlFor="remember" className="text-sm text-muted-foreground cursor-pointer">Remember me</label>
                 </div>
-                <button type="button" className="text-sm text-primary hover:underline">Forgot Password?</button>
+                <button type="button" onClick={() => setMode("forgot")} className="text-sm text-primary hover:underline">Forgot Password?</button>
               </div>
 
-              <Button type="submit" className="h-11 w-full text-base font-semibold">
+              <Button type="submit" className="h-11 w-full text-base font-semibold" disabled={loginForm.formState.isSubmitting}>
+                {loginForm.formState.isSubmitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
                 Log In
               </Button>
 
@@ -245,10 +318,10 @@ const AuthPage = () => {
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <Button type="button" variant="social" className="h-10 gap-2">
+                <Button type="button" variant="outline" className="h-10 gap-2" onClick={handleSocialLogin}>
                   <GoogleIcon /> Google
                 </Button>
-                <Button type="button" variant="social" className="h-10 gap-2">
+                <Button type="button" variant="outline" className="h-10 gap-2" onClick={handleSocialLogin}>
                   <GithubIcon /> GitHub
                 </Button>
               </div>
@@ -261,12 +334,76 @@ const AuthPage = () => {
               </p>
             </form>
           )}
+
+          {/* Forgot Password */}
+          {mode === "forgot" && (
+            <div className="space-y-5">
+              <div className="flex items-center gap-3">
+                <button type="button" onClick={() => setMode("login")} className="text-muted-foreground hover:text-foreground">
+                  <ArrowLeft className="h-5 w-5" />
+                </button>
+                <div>
+                  <h1 className="text-2xl font-bold text-foreground">Reset Password</h1>
+                  <p className="text-sm text-muted-foreground">Enter your email to receive a reset link</p>
+                </div>
+              </div>
+              <Input
+                type="email"
+                placeholder="Email Address"
+                className="h-11"
+                value={forgotEmail}
+                onChange={(e) => setForgotEmail(e.target.value)}
+              />
+              <Button onClick={handleForgotPassword} className="h-11 w-full text-base font-semibold">
+                Send Reset Link
+              </Button>
+              <p className="text-center text-sm text-muted-foreground">
+                Remember your password?{" "}
+                <button onClick={() => setMode("login")} className="font-medium text-primary hover:underline">
+                  Log in
+                </button>
+              </p>
+            </div>
+          )}
         </div>
 
         <p className="mt-6 text-center text-xs text-white/40">
-          By continuing, you agree to our <a href="#" className="underline hover:text-white/60">Terms of Service</a> and <a href="#" className="underline hover:text-white/60">Privacy Policy</a>
+          By continuing, you agree to our{" "}
+          <button onClick={() => setTermsOpen(true)} className="underline hover:text-white/60">Terms of Service</button>
+          {" "}and{" "}
+          <button onClick={() => setPrivacyOpen(true)} className="underline hover:text-white/60">Privacy Policy</button>
         </p>
       </div>
+
+      {/* Terms Dialog */}
+      <Dialog open={termsOpen} onOpenChange={setTermsOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader><DialogTitle>Terms of Service</DialogTitle></DialogHeader>
+          <div className="text-sm text-muted-foreground space-y-2 max-h-64 overflow-y-auto">
+            <p>Welcome to Kernel. By using our platform, you agree to these terms.</p>
+            <p>1. You must be at least 13 years old to use Kernel.</p>
+            <p>2. You are responsible for maintaining the security of your account.</p>
+            <p>3. Academic honesty is expected during all exams.</p>
+            <p>4. We reserve the right to suspend accounts that violate our policies.</p>
+            <p>5. Your data is handled according to our Privacy Policy.</p>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Privacy Dialog */}
+      <Dialog open={privacyOpen} onOpenChange={setPrivacyOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader><DialogTitle>Privacy Policy</DialogTitle></DialogHeader>
+          <div className="text-sm text-muted-foreground space-y-2 max-h-64 overflow-y-auto">
+            <p>Kernel respects your privacy and is committed to protecting your data.</p>
+            <p>1. We collect only the information necessary to provide our services.</p>
+            <p>2. Your exam data and results are stored securely.</p>
+            <p>3. We do not sell your personal information to third parties.</p>
+            <p>4. You can request deletion of your data at any time.</p>
+            <p>5. We use cookies for authentication and preferences only.</p>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

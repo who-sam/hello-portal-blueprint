@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Calendar as CalendarIcon, Clock, BookOpen, ArrowRight } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -22,6 +23,7 @@ const difficultyColor = (d: string) => {
 };
 
 export default function UpcomingExamsPage() {
+  const navigate = useNavigate();
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
 
   const examDates = exams.map((e) => e.date);
@@ -37,7 +39,7 @@ export default function UpcomingExamsPage() {
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
         {/* Calendar */}
-        <Card className="xl:col-span-1 border-border/50">
+        <Card className="xl:col-span-1 border-border/50 bg-card/80 backdrop-blur-md">
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center gap-2 text-lg">
               <CalendarIcon className="h-5 w-5 text-primary" />
@@ -69,7 +71,7 @@ export default function UpcomingExamsPage() {
         </Card>
 
         {/* Exam list */}
-        <Card className="xl:col-span-2 border-border/50">
+        <Card className="xl:col-span-2 border-border/50 bg-card/80 backdrop-blur-md">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-lg">
               <BookOpen className="h-5 w-5 text-primary" />
@@ -111,7 +113,7 @@ export default function UpcomingExamsPage() {
                       {exam.difficulty}
                     </Badge>
                     {!isPast && (
-                      <Button size="sm" variant="ghost" className="gap-1 text-primary">
+                      <Button size="sm" variant="ghost" className="gap-1 text-primary" onClick={(e) => { e.stopPropagation(); navigate("/dashboard/start"); }}>
                         Prepare <ArrowRight className="h-3 w-3" />
                       </Button>
                     )}

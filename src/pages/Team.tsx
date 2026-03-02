@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { Users, Mail, Trophy, BookOpen } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -21,6 +22,7 @@ const statusColor = (s: string) => {
 };
 
 export default function TeamPage() {
+  const navigate = useNavigate();
   const teamAvg = Math.round(teamMembers.reduce((a, m) => a + m.score, 0) / teamMembers.length);
   const topPerformer = teamMembers.reduce((a, b) => (a.score > b.score ? a : b));
 
@@ -33,7 +35,7 @@ export default function TeamPage() {
 
       {/* Team stats */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <Card className="border-border/50">
+        <Card className="border-border/50 bg-card/80 backdrop-blur-md">
           <CardContent className="p-5 flex items-center gap-4">
             <div className="rounded-xl bg-primary/10 p-3"><Users className="h-5 w-5 text-primary" /></div>
             <div>
@@ -42,7 +44,7 @@ export default function TeamPage() {
             </div>
           </CardContent>
         </Card>
-        <Card className="border-border/50">
+        <Card className="border-border/50 bg-card/80 backdrop-blur-md">
           <CardContent className="p-5 flex items-center gap-4">
             <div className="rounded-xl bg-accent/10 p-3"><BookOpen className="h-5 w-5 text-accent" /></div>
             <div>
@@ -51,7 +53,7 @@ export default function TeamPage() {
             </div>
           </CardContent>
         </Card>
-        <Card className="border-border/50">
+        <Card className="border-border/50 bg-card/80 backdrop-blur-md">
           <CardContent className="p-5 flex items-center gap-4">
             <div className="rounded-xl bg-green-500/10 p-3"><Trophy className="h-5 w-5 text-green-500" /></div>
             <div>
@@ -63,7 +65,7 @@ export default function TeamPage() {
       </div>
 
       {/* Member cards */}
-      <Card className="border-border/50">
+      <Card className="border-border/50 bg-card/80 backdrop-blur-md">
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-lg">
             <Users className="h-5 w-5 text-primary" />
@@ -97,7 +99,12 @@ export default function TeamPage() {
                   <span>{member.exams} exams taken</span>
                   <Badge variant="secondary" className="text-xs">🔥 {member.streak} streak</Badge>
                 </div>
-                <Button size="sm" variant="outline" className="w-full gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="w-full gap-2"
+                  onClick={() => navigate("/dashboard/messages")}
+                >
                   <Mail className="h-3 w-3" /> Message
                 </Button>
               </div>
