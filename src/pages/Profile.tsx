@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { format, parseISO } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -235,7 +236,7 @@ export default function Profile() {
                       <p className="text-xs text-muted-foreground mt-1">{a.description}</p>
                     </div>
                     {a.unlocked ? (
-                      <p className="text-xs text-primary">{a.earnedAt}</p>
+                      <p className="text-xs text-primary">{a.earnedAt ? format(parseISO(a.earnedAt), "MMM d, yyyy") : ""}</p>
                     ) : (
                       <div className="w-full space-y-1">
                         <Progress value={((a.progress || 0) / a.maxProgress) * 100} className="h-1.5" />

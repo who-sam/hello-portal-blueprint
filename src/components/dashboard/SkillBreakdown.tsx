@@ -12,7 +12,7 @@ const categories = [
 
 export function SkillBreakdown() {
   return (
-    <Card className="border-border/50">
+    <Card className="border-border/50 bg-card/80 backdrop-blur-md">
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-lg">
           <BookOpen className="h-5 w-5 text-primary" />

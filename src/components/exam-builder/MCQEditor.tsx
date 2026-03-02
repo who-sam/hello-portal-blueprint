@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Trash2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 import type { MCQQuestion, Difficulty } from "@/types/exam";
 
 interface Props {
@@ -12,6 +13,7 @@ interface Props {
 }
 
 export default function MCQEditor({ question, onChange }: Props) {
+  const { toast } = useToast();
   const update = (partial: Partial<MCQQuestion>) => onChange({ ...question, ...partial });
 
   const addOption = () => {
@@ -62,7 +64,12 @@ export default function MCQEditor({ question, onChange }: Props) {
       </div>
 
       <div className="flex items-center gap-3">
-        <Switch checked={question.multipleCorrect} onCheckedChange={(v) => update({ multipleCorrect: v, correctOptionIds: [] })} />
+        <Switch checked={question.multipleCorrect} onCheckedChange={(v) => {
+          if (question.correctOptionIds.length > 0) {
+            toast({ title: "Correct answers cleared", description: "Toggling answer mode resets selected correct answers." });
+          }
+          update({ multipleCorrect: v, correctOptionIds: [] });
+        }} />
         <span className="text-sm text-muted-foreground">Allow multiple correct answers</span>
       </div>
 

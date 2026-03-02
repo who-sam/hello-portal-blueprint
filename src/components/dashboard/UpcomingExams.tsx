@@ -10,14 +10,14 @@ const upcomingExams = [
 ];
 
 const difficultyColor = (d: string) => {
-  if (d === "Easy") return "bg-green-500/15 text-green-400 border-green-500/30";
+  if (d === "Easy") return "bg-green-500/15 text-green-600 dark:text-green-400 border-green-500/30";
   if (d === "Medium") return "bg-accent/15 text-accent border-accent/30";
   return "bg-destructive/15 text-destructive border-destructive/30";
 };
 
 export function UpcomingExams() {
   return (
-    <Card className="border-border/50">
+    <Card className="border-border/50 bg-card/80 backdrop-blur-md">
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-lg">
           <Clock className="h-5 w-5 text-primary" />

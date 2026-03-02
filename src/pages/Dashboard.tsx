@@ -12,6 +12,8 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const { name } = useUser();
   const firstName = name.split(" ")[0];
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
 
   return (
     <div className="space-y-6">
@@ -19,7 +21,7 @@ export default function Dashboard() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-foreground">
-            Good morning, {firstName} 👋
+            {greeting}, {firstName} 👋
           </h1>
           <p className="mt-1 text-muted-foreground">
             Stay on top of your exams, monitor progress, and track results.
