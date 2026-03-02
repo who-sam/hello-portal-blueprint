@@ -19,6 +19,10 @@ import Help from "./pages/Help";
 import TeacherDashboard from "./pages/TeacherDashboard";
 import ExamBuilder from "./pages/ExamBuilder";
 import ExamTaking from "./pages/ExamTaking";
+import Profile from "./pages/Profile";
+import Leaderboard from "./pages/Leaderboard";
+import ExamReview from "./pages/ExamReview";
+import Notifications from "./pages/Notifications";
 
 const queryClient = new QueryClient();
 
@@ -44,6 +48,10 @@ const App = () => (
             <Route path="teacher" element={<TeacherDashboard />} />
             <Route path="exam-builder" element={<ExamBuilder />} />
             <Route path="exam/:id" element={<ExamTaking />} />
+            <Route path="profile" element={<Profile />} />
+            <Route path="leaderboard" element={<Leaderboard />} />
+            <Route path="exam/:id/review" element={<ExamReview />} />
+            <Route path="notifications" element={<Notifications />} />
           </Route>
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

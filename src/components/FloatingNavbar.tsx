@@ -58,10 +58,11 @@ export function FloatingNavbar() {
           <Search className="h-4 w-4" />
         </button>
         <button
-          onClick={() => navigate("/dashboard/messages")}
-          className="flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+          onClick={() => navigate("/dashboard/notifications")}
+          className="relative flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
         >
           <Bell className="h-4 w-4" />
+          <span className="absolute -top-0.5 -right-0.5 h-3.5 w-3.5 rounded-full bg-primary text-[9px] font-bold text-primary-foreground flex items-center justify-center">2</span>
         </button>
         <button
           onClick={() => navigate("/dashboard/upcoming")}
@@ -88,7 +89,7 @@ export function FloatingNavbar() {
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-48 z-[100] bg-card border border-border shadow-xl">
-          <DropdownMenuItem onClick={() => navigate("/dashboard/settings")} className="cursor-pointer gap-2">
+          <DropdownMenuItem onClick={() => navigate("/dashboard/profile")} className="cursor-pointer gap-2">
             <User className="h-4 w-4" />
             Profile
           </DropdownMenuItem>
