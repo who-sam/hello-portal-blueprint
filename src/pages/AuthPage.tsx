@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import authHero from "@/assets/auth-hero.jpg";
 import authBg from "@/assets/auth-bg.jpg";
+import kernelLogo from "@/assets/kernel-logo.png";
 
 const AuthPage = () => {
   const [agreed, setAgreed] = useState(false);
@@ -17,9 +18,10 @@ const AuthPage = () => {
         {/* Left Panel - Form */}
         <div className="flex w-full flex-col justify-between bg-card p-10 md:w-[45%]">
           <div>
-            <h2 className="mb-1 text-lg font-bold tracking-tight text-foreground">
-              Kernel
-            </h2>
+            <div className="flex items-center gap-2">
+              <img src={kernelLogo} alt="Kernel" className="h-7 w-7" />
+              <h2 className="text-lg font-bold tracking-tight text-foreground">Kernel</h2>
+            </div>
           </div>
 
           <div className="my-auto space-y-6">
