@@ -10,8 +10,17 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useNavigate } from "react-router-dom";
+import { useRole } from "@/contexts/RoleContext";
 
-const navTabs = [
+const teacherNavTabs = [
+  { label: "Overview", url: "/dashboard" },
+  { label: "Exams", url: "/dashboard/upcoming" },
+  { label: "Exam Builder", url: "/dashboard/exam-builder" },
+  { label: "Results", url: "/dashboard/results" },
+  { label: "Settings", url: "/dashboard/settings" },
+];
+
+const studentNavTabs = [
   { label: "Overview", url: "/dashboard" },
   { label: "Exams", url: "/dashboard/upcoming" },
   { label: "Results", url: "/dashboard/results" },
@@ -21,6 +30,8 @@ const navTabs = [
 
 export function FloatingNavbar() {
   const navigate = useNavigate();
+  const { role } = useRole();
+  const navTabs = role === "teacher" ? teacherNavTabs : studentNavTabs;
 
   return (
     <header className="fixed left-20 right-6 top-4 z-50 flex items-center gap-3 h-12">
