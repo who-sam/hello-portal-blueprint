@@ -13,6 +13,8 @@ import {
   Moon,
   FilePlus2,
   GraduationCap,
+  User,
+  Trophy,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -20,6 +22,8 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 const mainItems = [
 { icon: BarChart3, url: "/dashboard", label: "Dashboard" },
 { icon: GraduationCap, url: "/dashboard/teacher", label: "Teacher" },
+{ icon: User, url: "/dashboard/profile", label: "Profile" },
+{ icon: Trophy, url: "/dashboard/leaderboard", label: "Leaderboard" },
 { icon: Code2, url: "/dashboard/editor", label: "Code Editor" },
 { icon: FilePlus2, url: "/dashboard/exam-builder", label: "Exam Builder" },
 { icon: Calendar, url: "/dashboard/upcoming", label: "Upcoming" },
