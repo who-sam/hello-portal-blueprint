@@ -7,6 +7,7 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, Trash2 } from "lucide-react";
+import { useTheme } from "next-themes";
 import type { CodingQuestion, Difficulty } from "@/types/exam";
 
 const LANGUAGES = ["python", "javascript", "c", "cpp"];
@@ -19,6 +20,7 @@ interface Props {
 export default function CodingEditor({ question, onChange }: Props) {
   const update = (partial: Partial<CodingQuestion>) => onChange({ ...question, ...partial });
   const [lang, setLang] = useState("python");
+  const { theme } = useTheme();
 
   const addTestCase = () => {
     update({
@@ -83,7 +85,7 @@ export default function CodingEditor({ question, onChange }: Props) {
                   language={l === "cpp" ? "cpp" : l}
                   value={question.starterCode[l] || ""}
                   onChange={(v) => update({ starterCode: { ...question.starterCode, [l]: v || "" } })}
-                  theme="vs-dark"
+                  theme={theme === "dark" ? "vs-dark" : "light"}
                   options={{ fontSize: 13, minimap: { enabled: false }, scrollBeyondLastLine: false, padding: { top: 8 } }}
                 />
               </div>
@@ -134,7 +136,7 @@ export default function CodingEditor({ question, onChange }: Props) {
                 />
                 <span className="text-xs text-muted-foreground">Sample</span>
               </div>
-              <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => removeTestCase(tc.id)}>
+              <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => removeTestCase(tc.id)} aria-label="Remove test case">
                 <Trash2 className="h-3.5 w-3.5" />
               </Button>
             </div>

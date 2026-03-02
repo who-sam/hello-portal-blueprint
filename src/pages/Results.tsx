@@ -1,22 +1,15 @@
 import { useState } from "react";
-import { ClipboardCheck, TrendingUp, TrendingDown, Minus, Eye } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { ClipboardCheck, TrendingUp, TrendingDown, Minus, Eye, FileSearch } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
+  Dialog, DialogContent, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
 
 const results = [
@@ -40,6 +33,7 @@ const TrendIcon = ({ trend }: { trend: string }) => {
 };
 
 export default function ResultsPage() {
+  const navigate = useNavigate();
   const [selected, setSelected] = useState<typeof results[0] | null>(null);
   const avg = Math.round(results.reduce((a, r) => a + r.score, 0) / results.length);
 
@@ -52,21 +46,21 @@ export default function ResultsPage() {
 
       {/* Summary cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <Card className="border-border/50">
+        <Card className="border-border/50 bg-card/80 backdrop-blur-md">
           <CardContent className="p-5">
             <p className="text-sm text-muted-foreground">Average Score</p>
             <p className="text-3xl font-bold text-foreground">{avg}%</p>
             <Progress value={avg} className="mt-2 h-2" />
           </CardContent>
         </Card>
-        <Card className="border-border/50">
+        <Card className="border-border/50 bg-card/80 backdrop-blur-md">
           <CardContent className="p-5">
             <p className="text-sm text-muted-foreground">Exams Taken</p>
             <p className="text-3xl font-bold text-foreground">{results.length}</p>
             <p className="text-xs text-muted-foreground mt-2">Last: {results[0].date}</p>
           </CardContent>
         </Card>
-        <Card className="border-border/50">
+        <Card className="border-border/50 bg-card/80 backdrop-blur-md">
           <CardContent className="p-5">
             <p className="text-sm text-muted-foreground">Best Score</p>
             <p className="text-3xl font-bold text-green-500">{Math.max(...results.map(r => r.score))}%</p>
@@ -76,7 +70,7 @@ export default function ResultsPage() {
       </div>
 
       {/* Results table */}
-      <Card className="border-border/50">
+      <Card className="border-border/50 bg-card/80 backdrop-blur-md">
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-lg">
             <ClipboardCheck className="h-5 w-5 text-primary" />
@@ -158,6 +152,12 @@ export default function ResultsPage() {
                   </div>
                 ))}
               </div>
+              <Button
+                className="w-full gap-2"
+                onClick={() => { setSelected(null); navigate(`/dashboard/exam/${selected.id}/review`); }}
+              >
+                <FileSearch className="h-4 w-4" /> View Detailed Review
+              </Button>
             </div>
           )}
         </DialogContent>

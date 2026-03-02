@@ -18,9 +18,9 @@ const faqs = [
 ];
 
 const resources = [
-  { title: "Getting Started Guide", desc: "Learn the basics of Kernel", icon: BookOpen },
-  { title: "API Documentation", desc: "For developers building integrations", icon: FileText },
-  { title: "Community Forum", desc: "Connect with other learners", icon: MessageCircle },
+  { title: "Getting Started Guide", desc: "Learn the basics of Kernel", icon: BookOpen, href: "#getting-started" },
+  { title: "API Documentation", desc: "For developers building integrations", icon: FileText, href: "#api-docs" },
+  { title: "Community Forum", desc: "Connect with other learners", icon: MessageCircle, href: "#community" },
 ];
 
 export default function HelpPage() {
@@ -33,7 +33,7 @@ export default function HelpPage() {
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
         {/* FAQ */}
-        <Card className="xl:col-span-2 border-border/50">
+        <Card className="xl:col-span-2 border-border/50 bg-card/80 backdrop-blur-md">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-lg">
               <HelpCircle className="h-5 w-5 text-primary" />
@@ -59,13 +59,17 @@ export default function HelpPage() {
 
         {/* Resources */}
         <div className="space-y-4">
-          <Card className="border-border/50">
+          <Card className="border-border/50 bg-card/80 backdrop-blur-md">
             <CardHeader className="pb-3">
               <CardTitle className="text-lg">Resources</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               {resources.map((r, i) => (
-                <div key={i} className="flex items-center gap-3 rounded-xl border border-border/50 bg-secondary/20 p-3 hover:bg-secondary/40 transition-colors cursor-pointer">
+                <a
+                  key={i}
+                  href={r.href}
+                  className="flex items-center gap-3 rounded-xl border border-border/50 bg-secondary/20 p-3 hover:bg-secondary/40 transition-colors cursor-pointer"
+                >
                   <div className="rounded-lg bg-primary/10 p-2">
                     <r.icon className="h-4 w-4 text-primary" />
                   </div>
@@ -74,7 +78,7 @@ export default function HelpPage() {
                     <p className="text-xs text-muted-foreground">{r.desc}</p>
                   </div>
                   <ExternalLink className="h-4 w-4 text-muted-foreground" />
-                </div>
+                </a>
               ))}
             </CardContent>
           </Card>
@@ -86,7 +90,7 @@ export default function HelpPage() {
                 <p className="font-semibold text-foreground">Still need help?</p>
                 <p className="text-sm text-muted-foreground">Our support team is here for you.</p>
               </div>
-              <Button className="w-full gap-2">
+              <Button className="w-full gap-2" onClick={() => window.location.href = "mailto:support@kernel.dev"}>
                 <MessageCircle className="h-4 w-4" /> Contact Support
               </Button>
             </CardContent>

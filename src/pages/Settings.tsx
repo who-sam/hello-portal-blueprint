@@ -9,13 +9,18 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { useUser } from "@/contexts/UserContext";
+import { useTheme } from "next-themes";
 
 export default function SettingsPage() {
   const { toast } = useToast();
-  const [profile, setProfile] = useState({ name: "John Doe", email: "john@kernel.dev", bio: "Full-stack developer passionate about clean code." });
+  const { name, email, setUser } = useUser();
+  const { theme, setTheme } = useTheme();
+  const [profile, setProfile] = useState({ name, email, bio: "Full-stack developer passionate about clean code." });
   const [notifications, setNotifications] = useState({ email: true, push: true, examReminders: true, results: false, marketing: false });
 
   const handleSave = () => {
+    setUser(profile.name, profile.email);
     toast({ title: "Settings saved", description: "Your preferences have been updated." });
   };
 
@@ -35,7 +40,7 @@ export default function SettingsPage() {
         </TabsList>
 
         <TabsContent value="profile">
-          <Card className="border-border/50">
+          <Card className="border-border/50 bg-card/80 backdrop-blur-md">
             <CardHeader>
               <CardTitle className="text-lg">Profile Information</CardTitle>
               <CardDescription>Update your personal details.</CardDescription>
@@ -63,7 +68,7 @@ export default function SettingsPage() {
         </TabsContent>
 
         <TabsContent value="notifications">
-          <Card className="border-border/50">
+          <Card className="border-border/50 bg-card/80 backdrop-blur-md">
             <CardHeader>
               <CardTitle className="text-lg">Notification Preferences</CardTitle>
               <CardDescription>Choose what you want to be notified about.</CardDescription>
@@ -94,7 +99,7 @@ export default function SettingsPage() {
         </TabsContent>
 
         <TabsContent value="appearance">
-          <Card className="border-border/50">
+          <Card className="border-border/50 bg-card/80 backdrop-blur-md">
             <CardHeader>
               <CardTitle className="text-lg">Appearance</CardTitle>
               <CardDescription>Customize the look and feel.</CardDescription>
@@ -106,8 +111,8 @@ export default function SettingsPage() {
                   <p className="text-sm text-muted-foreground">Toggle between light and dark themes</p>
                 </div>
                 <Switch
-                  checked={document.documentElement.classList.contains("dark")}
-                  onCheckedChange={() => document.documentElement.classList.toggle("dark")}
+                  checked={theme === "dark"}
+                  onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")}
                 />
               </div>
             </CardContent>
@@ -115,7 +120,7 @@ export default function SettingsPage() {
         </TabsContent>
 
         <TabsContent value="security">
-          <Card className="border-border/50">
+          <Card className="border-border/50 bg-card/80 backdrop-blur-md">
             <CardHeader>
               <CardTitle className="text-lg">Security</CardTitle>
               <CardDescription>Manage your password and security settings.</CardDescription>

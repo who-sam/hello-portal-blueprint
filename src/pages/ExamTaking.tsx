@@ -1,11 +1,14 @@
 import { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Clock, Flag, ChevronLeft, ChevronRight, Send, AlertTriangle, CheckSquare, FileText, Code2 } from "lucide-react";
+import { Clock, Flag, ChevronLeft, ChevronRight, Send, AlertTriangle, CheckSquare, FileText, Code2, PanelLeftClose, PanelLeft } from "lucide-react";
 import Editor from "@monaco-editor/react";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
+import { useTheme } from "next-themes";
 import type { Question, MCQQuestion, WrittenQuestion, CodingQuestion, StudentAnswer } from "@/types/exam";
 
 // Mock exam data
@@ -59,27 +62,49 @@ const initAnswers = (qs: Question[]): StudentAnswer[] =>
   qs.map((q) => ({ questionId: q.id, type: q.type, selectedOptionIds: [], textAnswer: "", code: "", language: "python", flagged: false }));
 
 export default function ExamTaking() {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const { theme } = useTheme();
   const [started, setStarted] = useState(false);
   const [currentIdx, setCurrentIdx] = useState(0);
   const [answers, setAnswers] = useState<StudentAnswer[]>(initAnswers(MOCK_QUESTIONS));
   const [timeLeft, setTimeLeft] = useState(MOCK_EXAM.durationMinutes * 60);
   const [submitDialogOpen, setSubmitDialogOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [visitedQuestions, setVisitedQuestions] = useState<Set<number>>(new Set());
+  const [submitted, setSubmitted] = useState(false);
 
   // Timer
   useEffect(() => {
-    if (!started || timeLeft <= 0) return;
+    if (!started || timeLeft <= 0 || submitted) return;
     const id = setInterval(() => setTimeLeft((t) => t - 1), 1000);
     return () => clearInterval(id);
-  }, [started, timeLeft]);
+  }, [started, timeLeft, submitted]);
+
+  // Auto-submit when time runs out
+  useEffect(() => {
+    if (started && timeLeft <= 0 && !submitted) {
+      setSubmitted(true);
+      setSubmitDialogOpen(false);
+      toast({ title: "Time's up!", description: "Your exam has been submitted automatically." });
+      setTimeout(() => navigate("/dashboard/results"), 1500);
+    }
+  }, [timeLeft, started, submitted, navigate, toast]);
+
+  // Track visited questions
+  useEffect(() => {
+    if (started) {
+      setVisitedQuestions((prev) => new Set(prev).add(currentIdx));
+    }
+  }, [currentIdx, started]);
 
   // Beforeunload
   useEffect(() => {
-    if (!started) return;
+    if (!started || submitted) return;
     const handler = (e: BeforeUnloadEvent) => { e.preventDefault(); };
     window.addEventListener("beforeunload", handler);
     return () => window.removeEventListener("beforeunload", handler);
-  }, [started]);
+  }, [started, submitted]);
 
   const updateAnswer = useCallback((idx: number, partial: Partial<StudentAnswer>) => {
     setAnswers((prev) => prev.map((a, i) => (i === idx ? { ...a, ...partial } : a)));
@@ -101,11 +126,19 @@ export default function ExamTaking() {
     if (a.type === "mcq" && a.selectedOptionIds && a.selectedOptionIds.length > 0) return "answered";
     if (a.type === "written" && a.textAnswer && a.textAnswer.trim()) return "answered";
     if (a.type === "coding" && a.code && a.code.trim()) return "answered";
+    if (visitedQuestions.has(i)) return "visited";
     return "unvisited";
   };
 
   const answeredCount = answers.filter((_, i) => getStatus(i) === "answered").length;
   const flaggedCount = answers.filter((a) => a.flagged).length;
+
+  const handleSubmit = () => {
+    setSubmitted(true);
+    setSubmitDialogOpen(false);
+    toast({ title: "Exam submitted!", description: "Your responses have been recorded." });
+    setTimeout(() => navigate("/dashboard/results"), 1000);
+  };
 
   // Pre-exam screen
   if (!started) {
@@ -142,11 +175,22 @@ export default function ExamTaking() {
     <div className="h-[calc(100vh-5.5rem)] flex flex-col">
       {/* Top bar */}
       <div className="flex items-center justify-between rounded-lg border border-border/50 bg-card/80 backdrop-blur-md px-4 py-2 mb-3">
-        <h2 className="text-sm font-semibold text-foreground truncate">{MOCK_EXAM.title}</h2>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7"
+            aria-label="Toggle sidebar"
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+          >
+            {sidebarOpen ? <PanelLeftClose className="h-4 w-4" /> : <PanelLeft className="h-4 w-4" />}
+          </Button>
+          <h2 className="text-sm font-semibold text-foreground truncate">{MOCK_EXAM.title}</h2>
+        </div>
         <div className={cn("flex items-center gap-1.5 font-mono text-sm font-bold", timeLeft < 300 ? "text-red-400" : "text-foreground")}>
           <Clock className="h-4 w-4" /> {formatTime(timeLeft)}
         </div>
-        <Button size="sm" className="gap-1.5 rounded-full" onClick={() => setSubmitDialogOpen(true)}>
+        <Button size="sm" className="gap-1.5 rounded-full" onClick={() => setSubmitDialogOpen(true)} disabled={submitted}>
           <Send className="h-3.5 w-3.5" /> Submit
         </Button>
       </div>
@@ -168,6 +212,7 @@ export default function ExamTaking() {
                       i === currentIdx && "ring-2 ring-primary",
                       status === "answered" && "bg-primary/20 text-primary",
                       status === "flagged" && "bg-amber-500/20 text-amber-400",
+                      status === "visited" && "bg-secondary text-muted-foreground",
                       status === "unvisited" && "bg-muted/50 text-muted-foreground",
                     )}
                   >
@@ -175,6 +220,12 @@ export default function ExamTaking() {
                   </button>
                 );
               })}
+            </div>
+            <div className="mt-3 space-y-1 text-xs text-muted-foreground">
+              <div className="flex items-center gap-2"><div className="h-3 w-3 rounded bg-primary/20" /> Answered</div>
+              <div className="flex items-center gap-2"><div className="h-3 w-3 rounded bg-amber-500/20" /> Flagged</div>
+              <div className="flex items-center gap-2"><div className="h-3 w-3 rounded bg-secondary" /> Visited</div>
+              <div className="flex items-center gap-2"><div className="h-3 w-3 rounded bg-muted/50" /> Not visited</div>
             </div>
           </div>
         )}
@@ -262,7 +313,7 @@ export default function ExamTaking() {
                   language={ans.language || "python"}
                   value={ans.code || (q as CodingQuestion).starterCode[ans.language || "python"] || ""}
                   onChange={(v) => updateAnswer(currentIdx, { code: v || "" })}
-                  theme="vs-dark"
+                  theme={theme === "dark" ? "vs-dark" : "light"}
                   options={{ fontSize: 13, minimap: { enabled: false }, scrollBeyondLastLine: false, padding: { top: 8 } }}
                 />
               </div>
@@ -305,7 +356,7 @@ export default function ExamTaking() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setSubmitDialogOpen(false)}>Cancel</Button>
-            <Button onClick={() => { setSubmitDialogOpen(false); alert("Exam submitted!"); }}>Confirm Submit</Button>
+            <Button onClick={handleSubmit}>Confirm Submit</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

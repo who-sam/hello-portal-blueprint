@@ -1,26 +1,31 @@
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Play } from "lucide-react";
 import { StatsCards } from "@/components/dashboard/StatsCards";
 import { PerformanceChart } from "@/components/dashboard/PerformanceChart";
 import { UpcomingExams } from "@/components/dashboard/UpcomingExams";
 import { RecentResults } from "@/components/dashboard/RecentResults";
 import { SkillBreakdown } from "@/components/dashboard/SkillBreakdown";
+import { useUser } from "@/contexts/UserContext";
 
 export default function Dashboard() {
+  const navigate = useNavigate();
+  const { name } = useUser();
+  const firstName = name.split(" ")[0];
+
   return (
     <div className="space-y-6">
       {/* Greeting */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-foreground">
-            Good morning, John 👋
+            Good morning, {firstName} 👋
           </h1>
           <p className="mt-1 text-muted-foreground">
             Stay on top of your exams, monitor progress, and track results.
           </p>
         </div>
-        <Button size="lg" className="gap-2 text-base font-semibold shadow-lg shadow-primary/25">
+        <Button size="lg" className="gap-2 text-base font-semibold shadow-lg shadow-primary/25" onClick={() => navigate("/dashboard/start")}>
           <Play className="h-5 w-5" />
           Start Practice Exam
         </Button>

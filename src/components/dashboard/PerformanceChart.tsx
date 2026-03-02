@@ -21,7 +21,7 @@ const data = [
 
 export function PerformanceChart() {
   return (
-    <Card className="border-border/50">
+    <Card className="border-border/50 bg-card/80 backdrop-blur-md">
       <CardHeader className="pb-2">
         <CardTitle className="flex items-center gap-2 text-lg">
           <TrendingUp className="h-5 w-5 text-primary" />
@@ -37,34 +37,34 @@ export function PerformanceChart() {
             <BarChart data={data} barSize={28}>
               <CartesianGrid
                 strokeDasharray="3 3"
-                stroke="hsl(20 12% 22%)"
+                stroke="var(--border)"
                 vertical={false}
               />
               <XAxis
                 dataKey="month"
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: "hsl(20 10% 55%)", fontSize: 12 }}
+                tick={{ fill: "var(--muted-foreground)", fontSize: 12 }}
               />
               <YAxis
                 domain={[0, 100]}
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: "hsl(20 10% 55%)", fontSize: 12 }}
+                tick={{ fill: "var(--muted-foreground)", fontSize: 12 }}
               />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: "hsl(20 12% 12%)",
-                  border: "1px solid hsl(20 12% 22%)",
+                  backgroundColor: "hsl(var(--card))",
+                  border: "1px solid hsl(var(--border))",
                   borderRadius: "8px",
-                  color: "hsl(30 20% 90%)",
+                  color: "hsl(var(--foreground))",
                   fontSize: 13,
                 }}
-                cursor={{ fill: "hsl(20 15% 18% / 0.5)" }}
+                cursor={{ fill: "hsl(var(--muted) / 0.5)" }}
               />
               <Bar
                 dataKey="score"
-                fill="hsl(20 90% 52%)"
+                fill="hsl(var(--primary))"
                 radius={[6, 6, 0, 0]}
               />
             </BarChart>
