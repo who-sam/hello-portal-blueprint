@@ -18,7 +18,7 @@ const AuthPage = () => {
         <div className="flex w-full flex-col justify-between bg-card p-10 md:w-[45%]">
           <div>
             <h2 className="mb-1 text-lg font-bold tracking-tight text-foreground">
-              BTR<span className="text-muted-foreground">.fi</span>
+              Kernel
             </h2>
           </div>
 
@@ -26,7 +26,7 @@ const AuthPage = () => {
             <div>
               <h1 className="text-3xl font-bold text-foreground">Sign up</h1>
               <p className="mt-2 text-sm text-muted-foreground">
-                Create your BTR account and grow your share of the Bitcoin Treasury Reserve.
+                Create your Kernel account and start your learning journey.
               </p>
             </div>
 
