@@ -8,6 +8,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { GraduationCap, BookOpen, ArrowLeft, Eye, EyeOff } from "lucide-react";
 import authBg from "@/assets/auth-bg.jpg";
 import KernelLogo from "@/components/KernelLogo";
+import { useRole } from "@/contexts/RoleContext";
+import { useNavigate } from "react-router-dom";
 
 type Role = "teacher" | "student";
 type AuthMode = "select" | "signup" | "login";
@@ -32,24 +34,30 @@ type LoginData = z.infer<typeof loginSchema>;
 
 const AuthPage = () => {
   const [mode, setMode] = useState<AuthMode>("select");
-  const [role, setRole] = useState<Role>("student");
+  const [role, setLocalRole] = useState<Role>("student");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  const { setRole } = useRole();
+  const navigate = useNavigate();
 
   const signupForm = useForm<SignupData>({ resolver: zodResolver(signupSchema) });
   const loginForm = useForm<LoginData>({ resolver: zodResolver(loginSchema) });
 
   const selectRole = (r: Role) => {
-    setRole(r);
+    setLocalRole(r);
     setMode("signup");
   };
 
   const onSignup = (data: SignupData) => {
     console.log("Signup:", { ...data, role });
+    setRole(role);
+    navigate("/dashboard");
   };
 
   const onLogin = (data: LoginData) => {
     console.log("Login:", data);
+    setRole(role);
+    navigate("/dashboard");
   };
 
   return (

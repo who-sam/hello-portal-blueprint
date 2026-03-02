@@ -18,35 +18,40 @@ import {
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { useRole } from "@/contexts/RoleContext";
 
-const mainItems = [
-{ icon: BarChart3, url: "/dashboard", label: "Dashboard" },
-{ icon: GraduationCap, url: "/dashboard/teacher", label: "Teacher" },
-{ icon: User, url: "/dashboard/profile", label: "Profile" },
-{ icon: Trophy, url: "/dashboard/leaderboard", label: "Leaderboard" },
-{ icon: Code2, url: "/dashboard/editor", label: "Code Editor" },
-{ icon: FilePlus2, url: "/dashboard/exam-builder", label: "Exam Builder" },
-{ icon: Calendar, url: "/dashboard/upcoming", label: "Upcoming" },
-{ icon: ClipboardCheck, url: "/dashboard/results", label: "Results" },
-{ icon: Mail, url: "/dashboard/messages", label: "Messages" }];
+const teacherMainItems = [
+  { icon: BarChart3, url: "/dashboard", label: "Dashboard" },
+  { icon: FilePlus2, url: "/dashboard/exam-builder", label: "Exam Builder" },
+  { icon: ClipboardCheck, url: "/dashboard/results", label: "Results" },
+  { icon: Mail, url: "/dashboard/messages", label: "Messages" },
+];
 
+const teacherSecondaryItems = [
+  { icon: Users, url: "/dashboard/team", label: "Team" },
+  { icon: Settings, url: "/dashboard/settings", label: "Settings" },
+];
 
-const secondaryItems = [
-{ icon: Users, url: "/dashboard/team", label: "Team" },
-{ icon: Settings, url: "/dashboard/settings", label: "Settings" }];
+const studentMainItems = [
+  { icon: BarChart3, url: "/dashboard", label: "Dashboard" },
+  { icon: User, url: "/dashboard/profile", label: "Profile" },
+  { icon: Trophy, url: "/dashboard/leaderboard", label: "Leaderboard" },
+  { icon: Code2, url: "/dashboard/editor", label: "Code Editor" },
+  { icon: Calendar, url: "/dashboard/upcoming", label: "Upcoming" },
+  { icon: ClipboardCheck, url: "/dashboard/results", label: "Results" },
+  { icon: Mail, url: "/dashboard/messages", label: "Messages" },
+];
 
+const studentSecondaryItems = [
+  { icon: Settings, url: "/dashboard/settings", label: "Settings" },
+];
 
 function SidebarIcon({
   icon: Icon,
   url,
   label,
-  end
-
-
-
-
-
-}: {icon: React.ElementType;url: string;label: string;end?: boolean;}) {
+  end,
+}: { icon: React.ElementType; url: string; label: string; end?: boolean }) {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
@@ -54,20 +59,24 @@ function SidebarIcon({
           to={url}
           end={end}
           className="flex h-10 w-10 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-          activeClassName="bg-primary/15 text-primary">
-
+          activeClassName="bg-primary/15 text-primary"
+        >
           <Icon className="h-5 w-5" />
         </NavLink>
       </TooltipTrigger>
       <TooltipContent side="right" className="text-xs">
         {label}
       </TooltipContent>
-    </Tooltip>);
-
+    </Tooltip>
+  );
 }
 
 export function AppSidebar() {
   const [isDark, setIsDark] = useState(true);
+  const { role } = useRole();
+
+  const mainItems = role === "teacher" ? teacherMainItems : studentMainItems;
+  const secondaryItems = role === "teacher" ? teacherSecondaryItems : studentSecondaryItems;
 
   const toggleTheme = () => {
     setIsDark(!isDark);
@@ -82,8 +91,8 @@ export function AppSidebar() {
           <TooltipTrigger asChild>
             <button
               onClick={toggleTheme}
-              className="flex h-10 w-10 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground">
-
+              className="flex h-10 w-10 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+            >
               {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </button>
           </TooltipTrigger>
@@ -97,16 +106,16 @@ export function AppSidebar() {
 
       {/* Main nav group — centered */}
       <div className="flex flex-col items-center gap-1 border border-border bg-card/80 px-1.5 py-2 shadow-lg backdrop-blur-md rounded-full">
-        {mainItems.map((item) =>
-        <SidebarIcon key={item.label} {...item} end={item.url === "/dashboard"} />
-        )}
+        {mainItems.map((item) => (
+          <SidebarIcon key={item.label} {...item} end={item.url === "/dashboard"} />
+        ))}
       </div>
 
       {/* Secondary nav group — centered */}
       <div className="flex flex-col items-center gap-1 rounded-full border border-border bg-card/80 px-1.5 py-2 shadow-lg backdrop-blur-md">
-        {secondaryItems.map((item) =>
-        <SidebarIcon key={item.label} {...item} />
-        )}
+        {secondaryItems.map((item) => (
+          <SidebarIcon key={item.label} {...item} />
+        ))}
       </div>
 
       <div className="flex-1" />
@@ -125,6 +134,6 @@ export function AppSidebar() {
           </TooltipContent>
         </Tooltip>
       </div>
-    </aside>);
-
+    </aside>
+  );
 }
