@@ -10,14 +10,18 @@ import {
   Settings,
   Users,
   Sun,
-  Moon } from
-"lucide-react";
+  Moon,
+  FilePlus2,
+  GraduationCap,
+} from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 const mainItems = [
 { icon: BarChart3, url: "/dashboard", label: "Dashboard" },
+{ icon: GraduationCap, url: "/dashboard/teacher", label: "Teacher" },
 { icon: Code2, url: "/dashboard/editor", label: "Code Editor" },
+{ icon: FilePlus2, url: "/dashboard/exam-builder", label: "Exam Builder" },
 { icon: Calendar, url: "/dashboard/upcoming", label: "Upcoming" },
 { icon: ClipboardCheck, url: "/dashboard/results", label: "Results" },
 { icon: Mail, url: "/dashboard/messages", label: "Messages" }];
