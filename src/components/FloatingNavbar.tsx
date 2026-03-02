@@ -1,5 +1,5 @@
 import { Search, Bell, Clock, ChevronDown, User, Settings, LogOut } from "lucide-react";
-import kernelLogo from "@/assets/kernel-logo.png";
+import KernelLogo from "@/components/KernelLogo";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { NavLink } from "@/components/NavLink";
 import {
@@ -26,7 +26,7 @@ export function FloatingNavbar() {
     <header className="fixed left-20 right-6 top-4 z-50 flex items-center gap-3 h-12">
       {/* Logo — left pill */}
       <div className="flex items-center gap-2 border border-border bg-card/80 px-4 py-1.5 shadow-lg backdrop-blur-md rounded-full">
-        <img src={kernelLogo} alt="Kernel" className="h-6 w-6" />
+        <KernelLogo className="h-6 w-6" />
         <span className="text-lg font-bold tracking-tight text-foreground">Kernel</span>
       </div>
 
