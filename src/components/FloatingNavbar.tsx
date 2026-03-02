@@ -32,12 +32,22 @@ const studentNavTabs = [
   { label: "Settings", url: "/dashboard/settings" },
 ];
 
-// Mock unread notifications count - shared data
+// Dynamic unread notifications count from shared mock data
+const MOCK_NOTIFICATIONS = [
+  { id: "1", read: false },
+  { id: "2", read: false },
+  { id: "3", read: true },
+  { id: "4", read: true },
+  { id: "5", read: true },
+  { id: "6", read: true },
+  { id: "7", read: true },
+  { id: "8", read: true },
+  { id: "9", read: true },
+  { id: "10", read: true },
+];
+
 const useUnreadCount = () => {
-  return useMemo(() => {
-    // Count from mock data - in production this would be from context/API
-    return 2; // matches mock: ids 1 and 2 are unread
-  }, []);
+  return useMemo(() => MOCK_NOTIFICATIONS.filter((n) => !n.read).length, []);
 };
 
 interface Props {

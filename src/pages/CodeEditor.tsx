@@ -226,9 +226,9 @@ export default function CodeEditorPage() {
   }, [handleRun, handleSubmit]);
 
   const difficultyColor: Record<string, string> = {
-    Easy: "text-green-400",
-    Medium: "text-yellow-400",
-    Hard: "text-red-400",
+    Easy: "text-green-600 dark:text-green-400",
+    Medium: "text-yellow-600 dark:text-yellow-400",
+    Hard: "text-red-600 dark:text-red-400",
   };
 
   return (
@@ -467,9 +467,9 @@ export default function CodeEditorPage() {
                     {testResults && (
                       <span className="ml-1.5">
                         {testResults.every((t) => t.passed) ? (
-                          <CheckCircle2 className="h-3.5 w-3.5 text-green-400 inline" />
+                          <CheckCircle2 className="h-3.5 w-3.5 text-green-600 dark:text-green-400 inline" />
                         ) : (
-                          <XCircle className="h-3.5 w-3.5 text-red-400 inline" />
+                          <XCircle className="h-3.5 w-3.5 text-red-600 dark:text-red-400 inline" />
                         )}
                       </span>
                     )}
@@ -495,12 +495,12 @@ export default function CodeEditorPage() {
                     <div className="space-y-3">
                       <div className="flex items-center gap-2">
                         {testResults.every((t) => t.passed) ? (
-                          <Badge className="rounded-full bg-green-500/15 text-green-400 border-green-500/30">
+                          <Badge className="rounded-full bg-green-500/15 text-green-600 dark:text-green-400 border-green-500/30">
                             <CheckCircle2 className="h-3.5 w-3.5 mr-1" />
                             All Passed
                           </Badge>
                         ) : (
-                          <Badge className="rounded-full bg-red-500/15 text-red-400 border-red-500/30">
+                          <Badge className="rounded-full bg-red-500/15 text-red-600 dark:text-red-400 border-red-500/30">
                             <XCircle className="h-3.5 w-3.5 mr-1" />
                             Some Failed
                           </Badge>
@@ -523,7 +523,7 @@ export default function CodeEditorPage() {
                           <div><span className="text-muted-foreground">Expected: </span>{t.expected}</div>
                           <div>
                             <span className="text-muted-foreground">Output: </span>
-                            <span className={t.passed ? "text-green-400" : "text-red-400"}>{t.output}</span>
+                            <span className={t.passed ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}>{t.output}</span>
                           </div>
                         </div>
                       ))}

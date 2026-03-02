@@ -20,7 +20,7 @@ const pastResults = [
 
 export function RecentResults() {
   return (
-    <Card className="border-border/50">
+    <Card className="border-border/50 bg-card/80 backdrop-blur-md">
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-lg">
           <Trophy className="h-5 w-5 text-accent" />
@@ -50,7 +50,7 @@ export function RecentResults() {
                 </TableCell>
                 <TableCell>
                   {r.status === "passed" ? (
-                    <div className="flex items-center gap-1 text-green-400">
+                    <div className="flex items-center gap-1 text-green-600 dark:text-green-400">
                       <CheckCircle2 className="h-4 w-4" />
                       <span className="text-xs font-medium">Passed</span>
                     </div>

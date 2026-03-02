@@ -80,7 +80,7 @@ export default function TeacherDashboard() {
                 <p className="text-sm text-muted-foreground">{s.label}</p>
                 <div className="flex items-center gap-2">
                   <span className="text-2xl font-bold text-foreground">{s.value}</span>
-                  <span className={`flex items-center text-xs font-medium ${s.up ? "text-green-400" : "text-red-400"}`}>
+                  <span className={`flex items-center text-xs font-medium ${s.up ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}>
                     {s.up ? <TrendingUp className="h-3 w-3 mr-0.5" /> : <TrendingDown className="h-3 w-3 mr-0.5" />}
                     {s.trend}
                   </span>
