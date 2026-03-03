@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
@@ -11,74 +11,183 @@ import { useToast } from "@/hooks/use-toast";
 import { useTheme } from "next-themes";
 import type { Question, MCQQuestion, WrittenQuestion, CodingQuestion, StudentAnswer } from "@/types/exam";
 
-// Mock exam data
-const MOCK_QUESTIONS: Question[] = [
-  {
-    id: "q1", type: "mcq", text: "What is the time complexity of binary search?", points: 5, difficulty: "easy",
-    options: [
-      { id: "a", text: "O(n)" }, { id: "b", text: "O(log n)" },
-      { id: "c", text: "O(n²)" }, { id: "d", text: "O(1)" },
+// Multiple mock exam datasets keyed by ID
+const MOCK_EXAMS: Record<string, { title: string; description: string; durationMinutes: number; questions: Question[] }> = {
+  "1": {
+    title: "JavaScript Fundamentals",
+    description: "Covers variables, loops, functions, and basic DOM manipulation.",
+    durationMinutes: 45,
+    questions: [
+      {
+        id: "q1", type: "mcq", text: "What is the output of typeof null?", points: 5, difficulty: "easy",
+        options: [
+          { id: "a", text: '"null"' }, { id: "b", text: '"object"' },
+          { id: "c", text: '"undefined"' }, { id: "d", text: '"number"' },
+        ],
+        correctOptionIds: ["b"], multipleCorrect: false, explanation: "",
+      } as MCQQuestion,
+      {
+        id: "q2", type: "mcq", text: "Which keyword declares a block-scoped variable?", points: 5, difficulty: "easy",
+        options: [
+          { id: "a", text: "var" }, { id: "b", text: "let" },
+          { id: "c", text: "const" }, { id: "d", text: "Both B and C" },
+        ],
+        correctOptionIds: ["d"], multipleCorrect: false, explanation: "",
+      } as MCQQuestion,
+      {
+        id: "q3", type: "written", text: "Explain the difference between == and === in JavaScript.", points: 10, difficulty: "medium",
+        maxWordCount: 200, rubric: "", requireManualGrading: true,
+      } as WrittenQuestion,
+      {
+        id: "q4", type: "coding", text: "Reverse a String", points: 15, difficulty: "easy",
+        description: "Write a function that reverses a given string without using the built-in reverse method.",
+        starterCode: {
+          python: "def reverse_string(s):\n    # Your code here\n    pass",
+          javascript: "function reverseString(s) {\n    // Your code here\n}",
+        },
+        testCases: [
+          { id: "t1", input: '"hello"', expectedOutput: '"olleh"', isSample: true },
+          { id: "t2", input: '"world"', expectedOutput: '"dlrow"', isSample: true },
+        ],
+        hints: "", timeLimitMs: 2000, memoryLimitKb: 262144,
+      } as CodingQuestion,
     ],
-    correctOptionIds: ["b"], multipleCorrect: false, explanation: "",
-  } as MCQQuestion,
-  {
-    id: "q2", type: "mcq", text: "Which data structures use LIFO ordering?", points: 5, difficulty: "easy",
-    options: [
-      { id: "a", text: "Queue" }, { id: "b", text: "Stack" },
-      { id: "c", text: "Linked List" }, { id: "d", text: "Tree" },
+  },
+  "mid-ds": {
+    title: "Midterm — Data Structures",
+    description: "Covers arrays, linked lists, stacks, queues, and basic algorithms.",
+    durationMinutes: 90,
+    questions: [
+      {
+        id: "q1", type: "mcq", text: "What is the time complexity of binary search?", points: 5, difficulty: "easy",
+        options: [
+          { id: "a", text: "O(n)" }, { id: "b", text: "O(log n)" },
+          { id: "c", text: "O(n²)" }, { id: "d", text: "O(1)" },
+        ],
+        correctOptionIds: ["b"], multipleCorrect: false, explanation: "",
+      } as MCQQuestion,
+      {
+        id: "q2", type: "mcq", text: "Which data structures use LIFO ordering?", points: 5, difficulty: "easy",
+        options: [
+          { id: "a", text: "Queue" }, { id: "b", text: "Stack" },
+          { id: "c", text: "Linked List" }, { id: "d", text: "Tree" },
+        ],
+        correctOptionIds: ["b"], multipleCorrect: false, explanation: "",
+      } as MCQQuestion,
+      {
+        id: "q3", type: "written", text: "Explain the difference between a stack and a queue. Give real-world examples of each.", points: 15, difficulty: "medium",
+        maxWordCount: 300, rubric: "", requireManualGrading: true,
+      } as WrittenQuestion,
+      {
+        id: "q4", type: "written", text: "Describe the concept of recursion and its advantages/disadvantages.", points: 10, difficulty: "medium",
+        maxWordCount: 250, rubric: "", requireManualGrading: true,
+      } as WrittenQuestion,
+      {
+        id: "q5", type: "coding", text: "Two Sum", points: 20, difficulty: "easy",
+        description: "Given an array of integers nums and an integer target, return indices of the two numbers that add up to target.",
+        starterCode: {
+          python: "def two_sum(nums, target):\n    # Your code here\n    pass",
+          javascript: "function twoSum(nums, target) {\n    // Your code here\n}",
+        },
+        testCases: [
+          { id: "t1", input: "[2,7,11,15], 9", expectedOutput: "[0,1]", isSample: true },
+          { id: "t2", input: "[3,2,4], 6", expectedOutput: "[1,2]", isSample: true },
+        ],
+        hints: "", timeLimitMs: 2000, memoryLimitKb: 262144,
+      } as CodingQuestion,
     ],
-    correctOptionIds: ["b"], multipleCorrect: false, explanation: "",
-  } as MCQQuestion,
-  {
-    id: "q3", type: "written", text: "Explain the difference between a stack and a queue. Give real-world examples of each.", points: 15, difficulty: "medium",
-    maxWordCount: 300, rubric: "", requireManualGrading: true,
-  } as WrittenQuestion,
-  {
-    id: "q4", type: "written", text: "Describe the concept of recursion and its advantages/disadvantages.", points: 10, difficulty: "medium",
-    maxWordCount: 250, rubric: "", requireManualGrading: true,
-  } as WrittenQuestion,
-  {
-    id: "q5", type: "coding", text: "Two Sum", points: 20, difficulty: "easy",
-    description: "Given an array of integers nums and an integer target, return indices of the two numbers that add up to target.",
-    starterCode: {
-      python: "def two_sum(nums, target):\n    # Your code here\n    pass",
-      javascript: "function twoSum(nums, target) {\n    // Your code here\n}",
-    },
-    testCases: [
-      { id: "t1", input: "[2,7,11,15], 9", expectedOutput: "[0,1]", isSample: true },
-      { id: "t2", input: "[3,2,4], 6", expectedOutput: "[1,2]", isSample: true },
+  },
+  "algo-final": {
+    title: "Algorithms Final Exam",
+    description: "Graph algorithms, dynamic programming, and sorting.",
+    durationMinutes: 120,
+    questions: [
+      {
+        id: "q1", type: "mcq", text: "What is the best-case time complexity of QuickSort?", points: 5, difficulty: "medium",
+        options: [
+          { id: "a", text: "O(n log n)" }, { id: "b", text: "O(n²)" },
+          { id: "c", text: "O(n)" }, { id: "d", text: "O(log n)" },
+        ],
+        correctOptionIds: ["a"], multipleCorrect: false, explanation: "",
+      } as MCQQuestion,
+      {
+        id: "q2", type: "mcq", text: "Dijkstra's algorithm does NOT work with:", points: 5, difficulty: "medium",
+        options: [
+          { id: "a", text: "Directed graphs" }, { id: "b", text: "Negative edge weights" },
+          { id: "c", text: "Weighted graphs" }, { id: "d", text: "Sparse graphs" },
+        ],
+        correctOptionIds: ["b"], multipleCorrect: false, explanation: "",
+      } as MCQQuestion,
+      {
+        id: "q3", type: "written", text: "Explain the difference between BFS and DFS. When would you prefer one over the other?", points: 15, difficulty: "medium",
+        maxWordCount: 300, rubric: "", requireManualGrading: true,
+      } as WrittenQuestion,
+      {
+        id: "q4", type: "coding", text: "Fibonacci (Dynamic Programming)", points: 20, difficulty: "medium",
+        description: "Write a function that returns the nth Fibonacci number using dynamic programming (not recursion).",
+        starterCode: {
+          python: "def fibonacci(n):\n    # Your code here\n    pass",
+          javascript: "function fibonacci(n) {\n    // Your code here\n}",
+        },
+        testCases: [
+          { id: "t1", input: "10", expectedOutput: "55", isSample: true },
+          { id: "t2", input: "0", expectedOutput: "0", isSample: true },
+        ],
+        hints: "", timeLimitMs: 2000, memoryLimitKb: 262144,
+      } as CodingQuestion,
     ],
-    hints: "", timeLimitMs: 2000, memoryLimitKb: 262144,
-  } as CodingQuestion,
-];
-
-const MOCK_EXAM = {
-  title: "Midterm — Data Structures",
-  description: "Covers arrays, linked lists, stacks, queues, and basic algorithms.",
-  durationMinutes: 90,
+  },
 };
+
+// Map practice exam IDs to mock exam keys
+const ID_ALIASES: Record<string, string> = {
+  "2": "mid-ds",
+  "3": "algo-final",
+  "4": "1",
+  "5": "mid-ds",
+  "6": "algo-final",
+};
+
+export const EXAM_IDS = ["1", "mid-ds", "algo-final"];
+
+function resolveExam(id: string | undefined) {
+  if (!id) return null;
+  if (MOCK_EXAMS[id]) return MOCK_EXAMS[id];
+  const alias = ID_ALIASES[id];
+  if (alias && MOCK_EXAMS[alias]) return MOCK_EXAMS[alias];
+  // Fallback: pick a deterministic exam based on hash
+  const keys = Object.keys(MOCK_EXAMS);
+  const index = Math.abs(id.split("").reduce((a, c) => a + c.charCodeAt(0), 0)) % keys.length;
+  return MOCK_EXAMS[keys[index]];
+}
 
 const initAnswers = (qs: Question[]): StudentAnswer[] =>
   qs.map((q) => ({ questionId: q.id, type: q.type, selectedOptionIds: [], textAnswer: "", code: "", language: "python", flagged: false }));
 
 export default function ExamTaking() {
+  const { id } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
   const { theme } = useTheme();
+
+  const exam = resolveExam(id);
+
   const [started, setStarted] = useState(false);
   const [currentIdx, setCurrentIdx] = useState(0);
-  const [answers, setAnswers] = useState<StudentAnswer[]>(initAnswers(MOCK_QUESTIONS));
-  const [timeLeft, setTimeLeft] = useState(MOCK_EXAM.durationMinutes * 60);
+  const [answers, setAnswers] = useState<StudentAnswer[]>(initAnswers(exam?.questions || []));
+  const [timeLeft, setTimeLeft] = useState((exam?.durationMinutes || 60) * 60);
   const [submitDialogOpen, setSubmitDialogOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [visitedQuestions, setVisitedQuestions] = useState<Set<number>>(new Set());
   const [submitted, setSubmitted] = useState(false);
 
+  const questions = exam?.questions || [];
+
   // Timer
   useEffect(() => {
     if (!started || timeLeft <= 0 || submitted) return;
-    const id = setInterval(() => setTimeLeft((t) => t - 1), 1000);
-    return () => clearInterval(id);
+    const tid = setInterval(() => setTimeLeft((t) => t - 1), 1000);
+    return () => clearInterval(tid);
   }, [started, timeLeft, submitted]);
 
   // Auto-submit when time runs out
@@ -116,9 +225,21 @@ export default function ExamTaking() {
     return `${m}:${sec.toString().padStart(2, "0")}`;
   };
 
-  const mcqCount = MOCK_QUESTIONS.filter((q) => q.type === "mcq").length;
-  const writtenCount = MOCK_QUESTIONS.filter((q) => q.type === "written").length;
-  const codingCount = MOCK_QUESTIONS.filter((q) => q.type === "coding").length;
+  if (!exam) {
+    return (
+      <div className="flex items-center justify-center min-h-[calc(100vh-5.5rem)]">
+        <div className="max-w-lg w-full rounded-2xl border border-border/50 bg-card/80 backdrop-blur-md p-8 space-y-4 text-center">
+          <h1 className="text-2xl font-bold text-foreground">Exam Not Found</h1>
+          <p className="text-sm text-muted-foreground">The exam you're looking for doesn't exist or has been removed.</p>
+          <Button onClick={() => navigate("/dashboard/upcoming")}>Back to Exams</Button>
+        </div>
+      </div>
+    );
+  }
+
+  const mcqCount = questions.filter((q) => q.type === "mcq").length;
+  const writtenCount = questions.filter((q) => q.type === "written").length;
+  const codingCount = questions.filter((q) => q.type === "coding").length;
 
   const getStatus = (i: number) => {
     const a = answers[i];
@@ -148,8 +269,8 @@ export default function ExamTaking() {
     return (
       <div className="flex items-center justify-center min-h-[calc(100vh-5.5rem)]">
         <div className="max-w-lg w-full rounded-2xl border border-border/50 bg-card/80 backdrop-blur-md p-8 space-y-6 text-center">
-          <h1 className="text-2xl font-bold text-foreground">{MOCK_EXAM.title}</h1>
-          <p className="text-sm text-muted-foreground">{MOCK_EXAM.description}</p>
+          <h1 className="text-2xl font-bold text-foreground">{exam.title}</h1>
+          <p className="text-sm text-muted-foreground">{exam.description}</p>
           <div className="flex justify-center gap-4 text-sm">
             <Badge variant="secondary" className="gap-1"><CheckSquare className="h-3 w-3" /> {mcqCount} MCQ</Badge>
             <Badge variant="secondary" className="gap-1"><FileText className="h-3 w-3" /> {writtenCount} Written</Badge>
@@ -157,9 +278,9 @@ export default function ExamTaking() {
           </div>
           <div className="flex items-center justify-center gap-2 text-muted-foreground">
             <Clock className="h-4 w-4" />
-            <span className="text-sm">{MOCK_EXAM.durationMinutes} minutes</span>
+            <span className="text-sm">{exam.durationMinutes} minutes</span>
           </div>
-          <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-amber-300 flex items-start gap-2">
+          <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-amber-600 dark:text-amber-300 flex items-start gap-2">
             <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
             <span>Once started, the timer cannot be paused. Make sure you have a stable connection.</span>
           </div>
@@ -171,7 +292,7 @@ export default function ExamTaking() {
     );
   }
 
-  const q = MOCK_QUESTIONS[currentIdx];
+  const q = questions[currentIdx];
   const ans = answers[currentIdx];
 
   return (
@@ -188,7 +309,7 @@ export default function ExamTaking() {
           >
             {sidebarOpen ? <PanelLeftClose className="h-4 w-4" /> : <PanelLeft className="h-4 w-4" />}
           </Button>
-          <h2 className="text-sm font-semibold text-foreground truncate">{MOCK_EXAM.title}</h2>
+          <h2 className="text-sm font-semibold text-foreground truncate">{exam.title}</h2>
         </div>
         <div className={cn("flex items-center gap-1.5 font-mono text-sm font-bold", timeLeft < 300 ? "text-red-400" : "text-foreground")}>
           <Clock className="h-4 w-4" /> {formatTime(timeLeft)}
@@ -204,7 +325,7 @@ export default function ExamTaking() {
           <div className="w-48 shrink-0 rounded-lg border border-border/50 bg-card/80 backdrop-blur-md p-3 overflow-y-auto">
             <p className="text-xs font-medium text-muted-foreground mb-2">Questions</p>
             <div className="grid grid-cols-5 gap-1.5">
-              {MOCK_QUESTIONS.map((_, i) => {
+              {questions.map((_, i) => {
                 const status = getStatus(i);
                 return (
                   <button
@@ -239,7 +360,7 @@ export default function ExamTaking() {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Badge variant="secondary" className="text-xs capitalize">{q.type}</Badge>
-              <span className="text-xs text-muted-foreground">Question {currentIdx + 1} of {MOCK_QUESTIONS.length}</span>
+              <span className="text-xs text-muted-foreground">Question {currentIdx + 1} of {questions.length}</span>
             </div>
             <div className="flex items-center gap-2">
               <Badge variant="outline" className="text-xs">{q.points} pts</Badge>
@@ -265,7 +386,7 @@ export default function ExamTaking() {
                   onClick={() => {
                     const ids = (q as MCQQuestion).multipleCorrect
                       ? ans.selectedOptionIds?.includes(opt.id)
-                        ? ans.selectedOptionIds.filter((id) => id !== opt.id)
+                        ? ans.selectedOptionIds.filter((oid) => oid !== opt.id)
                         : [...(ans.selectedOptionIds || []), opt.id]
                       : [opt.id];
                     updateAnswer(currentIdx, { selectedOptionIds: ids });
@@ -339,7 +460,7 @@ export default function ExamTaking() {
               variant="outline"
               size="sm"
               className="gap-1"
-              disabled={currentIdx === MOCK_QUESTIONS.length - 1}
+              disabled={currentIdx === questions.length - 1}
               onClick={() => setCurrentIdx((i) => i + 1)}
             >
               Next <ChevronRight className="h-4 w-4" />
@@ -355,7 +476,7 @@ export default function ExamTaking() {
             <DialogTitle>Submit Exam?</DialogTitle>
           </DialogHeader>
           <div className="space-y-2 py-2 text-sm">
-            <p className="text-foreground">{answeredCount} answered, {flaggedCount} flagged, {MOCK_QUESTIONS.length - answeredCount} unanswered</p>
+            <p className="text-foreground">{answeredCount} answered, {flaggedCount} flagged, {questions.length - answeredCount} unanswered</p>
             <p className="text-muted-foreground">Are you sure you want to submit? This action cannot be undone.</p>
           </div>
           <DialogFooter>

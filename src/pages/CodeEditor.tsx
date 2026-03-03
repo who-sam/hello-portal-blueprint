@@ -374,8 +374,8 @@ export default function CodeEditorPage() {
                     1: { approach: "Hash Map", steps: ["Create an empty hash map to store values and their indices.", "Iterate through the array. For each element, calculate the complement (target - current).", "Check if the complement exists in the hash map. If it does, return both indices.", "If not, add the current element and its index to the hash map."], time: "O(n)", space: "O(n)" },
                     2: { approach: "Stack", steps: ["Initialize an empty stack.", "Iterate through each character in the string.", "If the character is an opening bracket, push it onto the stack.", "If it's a closing bracket, check if the stack is non-empty and the top matches. If not, return false.", "After iteration, return true if the stack is empty."], time: "O(n)", space: "O(n)" },
                     3: { approach: "Iterative Merge", steps: ["Create a dummy head node.", "Compare the heads of both lists and attach the smaller one to the merged list.", "Move the pointer of the list from which the node was taken.", "After one list is exhausted, attach the remaining nodes of the other list."], time: "O(n + m)", space: "O(1)" },
-                    4: { approach: "Binary Search", steps: ["Sort the array (if not already sorted).", "For each element, use binary search to find the target.", "Adjust boundaries based on comparison results.", "Return the index when found, or -1 if not present."], time: "O(log n)", space: "O(1)" },
-                    5: { approach: "Sliding Window", steps: ["Use two pointers to define a window.", "Expand the window by moving the right pointer.", "Shrink the window from the left when a condition is violated.", "Track the maximum/minimum window size that satisfies the condition."], time: "O(n)", space: "O(min(n, m))" },
+                    4: { approach: "One-Pass Min Tracking", steps: ["Initialize minPrice to Infinity and maxProfit to 0.", "Iterate through each price in the array.", "Update minPrice if the current price is lower than minPrice.", "Compute profit as currentPrice − minPrice, and update maxProfit if this profit is larger."], time: "O(n)", space: "O(1)" },
+                    5: { approach: "Hash Set", steps: ["Create an empty hash set.", "Iterate through each element in the array.", "If the element already exists in the set, return true (duplicate found).", "Otherwise, add the element to the set. If the loop finishes, return false."], time: "O(n)", space: "O(n)" },
                   };
                   const ed = editorials[problem.id] || editorials[1];
                   return (
@@ -396,11 +396,31 @@ export default function CodeEditorPage() {
               </TabsContent>
 
               <TabsContent value="solutions" className="flex-1 overflow-y-auto p-5 m-0 space-y-3">
-                {[
-                  { author: "Alice C.", lang: "Python", votes: 234, time: "2 weeks ago", code: "def twoSum(nums, target):\n    seen = {}\n    for i, n in enumerate(nums):\n        comp = target - n\n        if comp in seen:\n            return [seen[comp], i]\n        seen[n] = i" },
-                  { author: "Bob K.", lang: "JavaScript", votes: 189, time: "1 month ago", code: "function twoSum(nums, target) {\n  const map = new Map();\n  for (let i = 0; i < nums.length; i++) {\n    const comp = target - nums[i];\n    if (map.has(comp)) return [map.get(comp), i];\n    map.set(nums[i], i);\n  }\n}" },
-                  { author: "Carla R.", lang: "Java", votes: 156, time: "3 months ago", code: "public int[] twoSum(int[] nums, int target) {\n  Map<Integer, Integer> map = new HashMap<>();\n  for (int i = 0; i < nums.length; i++) {\n    int comp = target - nums[i];\n    if (map.containsKey(comp)) return new int[]{map.get(comp), i};\n    map.put(nums[i], i);\n  }\n  return new int[]{};\n}" },
-                ].map((s, i) => (
+                {(() => {
+                  const SOLUTIONS: Record<number, { author: string; lang: string; votes: number; time: string; code: string }[]> = {
+                    1: [
+                      { author: "Alice C.", lang: "Python", votes: 234, time: "2 weeks ago", code: "def twoSum(nums, target):\n    seen = {}\n    for i, n in enumerate(nums):\n        comp = target - n\n        if comp in seen:\n            return [seen[comp], i]\n        seen[n] = i" },
+                      { author: "Bob K.", lang: "JavaScript", votes: 189, time: "1 month ago", code: "function twoSum(nums, target) {\n  const map = new Map();\n  for (let i = 0; i < nums.length; i++) {\n    const comp = target - nums[i];\n    if (map.has(comp)) return [map.get(comp), i];\n    map.set(nums[i], i);\n  }\n}" },
+                    ],
+                    2: [
+                      { author: "Dan W.", lang: "Python", votes: 198, time: "1 week ago", code: "def isValid(s):\n    stack = []\n    pairs = {')': '(', '}': '{', ']': '['}\n    for c in s:\n        if c in pairs.values():\n            stack.append(c)\n        elif c in pairs:\n            if not stack or stack[-1] != pairs[c]:\n                return False\n            stack.pop()\n    return len(stack) == 0" },
+                      { author: "Eva M.", lang: "JavaScript", votes: 165, time: "3 weeks ago", code: "function isValid(s) {\n  const stack = [];\n  const map = { ')': '(', '}': '{', ']': '[' };\n  for (const c of s) {\n    if ('({['.includes(c)) stack.push(c);\n    else if (stack.pop() !== map[c]) return false;\n  }\n  return stack.length === 0;\n}" },
+                    ],
+                    3: [
+                      { author: "Faye L.", lang: "Python", votes: 210, time: "2 weeks ago", code: "def mergeTwoLists(l1, l2):\n    dummy = ListNode(0)\n    curr = dummy\n    while l1 and l2:\n        if l1.val <= l2.val:\n            curr.next = l1\n            l1 = l1.next\n        else:\n            curr.next = l2\n            l2 = l2.next\n        curr = curr.next\n    curr.next = l1 or l2\n    return dummy.next" },
+                      { author: "Greg T.", lang: "JavaScript", votes: 145, time: "1 month ago", code: "function mergeTwoLists(l1, l2) {\n  if (!l1) return l2;\n  if (!l2) return l1;\n  if (l1.val <= l2.val) {\n    l1.next = mergeTwoLists(l1.next, l2);\n    return l1;\n  }\n  l2.next = mergeTwoLists(l1, l2.next);\n  return l2;\n}" },
+                    ],
+                    4: [
+                      { author: "Hana S.", lang: "Python", votes: 276, time: "1 week ago", code: "def maxProfit(prices):\n    min_price = float('inf')\n    max_profit = 0\n    for price in prices:\n        min_price = min(min_price, price)\n        max_profit = max(max_profit, price - min_price)\n    return max_profit" },
+                      { author: "Ivan P.", lang: "JavaScript", votes: 201, time: "2 weeks ago", code: "function maxProfit(prices) {\n  let minPrice = Infinity, maxProfit = 0;\n  for (const price of prices) {\n    minPrice = Math.min(minPrice, price);\n    maxProfit = Math.max(maxProfit, price - minPrice);\n  }\n  return maxProfit;\n}" },
+                    ],
+                    5: [
+                      { author: "Jade K.", lang: "Python", votes: 188, time: "3 weeks ago", code: "def containsDuplicate(nums):\n    return len(nums) != len(set(nums))" },
+                      { author: "Kyle R.", lang: "JavaScript", votes: 162, time: "1 month ago", code: "function containsDuplicate(nums) {\n  const seen = new Set();\n  for (const n of nums) {\n    if (seen.has(n)) return true;\n    seen.add(n);\n  }\n  return false;\n}" },
+                    ],
+                  };
+                  const solutions = SOLUTIONS[problem.id] || SOLUTIONS[1];
+                  return solutions.map((s, i) => (
                   <div
                     key={i}
                     onClick={() => setExpandedSolution(expandedSolution === i ? null : i)}
@@ -419,7 +439,8 @@ export default function CodeEditorPage() {
                       </pre>
                     )}
                   </div>
-                ))}
+                  ));
+                })()}
               </TabsContent>
             </Tabs>
           </div>

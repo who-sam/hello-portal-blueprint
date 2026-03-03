@@ -1,18 +1,19 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { createContext, useContext, useState, ReactNode } from "react";
 
 export type UserRole = "teacher" | "student";
 
 interface RoleContextType {
-  role: UserRole;
+  role: UserRole | null;
   setRole: (role: UserRole) => void;
+  clearRole: () => void;
 }
 
 const RoleContext = createContext<RoleContextType | undefined>(undefined);
 
 export function RoleProvider({ children }: { children: ReactNode }) {
-  const [role, setRoleState] = useState<UserRole>(() => {
+  const [role, setRoleState] = useState<UserRole | null>(() => {
     const stored = localStorage.getItem("kernel-role");
-    return (stored === "teacher" || stored === "student") ? stored : "student";
+    return (stored === "teacher" || stored === "student") ? stored : null;
   });
 
   const setRole = (newRole: UserRole) => {
@@ -20,8 +21,13 @@ export function RoleProvider({ children }: { children: ReactNode }) {
     localStorage.setItem("kernel-role", newRole);
   };
 
+  const clearRole = () => {
+    setRoleState(null);
+    localStorage.removeItem("kernel-role");
+  };
+
   return (
-    <RoleContext.Provider value={{ role, setRole }}>
+    <RoleContext.Provider value={{ role, setRole, clearRole }}>
       {children}
     </RoleContext.Provider>
   );
