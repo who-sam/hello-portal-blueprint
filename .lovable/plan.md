@@ -1,79 +1,74 @@
 
-# Fix 18 Remaining Bugs in Kernel Platform
 
-## 1. Chart Colors - PerformanceChart.tsx + TeacherDashboard.tsx
+# Fix 13 Remaining Bugs in Kernel Platform
 
-**PerformanceChart.tsx**: Lines 40 and 47/53 use `var(--border)` and `var(--muted-foreground)` without `hsl()` wrapper for the CartesianGrid `stroke` and XAxis/YAxis `tick.fill`. The Tooltip and Bar already use `hsl(var(...))` correctly. Fix lines 40, 47, 53.
+## 1. Logout Race Condition (RoleContext.tsx, AppSidebar.tsx, FloatingNavbar.tsx, DashboardLayout.tsx)
 
-**TeacherDashboard.tsx**: Lines 210-211 have the same issue - `stroke="var(--border)"` and `fill: "var(--muted-foreground)"` without `hsl()` wrappers.
+**Problem**: `setRole("student")` writes back to localStorage, undoing the `removeItem` call.
 
-## 2. Search Dialog Filter - FloatingNavbar.tsx
+**Fix**:
+- `RoleContext.tsx`: Change state type to `UserRole | null`. Add `clearRole()` that sets state to `null` and removes localStorage key. Export it. Remove unused `useEffect` import (issue 13).
+- `AppSidebar.tsx` + `FloatingNavbar.tsx`: Replace `setRole("student")` with `clearRole()` in logout handlers.
+- `DashboardLayout.tsx`: Update guard to check `if (!hasRole || hasRole === "")`.
 
-Add `searchQuery` state. Bind input onChange. Filter `searchItems` by query. Show "No results" when empty.
+## 2. Crash on Logout - Initials (FloatingNavbar.tsx)
 
-## 3. Shared Notification Context
+**Problem**: `name.split(" ").map(n => n[0].toUpperCase())` crashes when name is empty string.
 
-Create `src/contexts/NotificationContext.tsx` with the mock notifications data, unread count, `markAllRead()`, and `markAsRead(id)`. Consume it in both `FloatingNavbar.tsx` (for badge) and `Notifications.tsx` (for the list). Remove the hardcoded `MOCK_NOTIFICATIONS` from FloatingNavbar.
+**Fix**: Change to `const initials = name ? name.split(" ").filter(Boolean).map(n => n[0]?.toUpperCase() || "").join("").slice(0, 2) : "";`
 
-## 4. Flagged Questions Count - ExamTaking.tsx
+## 3. Code Editor Editorials for Problems 4 and 5 (CodeEditor.tsx)
 
-Change `getStatus` (line 123-131): check answered status first, then check flagged. If both answered and flagged, return `"answered-flagged"`. Update `answeredCount` (line 133) to count both `"answered"` and `"answered-flagged"`. Update the sidebar button styling to handle the new status.
+**Fix**:
+- Problem 4: Change from "Binary Search" to "One-Pass Min Tracking" with steps: track minimum price, compute profit at each step, update max profit.
+- Problem 5: Change from "Sliding Window" to "Hash Set" with steps: iterate array, check if element in set, return true if found, add to set.
 
-## 5. Settings Password - Settings.tsx
+## 4. Code Editor Solutions Per-Problem (CodeEditor.tsx)
 
-Add `currentPassword` and `newPassword` state. Bind to inputs. Create `handlePasswordUpdate` that validates both fields filled, new password >= 8 chars, shows toast, clears fields.
+**Problem**: Solutions tab always shows Two Sum solutions.
 
-## 6. Settings Notification Persistence - Settings.tsx
+**Fix**: Create a `SOLUTIONS` record keyed by problem ID with 2-3 solutions per problem. Render `SOLUTIONS[problem.id]` instead of the hardcoded array.
 
-Change "Save Preferences" button to call a dedicated handler that saves to `localStorage` under `kernel-notification-prefs` and shows a specific toast. Load initial state from localStorage.
+## 5. Compose Message Sender (Messages.tsx)
 
-## 7. Help Resource Links - Help.tsx
+**Problem**: `from: composeTo` makes the recipient appear as sender.
 
-Change the `<a>` tags to `<button>` elements with `onClick` that opens placeholder URLs via `window.open` or shows a toast.
+**Fix**: Import `useUser`, set `from` to current user's name, and `initials` from user name.
 
-## 8. Messages Compose Dialog - Messages.tsx
+## 6. ExamTaking Ignores :id (ExamTaking.tsx)
 
-Add `composeTo`, `composeSubject`, `composeBody` state. Bind inputs. On Send, add message to list, clear fields, close dialog.
+**Fix**: Create 3 mock exam datasets keyed by ID (e.g., `"1"`, `"mid-ds"`, `"random"`). Call `useParams()` to get `id`. Look up the matching exam. Show "Exam not found" if no match.
 
-## 9. Code Editor Per-Problem Like/Dislike/Bookmark - CodeEditor.tsx
+## 7. ExamReview Ignores :id (ExamReview.tsx)
 
-Change `liked`, `disliked`, `bookmarked` from single booleans to `Record<number, boolean>` keyed by problem ID.
+**Fix**: Create 2-3 mock review datasets. Look up by `id` from `useParams()`. Show "Review not found" if no match.
 
-## 10. Code Editor Editorial Per-Problem - CodeEditor.tsx
+## 8. Exam Warning Banner Light Mode (ExamTaking.tsx)
 
-Add an `editorials` object mapping problem ID to editorial content. Render the matching editorial.
+**Fix**: Change `text-amber-300` to `text-amber-600 dark:text-amber-300` on line 162.
 
-## 11. Code Editor Solutions Clickable - CodeEditor.tsx
+## 9. Quick Random Quiz (Practice.tsx)
 
-Add `onClick` to solution items that expands them or shows a dialog with sample code.
+**Fix**: Change the button's onClick to randomly pick from the available exam IDs instead of always navigating to `/dashboard/exam/random`.
 
-## 12. Profile Role Badge - Profile.tsx
+## 10. Leaderboard isCurrentUser Dynamic (Leaderboard.tsx)
 
-Import `useRole` and display actual role instead of hardcoded "Student".
+**Fix**: Import `useUser`, compare `entry.studentName === name` to set `isCurrentUser` dynamically. Remove hardcoded `isCurrentUser: true` from data.
 
-## 13. Teacher Dashboard Delete Exam - TeacherDashboard.tsx
+## 11. Leaderboard Separate Time Filters (Leaderboard.tsx)
 
-Convert `activeExams` to `useState`. On delete, filter the array.
+**Fix**: Replace single `timeFilter` state with `classTimeFilter` and `globalTimeFilter`. Each tab's filter buttons and `filterAndSort` calls use their own state variable.
 
-## 14. Teacher "View" Label - TeacherDashboard.tsx
+## 12. Notification Timestamps Dynamic (NotificationContext.tsx, types/exam.ts)
 
-Change "View" to "Preview as Student" or navigate to `/dashboard/exam/${id}/review`.
+**Fix**: 
+- Add `date: Date` field to `AppNotification` type (keep `timestamp` as computed).
+- In `NotificationContext.tsx`, store actual `Date` objects and compute relative timestamps using `formatDistanceToNow` from date-fns.
+- Update `Notifications.tsx` to display the formatted timestamp.
 
-## 15. Logout Context Reset - AppSidebar.tsx + FloatingNavbar.tsx
+## 13. Remove Unused Import (RoleContext.tsx)
 
-Import `useRole` and `useUser` in both logout handlers. Call `setRole("student")` and `setUser("", "")` before navigating.
-
-## 16. Flash of Dark Theme - index.html
-
-Remove `class="dark"` from the `<html>` tag. `next-themes` handles it.
-
-## 17. Remove "Remember Me" Checkbox - AuthPage.tsx
-
-Remove the `rememberMe` state and the checkbox UI since it's not implemented.
-
-## 18. Redirect Authenticated Users - Index.tsx
-
-Check `localStorage.getItem("kernel-role")` and redirect to `/dashboard` if it exists.
+Already covered in fix 1 -- remove `useEffect` from the import.
 
 ---
 
@@ -81,22 +76,19 @@ Check `localStorage.getItem("kernel-role")` and redirect to `/dashboard` if it e
 
 | File | Changes |
 |------|---------|
-| `src/components/dashboard/PerformanceChart.tsx` | Wrap var() with hsl() on lines 40, 47, 53 |
-| `src/pages/TeacherDashboard.tsx` | Fix chart colors, convert activeExams to state, change View label, delete removes from list |
-| `src/components/FloatingNavbar.tsx` | Add search filter, use NotificationContext, reset context on logout |
-| `src/contexts/NotificationContext.tsx` | **NEW** - shared notification state |
-| `src/pages/Notifications.tsx` | Use NotificationContext instead of local state |
-| `src/pages/ExamTaking.tsx` | Fix getStatus priority, count answered-flagged |
-| `src/pages/Settings.tsx` | Add password state/validation, persist notification prefs |
-| `src/pages/Help.tsx` | Fix resource links |
-| `src/pages/Messages.tsx` | Wire compose dialog inputs |
-| `src/pages/CodeEditor.tsx` | Per-problem like/dislike/bookmark, per-problem editorial, clickable solutions |
-| `src/pages/Profile.tsx` | Dynamic role badge |
-| `src/components/AppSidebar.tsx` | Reset context on logout |
-| `index.html` | Remove class="dark" |
-| `src/pages/AuthPage.tsx` | Remove remember me checkbox |
-| `src/pages/Index.tsx` | Redirect authenticated users |
-| `src/App.tsx` | Wrap with NotificationProvider |
-| `src/main.tsx` | No changes needed (ThemeProvider already present) |
+| `src/contexts/RoleContext.tsx` | Add `clearRole`, change type to nullable, remove unused `useEffect` |
+| `src/components/AppSidebar.tsx` | Use `clearRole()` in logout |
+| `src/components/FloatingNavbar.tsx` | Use `clearRole()` in logout, guard initials computation |
+| `src/components/DashboardLayout.tsx` | Update route guard check |
+| `src/pages/CodeEditor.tsx` | Fix editorials 4+5, add per-problem solutions |
+| `src/pages/Messages.tsx` | Fix compose sender to use current user |
+| `src/pages/ExamTaking.tsx` | Use `useParams`, multiple mock exams, fix amber text |
+| `src/pages/ExamReview.tsx` | Use `useParams` to select mock review |
+| `src/pages/Practice.tsx` | Randomize quiz ID |
+| `src/pages/Leaderboard.tsx` | Dynamic `isCurrentUser`, separate time filters per tab |
+| `src/contexts/NotificationContext.tsx` | Use `Date` objects + `formatDistanceToNow` |
+| `src/types/exam.ts` | Add optional `date` field to `AppNotification` |
+| `src/pages/Notifications.tsx` | Display computed timestamp from context |
 
-Total: 1 new file, ~15 files edited.
+Total: ~13 files edited, 0 new files.
+
