@@ -17,11 +17,35 @@ export default function SettingsPage() {
   const { name, email, setUser } = useUser();
   const { theme, setTheme } = useTheme();
   const [profile, setProfile] = useState({ name, email, bio: "Full-stack developer passionate about clean code." });
-  const [notifications, setNotifications] = useState({ email: true, push: true, examReminders: true, results: false, marketing: false });
+  const [notifications, setNotifications] = useState(() => {
+    const stored = localStorage.getItem("kernel-notification-prefs");
+    return stored ? JSON.parse(stored) : { email: true, push: true, examReminders: true, results: false, marketing: false };
+  });
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
 
   const handleSave = () => {
     setUser(profile.name, profile.email);
-    toast({ title: "Settings saved", description: "Your preferences have been updated." });
+    toast({ title: "Settings saved", description: "Your profile has been updated." });
+  };
+
+  const handleSaveNotifications = () => {
+    localStorage.setItem("kernel-notification-prefs", JSON.stringify(notifications));
+    toast({ title: "Preferences saved", description: "Your notification preferences have been updated." });
+  };
+
+  const handlePasswordUpdate = () => {
+    if (!currentPassword || !newPassword) {
+      toast({ title: "Error", description: "Please fill in both password fields.", variant: "destructive" });
+      return;
+    }
+    if (newPassword.length < 8) {
+      toast({ title: "Error", description: "New password must be at least 8 characters.", variant: "destructive" });
+      return;
+    }
+    toast({ title: "Password updated", description: "Your password has been changed successfully." });
+    setCurrentPassword("");
+    setNewPassword("");
   };
 
   return (
@@ -93,7 +117,7 @@ export default function SettingsPage() {
                 </div>
               ))}
               <Separator />
-              <Button onClick={handleSave}>Save Preferences</Button>
+              <Button onClick={handleSaveNotifications}>Save Preferences</Button>
             </CardContent>
           </Card>
         </TabsContent>
@@ -129,14 +153,14 @@ export default function SettingsPage() {
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="current-pw">Current Password</Label>
-                  <Input id="current-pw" type="password" placeholder="••••••••" />
+                  <Input id="current-pw" type="password" placeholder="••••••••" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="new-pw">New Password</Label>
-                  <Input id="new-pw" type="password" placeholder="••••••••" />
+                  <Input id="new-pw" type="password" placeholder="••••••••" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
                 </div>
               </div>
-              <Button onClick={handleSave}>Update Password</Button>
+              <Button onClick={handlePasswordUpdate}>Update Password</Button>
             </CardContent>
           </Card>
         </TabsContent>

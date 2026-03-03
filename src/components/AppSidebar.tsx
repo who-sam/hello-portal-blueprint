@@ -18,6 +18,7 @@ import {
 import { NavLink } from "@/components/NavLink";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useRole } from "@/contexts/RoleContext";
+import { useUser } from "@/contexts/UserContext";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "next-themes";
 
@@ -80,7 +81,8 @@ interface AppSidebarProps {
 }
 
 export function AppSidebar({ mobile, onNavigate }: AppSidebarProps) {
-  const { role } = useRole();
+  const { role, setRole } = useRole();
+  const { setUser } = useUser();
   const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
   const isDark = theme === "dark";
@@ -94,6 +96,8 @@ export function AppSidebar({ mobile, onNavigate }: AppSidebarProps) {
     localStorage.removeItem("kernel-role");
     localStorage.removeItem("kernel-user-name");
     localStorage.removeItem("kernel-user-email");
+    setRole("student");
+    setUser("", "");
     navigate("/");
   };
 

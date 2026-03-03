@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { RoleProvider } from "@/contexts/RoleContext";
 import { UserProvider } from "@/contexts/UserContext";
+import { NotificationProvider } from "@/contexts/NotificationContext";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import AuthPage from "./pages/AuthPage";
@@ -34,30 +35,32 @@ const App = () => (
       <Sonner />
       <RoleProvider>
         <UserProvider>
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/auth" element={<AuthPage />} />
-              <Route path="/dashboard" element={<DashboardLayout />}>
-                <Route index element={<DashboardIndex />} />
-                <Route path="editor" element={<CodeEditor />} />
-                <Route path="upcoming" element={<UpcomingExams />} />
-                <Route path="results" element={<Results />} />
-                <Route path="start" element={<Practice />} />
-                <Route path="settings" element={<Settings />} />
-                <Route path="messages" element={<Messages />} />
-                <Route path="team" element={<Team />} />
-                <Route path="help" element={<Help />} />
-                <Route path="exam-builder" element={<ExamBuilder />} />
-                <Route path="exam/:id" element={<ExamTaking />} />
-                <Route path="profile" element={<Profile />} />
-                <Route path="leaderboard" element={<Leaderboard />} />
-                <Route path="exam/:id/review" element={<ExamReview />} />
-                <Route path="notifications" element={<Notifications />} />
-              </Route>
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
+          <NotificationProvider>
+            <BrowserRouter>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/auth" element={<AuthPage />} />
+                <Route path="/dashboard" element={<DashboardLayout />}>
+                  <Route index element={<DashboardIndex />} />
+                  <Route path="editor" element={<CodeEditor />} />
+                  <Route path="upcoming" element={<UpcomingExams />} />
+                  <Route path="results" element={<Results />} />
+                  <Route path="start" element={<Practice />} />
+                  <Route path="settings" element={<Settings />} />
+                  <Route path="messages" element={<Messages />} />
+                  <Route path="team" element={<Team />} />
+                  <Route path="help" element={<Help />} />
+                  <Route path="exam-builder" element={<ExamBuilder />} />
+                  <Route path="exam/:id" element={<ExamTaking />} />
+                  <Route path="profile" element={<Profile />} />
+                  <Route path="leaderboard" element={<Leaderboard />} />
+                  <Route path="exam/:id/review" element={<ExamReview />} />
+                  <Route path="notifications" element={<Notifications />} />
+                </Route>
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </BrowserRouter>
+          </NotificationProvider>
         </UserProvider>
       </RoleProvider>
     </TooltipProvider>

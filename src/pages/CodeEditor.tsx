@@ -151,9 +151,10 @@ export default function CodeEditorPage() {
   const [bottomTab, setBottomTab] = useState("testcase");
   const [testResults, setTestResults] = useState<TestResult[] | null>(null);
   const [isRunning, setIsRunning] = useState(false);
-  const [liked, setLiked] = useState(false);
-  const [disliked, setDisliked] = useState(false);
-  const [bookmarked, setBookmarked] = useState(false);
+  const [liked, setLiked] = useState<Record<number, boolean>>({});
+  const [disliked, setDisliked] = useState<Record<number, boolean>>({});
+  const [bookmarked, setBookmarked] = useState<Record<number, boolean>>({});
+  const [expandedSolution, setExpandedSolution] = useState<number | null>(null);
 
   const problem = PROBLEMS[problemIdx];
 
@@ -337,22 +338,22 @@ export default function CodeEditorPage() {
                 {/* Actions */}
                 <div className="flex items-center gap-4 text-muted-foreground pt-2">
                   <button
-                    onClick={() => { setLiked(!liked); if (disliked) setDisliked(false); }}
-                    className={`flex items-center gap-1.5 text-sm transition-colors ${liked ? "text-primary" : "hover:text-primary"}`}
+                    onClick={() => { setLiked(prev => ({ ...prev, [problem.id]: !prev[problem.id] })); if (disliked[problem.id]) setDisliked(prev => ({ ...prev, [problem.id]: false })); }}
+                    className={`flex items-center gap-1.5 text-sm transition-colors ${liked[problem.id] ? "text-primary" : "hover:text-primary"}`}
                     aria-label="Like"
                   >
-                    <ThumbsUp className="h-4 w-4" /> {problem.likes + (liked ? 1 : 0)}
+                    <ThumbsUp className="h-4 w-4" /> {problem.likes + (liked[problem.id] ? 1 : 0)}
                   </button>
                   <button
-                    onClick={() => { setDisliked(!disliked); if (liked) setLiked(false); }}
-                    className={`flex items-center gap-1.5 text-sm transition-colors ${disliked ? "text-destructive" : "hover:text-destructive"}`}
+                    onClick={() => { setDisliked(prev => ({ ...prev, [problem.id]: !prev[problem.id] })); if (liked[problem.id]) setLiked(prev => ({ ...prev, [problem.id]: false })); }}
+                    className={`flex items-center gap-1.5 text-sm transition-colors ${disliked[problem.id] ? "text-destructive" : "hover:text-destructive"}`}
                     aria-label="Dislike"
                   >
-                    <ThumbsDown className="h-4 w-4" /> {problem.dislikes + (disliked ? 1 : 0)}
+                    <ThumbsDown className="h-4 w-4" /> {problem.dislikes + (disliked[problem.id] ? 1 : 0)}
                   </button>
                   <button
-                    onClick={() => setBookmarked(!bookmarked)}
-                    className={`flex items-center gap-1.5 text-sm transition-colors ${bookmarked ? "text-accent" : "hover:text-accent"}`}
+                    onClick={() => setBookmarked(prev => ({ ...prev, [problem.id]: !prev[problem.id] }))}
+                    className={`flex items-center gap-1.5 text-sm transition-colors ${bookmarked[problem.id] ? "text-accent" : "hover:text-accent"}`}
                     aria-label="Bookmark"
                   >
                     <BookmarkPlus className="h-4 w-4" />
@@ -368,26 +369,43 @@ export default function CodeEditorPage() {
               </TabsContent>
 
               <TabsContent value="editorial" className="flex-1 overflow-y-auto p-5 m-0 space-y-4">
-                <h3 className="text-base font-semibold text-foreground">Approach: Hash Map</h3>
-                <div className="space-y-2 text-sm text-muted-foreground">
-                  <p><strong className="text-foreground">Step 1:</strong> Create an empty hash map to store values and their indices.</p>
-                  <p><strong className="text-foreground">Step 2:</strong> Iterate through the array. For each element, calculate the complement (target - current).</p>
-                  <p><strong className="text-foreground">Step 3:</strong> Check if the complement exists in the hash map. If it does, return both indices.</p>
-                  <p><strong className="text-foreground">Step 4:</strong> If not, add the current element and its index to the hash map.</p>
-                </div>
-                <div className="rounded-xl bg-muted/50 border border-border p-4 font-mono text-xs">
-                  <p className="text-muted-foreground">Time Complexity: O(n)</p>
-                  <p className="text-muted-foreground">Space Complexity: O(n)</p>
-                </div>
+                {(() => {
+                  const editorials: Record<number, { approach: string; steps: string[]; time: string; space: string }> = {
+                    1: { approach: "Hash Map", steps: ["Create an empty hash map to store values and their indices.", "Iterate through the array. For each element, calculate the complement (target - current).", "Check if the complement exists in the hash map. If it does, return both indices.", "If not, add the current element and its index to the hash map."], time: "O(n)", space: "O(n)" },
+                    2: { approach: "Stack", steps: ["Initialize an empty stack.", "Iterate through each character in the string.", "If the character is an opening bracket, push it onto the stack.", "If it's a closing bracket, check if the stack is non-empty and the top matches. If not, return false.", "After iteration, return true if the stack is empty."], time: "O(n)", space: "O(n)" },
+                    3: { approach: "Iterative Merge", steps: ["Create a dummy head node.", "Compare the heads of both lists and attach the smaller one to the merged list.", "Move the pointer of the list from which the node was taken.", "After one list is exhausted, attach the remaining nodes of the other list."], time: "O(n + m)", space: "O(1)" },
+                    4: { approach: "Binary Search", steps: ["Sort the array (if not already sorted).", "For each element, use binary search to find the target.", "Adjust boundaries based on comparison results.", "Return the index when found, or -1 if not present."], time: "O(log n)", space: "O(1)" },
+                    5: { approach: "Sliding Window", steps: ["Use two pointers to define a window.", "Expand the window by moving the right pointer.", "Shrink the window from the left when a condition is violated.", "Track the maximum/minimum window size that satisfies the condition."], time: "O(n)", space: "O(min(n, m))" },
+                  };
+                  const ed = editorials[problem.id] || editorials[1];
+                  return (
+                    <>
+                      <h3 className="text-base font-semibold text-foreground">Approach: {ed.approach}</h3>
+                      <div className="space-y-2 text-sm text-muted-foreground">
+                        {ed.steps.map((step, i) => (
+                          <p key={i}><strong className="text-foreground">Step {i + 1}:</strong> {step}</p>
+                        ))}
+                      </div>
+                      <div className="rounded-xl bg-muted/50 border border-border p-4 font-mono text-xs">
+                        <p className="text-muted-foreground">Time Complexity: {ed.time}</p>
+                        <p className="text-muted-foreground">Space Complexity: {ed.space}</p>
+                      </div>
+                    </>
+                  );
+                })()}
               </TabsContent>
 
               <TabsContent value="solutions" className="flex-1 overflow-y-auto p-5 m-0 space-y-3">
                 {[
-                  { author: "Alice C.", lang: "Python", votes: 234, time: "2 weeks ago" },
-                  { author: "Bob K.", lang: "JavaScript", votes: 189, time: "1 month ago" },
-                  { author: "Carla R.", lang: "Java", votes: 156, time: "3 months ago" },
+                  { author: "Alice C.", lang: "Python", votes: 234, time: "2 weeks ago", code: "def twoSum(nums, target):\n    seen = {}\n    for i, n in enumerate(nums):\n        comp = target - n\n        if comp in seen:\n            return [seen[comp], i]\n        seen[n] = i" },
+                  { author: "Bob K.", lang: "JavaScript", votes: 189, time: "1 month ago", code: "function twoSum(nums, target) {\n  const map = new Map();\n  for (let i = 0; i < nums.length; i++) {\n    const comp = target - nums[i];\n    if (map.has(comp)) return [map.get(comp), i];\n    map.set(nums[i], i);\n  }\n}" },
+                  { author: "Carla R.", lang: "Java", votes: 156, time: "3 months ago", code: "public int[] twoSum(int[] nums, int target) {\n  Map<Integer, Integer> map = new HashMap<>();\n  for (int i = 0; i < nums.length; i++) {\n    int comp = target - nums[i];\n    if (map.containsKey(comp)) return new int[]{map.get(comp), i};\n    map.put(nums[i], i);\n  }\n  return new int[]{};\n}" },
                 ].map((s, i) => (
-                  <div key={i} className="rounded-xl border border-border/50 bg-secondary/20 p-4 hover:bg-secondary/40 transition-colors cursor-pointer">
+                  <div
+                    key={i}
+                    onClick={() => setExpandedSolution(expandedSolution === i ? null : i)}
+                    className="rounded-xl border border-border/50 bg-secondary/20 p-4 hover:bg-secondary/40 transition-colors cursor-pointer"
+                  >
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-sm font-medium text-foreground">{s.author}</p>
@@ -395,6 +413,11 @@ export default function CodeEditorPage() {
                       </div>
                       <Badge variant="secondary" className="text-xs">▲ {s.votes}</Badge>
                     </div>
+                    {expandedSolution === i && (
+                      <pre className="mt-3 rounded-lg bg-muted/50 border border-border p-3 text-xs font-mono text-foreground overflow-x-auto whitespace-pre-wrap">
+                        {s.code}
+                      </pre>
+                    )}
                   </div>
                 ))}
               </TabsContent>

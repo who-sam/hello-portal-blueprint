@@ -39,7 +39,6 @@ const AuthPage = () => {
   const [mode, setMode] = useState<AuthMode>("select");
   const [role, setLocalRole] = useState<Role>("student");
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
   const [termsOpen, setTermsOpen] = useState(false);
   const [privacyOpen, setPrivacyOpen] = useState(false);
   const [forgotEmail, setForgotEmail] = useState("");
@@ -298,11 +297,7 @@ const AuthPage = () => {
                 </div>
               </div>
 
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Checkbox id="remember" checked={rememberMe} onCheckedChange={(v) => setRememberMe(v === true)} />
-                  <label htmlFor="remember" className="text-sm text-muted-foreground cursor-pointer">Remember me</label>
-                </div>
+              <div className="flex items-center justify-end">
                 <button type="button" onClick={() => setMode("forgot")} className="text-sm text-primary hover:underline">Forgot Password?</button>
               </div>
 

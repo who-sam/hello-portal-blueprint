@@ -14,6 +14,7 @@ import {
   Zap, Globe, Target, Trophy, Star, Settings,
 } from "lucide-react";
 import { useUser } from "@/contexts/UserContext";
+import { useRole } from "@/contexts/RoleContext";
 import type { Achievement } from "@/types/exam";
 
 const performanceData = [
@@ -67,6 +68,7 @@ const iconMap: Record<string, React.ElementType> = {
 export default function Profile() {
   const navigate = useNavigate();
   const { name, email } = useUser();
+  const { role } = useRole();
   const [tab, setTab] = useState("overview");
 
   const initials = name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
@@ -82,7 +84,7 @@ export default function Profile() {
           <div className="flex-1 space-y-1">
             <div className="flex items-center gap-3">
               <h1 className="text-2xl font-bold text-foreground">{name}</h1>
-              <Badge variant="secondary">Student</Badge>
+              <Badge variant="secondary">{role === "teacher" ? "Teacher" : "Student"}</Badge>
             </div>
             <p className="text-sm text-muted-foreground">{email}</p>
             <p className="text-sm text-muted-foreground">Member since September 2025</p>
