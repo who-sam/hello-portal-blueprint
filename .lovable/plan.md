@@ -1,94 +1,63 @@
 
+# Fix 6 Remaining Issues
 
-# Fix 13 Remaining Bugs in Kernel Platform
+## 1. Practice Exam Cards - Match Labels to Mock Exams (Practice.tsx)
 
-## 1. Logout Race Condition (RoleContext.tsx, AppSidebar.tsx, FloatingNavbar.tsx, DashboardLayout.tsx)
+The practice cards have IDs 1-6 but only 3 mock exams exist ("1" = JS Fundamentals, "mid-ds" = Data Structures, "algo-final" = Algorithms). The ID_ALIASES map cards 2-6 to these three exams, but the card labels don't match. 
 
-**Problem**: `setRole("student")` writes back to localStorage, undoing the `removeItem` call.
+**Fix**: Update the practice card names/descriptions to match the actual exams they open:
+- Card 1 (ID "1"): Keep "JavaScript Fundamentals" (matches)
+- Card 2 (ID "2" -> "mid-ds"): Rename to "Data Structures" with matching description
+- Card 3 (ID "3" -> "algo-final"): Rename to "Algorithms & Graphs" with matching description
+- Card 4 (ID "4" -> "1"): Rename to "JS Basics Review" (second pass at JS Fundamentals)
+- Card 5 (ID "5" -> "mid-ds"): Rename to "Data Structures II" (second pass)
+- Card 6 (ID "6" -> "algo-final"): Rename to "Algorithms Challenge" (second pass)
+
+Also update categories accordingly.
+
+## 2. Composed Messages Appear as Received (Messages.tsx)
+
+Sent messages get added to the inbox with `from: userName`, making them look like received messages from yourself.
+
+**Fix**: Don't add composed messages to the inbox. Instead, just show a toast "Message sent to {composeTo}" and close the dialog. The inbox should only show received messages.
+
+## 3. Teacher "Preview as Student" Missing for quiz-alg and final-oop (ExamReview.tsx + ExamTaking.tsx)
+
+Teacher dashboard has exam IDs "quiz-alg" and "final-oop" but neither `MOCK_REVIEWS` nor `MOCK_EXAMS` / `ID_ALIASES` include them.
 
 **Fix**:
-- `RoleContext.tsx`: Change state type to `UserRole | null`. Add `clearRole()` that sets state to `null` and removes localStorage key. Export it. Remove unused `useEffect` import (issue 13).
-- `AppSidebar.tsx` + `FloatingNavbar.tsx`: Replace `setRole("student")` with `clearRole()` in logout handlers.
-- `DashboardLayout.tsx`: Update guard to check `if (!hasRole || hasRole === "")`.
+- In `ExamReview.tsx`: Add "quiz-alg" and "final-oop" to the `resolveReview` aliases (map "quiz-alg" -> "algo-final" and "final-oop" -> "1")
+- In `ExamTaking.tsx`: Add "quiz-alg" and "final-oop" to `ID_ALIASES` (same mappings)
 
-## 2. Crash on Logout - Initials (FloatingNavbar.tsx)
+## 4. Timer Text Invisible in Light Mode (ExamTaking.tsx)
 
-**Problem**: `name.split(" ").map(n => n[0].toUpperCase())` crashes when name is empty string.
+Line 314: `text-red-400` has poor contrast on light backgrounds when timer < 5 min.
 
-**Fix**: Change to `const initials = name ? name.split(" ").filter(Boolean).map(n => n[0]?.toUpperCase() || "").join("").slice(0, 2) : "";`
+**Fix**: Change `text-red-400` to `text-destructive` which adapts to both themes.
 
-## 3. Code Editor Editorials for Problems 4 and 5 (CodeEditor.tsx)
+## 5. UserContext Defaults to "John Doe" (UserContext.tsx)
 
-**Fix**:
-- Problem 4: Change from "Binary Search" to "One-Pass Min Tracking" with steps: track minimum price, compute profit at each step, update max profit.
-- Problem 5: Change from "Sliding Window" to "Hash Set" with steps: iterate array, check if element in set, return true if found, add to set.
+After logout clears localStorage, re-mounting defaults back to "John Doe".
 
-## 4. Code Editor Solutions Per-Problem (CodeEditor.tsx)
+**Fix**: Change fallbacks from `|| "John Doe"` and `|| "john@kernel.dev"` to `|| ""`.
 
-**Problem**: Solutions tab always shows Two Sum solutions.
+## 6. FloatingNavbar Calls useUser() Twice (FloatingNavbar.tsx)
 
-**Fix**: Create a `SOLUTIONS` record keyed by problem ID with 2-3 solutions per problem. Render `SOLUTIONS[problem.id]` instead of the hardcoded array.
+Two separate `useUser()` calls on lines 43-44.
 
-## 5. Compose Message Sender (Messages.tsx)
-
-**Problem**: `from: composeTo` makes the recipient appear as sender.
-
-**Fix**: Import `useUser`, set `from` to current user's name, and `initials` from user name.
-
-## 6. ExamTaking Ignores :id (ExamTaking.tsx)
-
-**Fix**: Create 3 mock exam datasets keyed by ID (e.g., `"1"`, `"mid-ds"`, `"random"`). Call `useParams()` to get `id`. Look up the matching exam. Show "Exam not found" if no match.
-
-## 7. ExamReview Ignores :id (ExamReview.tsx)
-
-**Fix**: Create 2-3 mock review datasets. Look up by `id` from `useParams()`. Show "Review not found" if no match.
-
-## 8. Exam Warning Banner Light Mode (ExamTaking.tsx)
-
-**Fix**: Change `text-amber-300` to `text-amber-600 dark:text-amber-300` on line 162.
-
-## 9. Quick Random Quiz (Practice.tsx)
-
-**Fix**: Change the button's onClick to randomly pick from the available exam IDs instead of always navigating to `/dashboard/exam/random`.
-
-## 10. Leaderboard isCurrentUser Dynamic (Leaderboard.tsx)
-
-**Fix**: Import `useUser`, compare `entry.studentName === name` to set `isCurrentUser` dynamically. Remove hardcoded `isCurrentUser: true` from data.
-
-## 11. Leaderboard Separate Time Filters (Leaderboard.tsx)
-
-**Fix**: Replace single `timeFilter` state with `classTimeFilter` and `globalTimeFilter`. Each tab's filter buttons and `filterAndSort` calls use their own state variable.
-
-## 12. Notification Timestamps Dynamic (NotificationContext.tsx, types/exam.ts)
-
-**Fix**: 
-- Add `date: Date` field to `AppNotification` type (keep `timestamp` as computed).
-- In `NotificationContext.tsx`, store actual `Date` objects and compute relative timestamps using `formatDistanceToNow` from date-fns.
-- Update `Notifications.tsx` to display the formatted timestamp.
-
-## 13. Remove Unused Import (RoleContext.tsx)
-
-Already covered in fix 1 -- remove `useEffect` from the import.
+**Fix**: Combine into `const { name, email, setUser } = useUser();`
 
 ---
 
-## Files Modified
+## Technical Details
 
 | File | Changes |
 |------|---------|
-| `src/contexts/RoleContext.tsx` | Add `clearRole`, change type to nullable, remove unused `useEffect` |
-| `src/components/AppSidebar.tsx` | Use `clearRole()` in logout |
-| `src/components/FloatingNavbar.tsx` | Use `clearRole()` in logout, guard initials computation |
-| `src/components/DashboardLayout.tsx` | Update route guard check |
-| `src/pages/CodeEditor.tsx` | Fix editorials 4+5, add per-problem solutions |
-| `src/pages/Messages.tsx` | Fix compose sender to use current user |
-| `src/pages/ExamTaking.tsx` | Use `useParams`, multiple mock exams, fix amber text |
-| `src/pages/ExamReview.tsx` | Use `useParams` to select mock review |
-| `src/pages/Practice.tsx` | Randomize quiz ID |
-| `src/pages/Leaderboard.tsx` | Dynamic `isCurrentUser`, separate time filters per tab |
-| `src/contexts/NotificationContext.tsx` | Use `Date` objects + `formatDistanceToNow` |
-| `src/types/exam.ts` | Add optional `date` field to `AppNotification` |
-| `src/pages/Notifications.tsx` | Display computed timestamp from context |
+| `src/pages/Practice.tsx` | Update card names/descriptions to match aliased exams |
+| `src/pages/Messages.tsx` | Remove adding sent message to inbox, just toast |
+| `src/pages/ExamReview.tsx` | Add "quiz-alg" and "final-oop" aliases |
+| `src/pages/ExamTaking.tsx` | Add "quiz-alg"/"final-oop" to ID_ALIASES, fix timer color |
+| `src/contexts/UserContext.tsx` | Change fallbacks to empty strings |
+| `src/components/FloatingNavbar.tsx` | Merge duplicate useUser() calls |
 
-Total: ~13 files edited, 0 new files.
-
+Total: 6 files edited.
