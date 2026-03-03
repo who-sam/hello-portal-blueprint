@@ -146,6 +146,8 @@ const ID_ALIASES: Record<string, string> = {
   "4": "1",
   "5": "mid-ds",
   "6": "algo-final",
+  "quiz-alg": "algo-final",
+  "final-oop": "1",
 };
 
 export const EXAM_IDS = ["1", "mid-ds", "algo-final"];
@@ -311,7 +313,7 @@ export default function ExamTaking() {
           </Button>
           <h2 className="text-sm font-semibold text-foreground truncate">{exam.title}</h2>
         </div>
-        <div className={cn("flex items-center gap-1.5 font-mono text-sm font-bold", timeLeft < 300 ? "text-red-400" : "text-foreground")}>
+        <div className={cn("flex items-center gap-1.5 font-mono text-sm font-bold", timeLeft < 300 ? "text-destructive" : "text-foreground")}>
           <Clock className="h-4 w-4" /> {formatTime(timeLeft)}
         </div>
         <Button size="sm" className="gap-1.5 rounded-full" onClick={() => setSubmitDialogOpen(true)} disabled={submitted}>

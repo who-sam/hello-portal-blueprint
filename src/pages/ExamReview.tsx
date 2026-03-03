@@ -73,7 +73,7 @@ function resolveReview(id: string | undefined) {
   if (!id) return null;
   if (MOCK_REVIEWS[id]) return MOCK_REVIEWS[id];
   // Alias numeric IDs
-  const aliases: Record<string, string> = { "2": "mid-ds", "3": "algo-final", "4": "1", "5": "mid-ds", "6": "algo-final" };
+  const aliases: Record<string, string> = { "2": "mid-ds", "3": "algo-final", "4": "1", "5": "mid-ds", "6": "algo-final", "quiz-alg": "algo-final", "final-oop": "1" };
   if (aliases[id] && MOCK_REVIEWS[aliases[id]]) return MOCK_REVIEWS[aliases[id]];
   return null;
 }

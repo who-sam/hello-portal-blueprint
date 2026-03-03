@@ -40,8 +40,7 @@ interface Props {
 export function FloatingNavbar({ onMobileMenuToggle }: Props) {
   const navigate = useNavigate();
   const { role, clearRole } = useRole();
-  const { name, email } = useUser();
-  const { setUser } = useUser();
+  const { name, email, setUser } = useUser();
   const { unreadCount } = useNotifications();
   const isMobile = useIsMobile();
   const navTabs = role === "teacher" ? teacherNavTabs : studentNavTabs;
