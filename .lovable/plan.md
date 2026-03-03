@@ -1,207 +1,102 @@
 
-# Kernel Platform - Comprehensive Bug Fix & Enhancement Plan
+# Fix 18 Remaining Bugs in Kernel Platform
 
-This is a large-scale effort covering bug fixes, missing features, responsiveness, loading states, and visual consistency. Due to the scope (~30+ files affected), the work is organized into 5 implementation phases.
+## 1. Chart Colors - PerformanceChart.tsx + TeacherDashboard.tsx
 
----
+**PerformanceChart.tsx**: Lines 40 and 47/53 use `var(--border)` and `var(--muted-foreground)` without `hsl()` wrapper for the CartesianGrid `stroke` and XAxis/YAxis `tick.fill`. The Tooltip and Bar already use `hsl(var(...))` correctly. Fix lines 40, 47, 53.
 
-## Phase 1: Critical Bug Fixes
+**TeacherDashboard.tsx**: Lines 210-211 have the same issue - `stroke="var(--border)"` and `fill: "var(--muted-foreground)"` without `hsl()` wrappers.
 
-### 1A. Auth & Role Fixes
-**Files**: `AuthPage.tsx`, `RoleContext.tsx`, `DashboardLayout.tsx`, `FloatingNavbar.tsx`, `AppSidebar.tsx`
+## 2. Search Dialog Filter - FloatingNavbar.tsx
 
-- **Login skips role**: Add role selection to the login flow. When user clicks "Log in" from the role-selection screen, show role cards first (reuse existing UI), then show the login form with the selected role. Store role on login just like signup.
-- **Route guards**: In `DashboardLayout.tsx`, check if `localStorage` has `kernel-role` set. If not, redirect to `/auth` using `<Navigate to="/auth" />`.
-- **Logout - Navbar**: Update the "Log out" dropdown item to clear `localStorage.removeItem("kernel-role")` before navigating to `/`.
-- **Logout - Sidebar**: Add `onClick` handler to the sidebar logout button: clear role from localStorage, navigate to `/`.
+Add `searchQuery` state. Bind input onChange. Filter `searchItems` by query. Show "No results" when empty.
 
-### 1B. Exam Timer Auto-Submit
-**File**: `ExamTaking.tsx`
+## 3. Shared Notification Context
 
-- When `timeLeft` reaches 0, auto-trigger submission: set `submitDialogOpen(false)`, show a toast "Time's up! Your exam has been submitted.", and navigate to `/dashboard/results`.
+Create `src/contexts/NotificationContext.tsx` with the mock notifications data, unread count, `markAllRead()`, and `markAsRead(id)`. Consume it in both `FloatingNavbar.tsx` (for badge) and `Notifications.tsx` (for the list). Remove the hardcoded `MOCK_NOTIFICATIONS` from FloatingNavbar.
 
-### 1C. Theme Toggle Fix
-**Files**: `AppSidebar.tsx`, `Settings.tsx`, `main.tsx` or a new `ThemeContext.tsx`
+## 4. Flagged Questions Count - ExamTaking.tsx
 
-- Use the already-installed `next-themes` library. Wrap the app with `<ThemeProvider>` in `main.tsx` (attribute="class", defaultTheme="dark", storageKey="kernel-theme").
-- In `AppSidebar.tsx`, replace local `useState` + DOM manipulation with `useTheme()` from next-themes.
-- In `Settings.tsx` appearance tab, replace `document.documentElement.classList.contains("dark")` with `useTheme()`.
+Change `getStatus` (line 123-131): check answered status first, then check flagged. If both answered and flagged, return `"answered-flagged"`. Update `answeredCount` (line 133) to count both `"answered"` and `"answered-flagged"`. Update the sidebar button styling to handle the new status.
 
-### 1D. Leaderboard Filters
-**File**: `Leaderboard.tsx`
+## 5. Settings Password - Settings.tsx
 
-- Add `class` field and `weekScore`/`monthScore` fields to mock data entries.
-- Filter entries based on selected class and time period. When "This Week" is selected, sort by `weekScore`; "This Month" by `monthScore`; "All Time" by `score`.
+Add `currentPassword` and `newPassword` state. Bind to inputs. Create `handlePasswordUpdate` that validates both fields filled, new password >= 8 chars, shows toast, clears fields.
 
-### 1E. Notifications Fixes
-**File**: `Notifications.tsx`
+## 6. Settings Notification Persistence - Settings.tsx
 
-- Mark notification as read before navigating (call state update then navigate).
-- Add "Submissions" tab to the filter tabs list.
+Change "Save Preferences" button to call a dedicated handler that saves to `localStorage` under `kernel-notification-prefs` and shows a specific toast. Load initial state from localStorage.
 
-### 1F. Teacher Dashboard Route Fix
-**File**: `TeacherDashboard.tsx`
+## 7. Help Resource Links - Help.tsx
 
-- Change "Question Bank" quick action route from `/dashboard/results` to `/dashboard/exam-builder`.
+Change the `<a>` tags to `<button>` elements with `onClick` that opens placeholder URLs via `window.open` or shows a toast.
 
----
+## 8. Messages Compose Dialog - Messages.tsx
 
-## Phase 2: Non-Functional Buttons
+Add `composeTo`, `composeSubject`, `composeBody` state. Bind inputs. On Send, add message to list, clear fields, close dialog.
 
-### 2A. Dashboard
-**File**: `Dashboard.tsx`
-- "Start Practice Exam" button: add `onClick={() => navigate("/dashboard/start")}`.
+## 9. Code Editor Per-Problem Like/Dislike/Bookmark - CodeEditor.tsx
 
-### 2B. Upcoming Exams
-**File**: `UpcomingExams.tsx`
-- "Prepare" button: navigate to `/dashboard/start` (practice page).
+Change `liked`, `disliked`, `bookmarked` from single booleans to `Record<number, boolean>` keyed by problem ID.
 
-### 2C. Practice Page
-**File**: `Practice.tsx`
-- "Quick Random Quiz": navigate to `/dashboard/exam/random` (exam taking with random ID).
-- "Start Practice" / "Continue": navigate to `/dashboard/exam/{exam.id}`.
+## 10. Code Editor Editorial Per-Problem - CodeEditor.tsx
 
-### 2D. Exam Builder
-**File**: `ExamBuilder.tsx`
-- "Save Exam": validate title + at least 1 question exist, show error toast if not, success toast + console.log exam data if valid.
-- Add confirmation dialog before deleting a question (using AlertDialog).
+Add an `editorials` object mapping problem ID to editorial content. Render the matching editorial.
 
-### 2E. Auth Page
-**File**: `AuthPage.tsx`
-- "Forgot Password?": toggle to a simple forgot-password form (email input + "Send Reset Link" button that shows a toast).
-- Social login buttons: show toast "Coming soon".
-- Terms/Privacy links: open simple dialog modals with placeholder text.
-- Add loading spinner on submit buttons during form submission (use `isSubmitting` from react-hook-form).
+## 11. Code Editor Solutions Clickable - CodeEditor.tsx
 
-### 2F. Help Page
-**File**: `Help.tsx`
-- "Contact Support": `window.location.href = "mailto:support@kernel.dev"`.
-- Resource cards: wrap in anchor tags pointing to `#` with descriptive placeholder.
+Add `onClick` to solution items that expands them or shows a dialog with sample code.
 
-### 2G. Code Editor
-**File**: `CodeEditor.tsx`
-- Like/Dislike/Bookmark/Share: add toggle state with active styling.
-- Remove unused `ChevronDown` import.
+## 12. Profile Role Badge - Profile.tsx
 
-### 2H. Team Page
-**File**: `Team.tsx`
-- "Message" button: navigate to `/dashboard/messages` (future: pre-select member).
+Import `useRole` and display actual role instead of hardcoded "Student".
 
-### 2I. Teacher Dashboard
-**File**: `TeacherDashboard.tsx`
-- "More" button on exam rows: replace with `DropdownMenu` containing View, Edit, Delete, View Results options (with toasts for now).
+## 13. Teacher Dashboard Delete Exam - TeacherDashboard.tsx
 
-### 2J. Profile Submissions
-**File**: `Profile.tsx`
-- Make submission rows clickable: navigate to `/dashboard/exam/{id}/review`.
+Convert `activeExams` to `useState`. On delete, filter the array.
 
-### 2K. Results - Exam Review Access
-**File**: `Results.tsx`
-- Add "View Detailed Review" button inside the result dialog that navigates to `/dashboard/exam/{id}/review`.
+## 14. Teacher "View" Label - TeacherDashboard.tsx
+
+Change "View" to "Preview as Student" or navigate to `/dashboard/exam/${id}/review`.
+
+## 15. Logout Context Reset - AppSidebar.tsx + FloatingNavbar.tsx
+
+Import `useRole` and `useUser` in both logout handlers. Call `setRole("student")` and `setUser("", "")` before navigating.
+
+## 16. Flash of Dark Theme - index.html
+
+Remove `class="dark"` from the `<html>` tag. `next-themes` handles it.
+
+## 17. Remove "Remember Me" Checkbox - AuthPage.tsx
+
+Remove the `rememberMe` state and the checkbox UI since it's not implemented.
+
+## 18. Redirect Authenticated Users - Index.tsx
+
+Check `localStorage.getItem("kernel-role")` and redirect to `/dashboard` if it exists.
 
 ---
 
-## Phase 3: Missing Pages & Features
+## Files Modified
 
-### 3A. Search Icon Fix
-**File**: `FloatingNavbar.tsx`
-- Replace `Search` icon with `Code2` icon for the editor link, or change the search button to open a simple search dialog overlay (command palette style using the existing `cmdk` dependency).
+| File | Changes |
+|------|---------|
+| `src/components/dashboard/PerformanceChart.tsx` | Wrap var() with hsl() on lines 40, 47, 53 |
+| `src/pages/TeacherDashboard.tsx` | Fix chart colors, convert activeExams to state, change View label, delete removes from list |
+| `src/components/FloatingNavbar.tsx` | Add search filter, use NotificationContext, reset context on logout |
+| `src/contexts/NotificationContext.tsx` | **NEW** - shared notification state |
+| `src/pages/Notifications.tsx` | Use NotificationContext instead of local state |
+| `src/pages/ExamTaking.tsx` | Fix getStatus priority, count answered-flagged |
+| `src/pages/Settings.tsx` | Add password state/validation, persist notification prefs |
+| `src/pages/Help.tsx` | Fix resource links |
+| `src/pages/Messages.tsx` | Wire compose dialog inputs |
+| `src/pages/CodeEditor.tsx` | Per-problem like/dislike/bookmark, per-problem editorial, clickable solutions |
+| `src/pages/Profile.tsx` | Dynamic role badge |
+| `src/components/AppSidebar.tsx` | Reset context on logout |
+| `index.html` | Remove class="dark" |
+| `src/pages/AuthPage.tsx` | Remove remember me checkbox |
+| `src/pages/Index.tsx` | Redirect authenticated users |
+| `src/App.tsx` | Wrap with NotificationProvider |
+| `src/main.tsx` | No changes needed (ThemeProvider already present) |
 
-### 3B. Messages Enhancements
-**File**: `Messages.tsx`
-- Add "New Message" button that opens a compose form.
-- Add reply textarea when viewing a message.
-- Show empty state when search returns no results.
-
-### 3C. Code Editor Improvements
-**File**: `CodeEditor.tsx`
-- Add a problem list (array of 5 problems) with a dropdown/select to switch between them.
-- Replace plain text description rendering with simple markdown-like rendering (parse backticks/bold manually or add lightweight rendering).
-- "Editorial" tab: add placeholder step-by-step solution content.
-- "Solutions" tab: add placeholder community solution cards.
-- Language change: preserve code per language using a `Record<string, string>` state.
-- Keyboard shortcuts: add `useEffect` for Ctrl+Enter (Run) and Ctrl+Shift+Enter (Submit).
-
-### 3D. Exam Taking Enhancements
-**File**: `ExamTaking.tsx`
-- Add sidebar toggle button.
-- Add "visited but unanswered" status to question navigator (track visited questions in state).
-
----
-
-## Phase 4: Mobile Responsiveness
-
-**Files**: `DashboardLayout.tsx`, `FloatingNavbar.tsx`, `AppSidebar.tsx`, `ExamTaking.tsx`, `CodeEditor.tsx`, `ExamBuilder.tsx`
-
-- Create a mobile nav context or use the existing `useIsMobile` hook.
-- Add hamburger menu button in navbar visible at `< 768px`.
-- Hide sidebar on mobile; show as a slide-out Sheet (from shadcn) when hamburger is tapped.
-- Collapse navbar tabs into the hamburger menu on mobile; keep logo + bell + profile visible.
-- ExamTaking: stack sidebar above question area on mobile; hide sidebar by default.
-- CodeEditor: switch ResizablePanelGroup to vertical on mobile.
-- ExamBuilder: switch to vertical layout on mobile.
-
----
-
-## Phase 5: Polish & Consistency
-
-### 5A. Loading, Error, Empty States
-- Create reusable `<PageSkeleton />`, `<EmptyState />`, and `<ErrorState />` components.
-- Add empty states to: UpcomingExams, Results, Messages, Notifications, Practice, Team.
-- Skeleton states: wrap each page's content area with a simulated loading skeleton (1-second delay toggle for demo purposes since there's no real data fetching).
-
-### 5B. Visual Consistency
-- **Headings**: Standardize all pages to `text-3xl font-bold` (fix TeacherDashboard, ExamBuilder, Leaderboard, Notifications).
-- **Card styling**: Add `bg-card/80 backdrop-blur-md border-border/50` to all cards missing it (Results summary cards, Help cards, etc.).
-- **Chart colors**: Replace all hardcoded HSL values in `PerformanceChart.tsx` and `TeacherDashboard.tsx` with CSS custom property references using `var(--border)`, `var(--muted-foreground)`, `var(--primary)`.
-- **Monaco theme**: In `CodingEditor.tsx`, `CodeEditor.tsx`, `ExamTaking.tsx`, `ExamReview.tsx` -- use `useTheme()` to dynamically set Monaco theme to `"vs-dark"` or `"light"`.
-
-### 5C. User Context
-- Create `UserContext.tsx` storing `name` and `email` (set during auth signup/login form).
-- Replace all hardcoded user references: "Good morning, John" (Dashboard), "Welcome back, Dr. Smith" (TeacherDashboard), "John Doe" / "john@kernel.dev" (FloatingNavbar, Profile, Settings).
-
-### 5D. Notification Badge
-**File**: `FloatingNavbar.tsx`
-- Replace hardcoded "2" badge with a dynamic count from notification mock data (or a shared notification context).
-
-### 5E. HTML Metadata
-**File**: `index.html`
-- Title: "Kernel -- Exam Platform"
-- Description: "Kernel is a modern exam platform for teachers and students."
-- Remove Lovable OG image URLs, update author.
-
-### 5F. Navigation Consistency
-**Files**: `AppSidebar.tsx`, `FloatingNavbar.tsx`
-
-Student sidebar should include: Dashboard, Profile, Leaderboard, Code Editor, Upcoming Exams, Results, Practice, Messages, Help (bottom), Logout (bottom).
-Teacher sidebar should include: Dashboard, Exam Builder, Upcoming Exams, Results, Team, Messages, Help (bottom), Logout (bottom).
-
-Ensure navbar tabs match sidebar access for each role.
-
-### 5G. NotFound Page
-**File**: `NotFound.tsx`
-- Replace `<a href="/">` with `<Link to="/">`.
-- Add Kernel logo and match app styling.
-
-### 5H. Aria Labels
-- Add `aria-label` to all icon-only buttons across: FloatingNavbar, AppSidebar, CodeEditor, ExamTaking, Messages, Team.
-
----
-
-## Summary
-
-| Phase | Files Modified | Key Changes |
-|-------|---------------|-------------|
-| 1 | ~8 files | Auth/role bugs, timer, theme, leaderboard filters, notifications |
-| 2 | ~10 files | Wire up all non-functional buttons |
-| 3 | ~4 files | Search overlay, messages compose/reply, code editor problems, exam sidebar toggle |
-| 4 | ~6 files | Mobile hamburger menu, responsive layouts |
-| 5 | ~15 files | Loading/empty states, visual consistency, user context, metadata, aria labels |
-
-New files to create:
-- `src/contexts/UserContext.tsx` -- user name/email context
-- `src/components/PageSkeleton.tsx` -- reusable skeleton loader
-- `src/components/EmptyState.tsx` -- reusable empty state
-- `src/components/ErrorState.tsx` -- reusable error state
-
-Total estimated: ~25-30 files modified/created across all phases.
+Total: 1 new file, ~15 files edited.
