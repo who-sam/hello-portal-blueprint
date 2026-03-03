@@ -9,14 +9,14 @@ import { Progress } from "@/components/ui/progress";
 
 const practiceExams = [
   { id: 1, name: "JavaScript Fundamentals", category: "JavaScript", questions: 40, duration: "45 min", difficulty: "Easy", completed: 75, description: "Variables, loops, functions, and basic DOM manipulation." },
-  { id: 2, name: "React Component Patterns", category: "React", questions: 30, duration: "60 min", difficulty: "Medium", completed: 40, description: "Hooks, context, composition, and performance patterns." },
-  { id: 3, name: "TypeScript Advanced Types", category: "TypeScript", questions: 25, duration: "50 min", difficulty: "Hard", completed: 10, description: "Generics, conditional types, mapped types, and utility types." },
-  { id: 4, name: "CSS Flexbox & Grid", category: "CSS", questions: 35, duration: "40 min", difficulty: "Easy", completed: 90, description: "Layout techniques, alignment, and responsive design patterns." },
-  { id: 5, name: "Node.js & Express", category: "Backend", questions: 30, duration: "55 min", difficulty: "Medium", completed: 0, description: "REST APIs, middleware, error handling, and authentication." },
-  { id: 6, name: "System Design Basics", category: "CS Core", questions: 20, duration: "90 min", difficulty: "Hard", completed: 0, description: "Scalability, caching, load balancing, and database design." },
+  { id: 2, name: "Data Structures", category: "CS Core", questions: 30, duration: "90 min", difficulty: "Medium", completed: 40, description: "Arrays, linked lists, stacks, queues, and basic algorithms." },
+  { id: 3, name: "Algorithms & Graphs", category: "CS Core", questions: 25, duration: "120 min", difficulty: "Hard", completed: 10, description: "Graph algorithms, dynamic programming, and sorting." },
+  { id: 4, name: "JS Basics Review", category: "JavaScript", questions: 35, duration: "45 min", difficulty: "Easy", completed: 90, description: "Second pass on variables, loops, functions, and DOM basics." },
+  { id: 5, name: "Data Structures II", category: "CS Core", questions: 30, duration: "90 min", difficulty: "Medium", completed: 0, description: "Advanced practice on stacks, queues, trees, and hash tables." },
+  { id: 6, name: "Algorithms Challenge", category: "CS Core", questions: 20, duration: "120 min", difficulty: "Hard", completed: 0, description: "Challenging problems on graphs, DP, and sorting algorithms." },
 ];
 
-const categories = ["All", "JavaScript", "React", "TypeScript", "CSS", "Backend", "CS Core"];
+const categories = ["All", "JavaScript", "CS Core"];
 
 const diffColor = (d: string) => {
   if (d === "Easy") return "bg-green-500/15 text-green-500 border-green-500/30";

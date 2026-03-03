@@ -169,12 +169,9 @@ export default function MessagesPage() {
             <Button variant="outline" onClick={() => setComposeOpen(false)}>Cancel</Button>
             <Button onClick={() => {
               if (!composeTo.trim() || !composeSubject.trim()) { toast({ title: "Missing fields", description: "Please fill in recipient and subject.", variant: "destructive" }); return; }
-              const senderInitials = userName ? userName.split(" ").filter(Boolean).map(n => n[0]?.toUpperCase() || "").join("").slice(0, 2) : "ME";
-              const newMsg = { id: Date.now(), from: userName || "Me", initials: senderInitials, subject: composeSubject, body: `To: ${composeTo} — ${composeBody}`, time: "Just now", read: true, starred: false, type: "direct" as const };
-              setMessages(prev => [newMsg, ...prev]);
               setComposeTo(""); setComposeSubject(""); setComposeBody("");
               setComposeOpen(false);
-              toast({ title: "Message sent" });
+              toast({ title: "Message sent", description: `Your message has been sent to ${composeTo}.` });
             }} className="gap-2">
               <Send className="h-4 w-4" /> Send
             </Button>

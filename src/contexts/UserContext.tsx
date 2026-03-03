@@ -9,8 +9,8 @@ interface UserContextType {
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export function UserProvider({ children }: { children: ReactNode }) {
-  const [name, setName] = useState(() => localStorage.getItem("kernel-user-name") || "John Doe");
-  const [email, setEmail] = useState(() => localStorage.getItem("kernel-user-email") || "john@kernel.dev");
+  const [name, setName] = useState(() => localStorage.getItem("kernel-user-name") || "");
+  const [email, setEmail] = useState(() => localStorage.getItem("kernel-user-email") || "");
 
   const setUser = (n: string, e: string) => {
     setName(n);
