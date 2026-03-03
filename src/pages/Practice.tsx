@@ -45,7 +45,7 @@ export default function PracticePage() {
         <Button
           size="lg"
           className="gap-2 text-base font-semibold shadow-lg shadow-primary/25"
-          onClick={() => navigate("/dashboard/exam/random")}
+          onClick={() => { const ids = ["1", "mid-ds", "algo-final"]; navigate(`/dashboard/exam/${ids[Math.floor(Math.random() * ids.length)]}`); }}
         >
           <Zap className="h-5 w-5" />
           Quick Random Quiz

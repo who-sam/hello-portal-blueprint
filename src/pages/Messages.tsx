@@ -10,6 +10,7 @@ import { Separator } from "@/components/ui/separator";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { EmptyState } from "@/components/EmptyState";
+import { useUser } from "@/contexts/UserContext";
 
 const initialMessages = [
   { id: 1, from: "Kernel Team", initials: "KT", subject: "Welcome to Kernel!", body: "Thanks for joining Kernel. Start by exploring your dashboard, setting up your profile, and taking your first practice exam.", time: "2h ago", read: false, starred: false, type: "system" },
@@ -28,6 +29,7 @@ const typeColor = (t: string) => {
 
 export default function MessagesPage() {
   const { toast } = useToast();
+  const { name: userName } = useUser();
   const [messages, setMessages] = useState(initialMessages);
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [search, setSearch] = useState("");
@@ -167,7 +169,8 @@ export default function MessagesPage() {
             <Button variant="outline" onClick={() => setComposeOpen(false)}>Cancel</Button>
             <Button onClick={() => {
               if (!composeTo.trim() || !composeSubject.trim()) { toast({ title: "Missing fields", description: "Please fill in recipient and subject.", variant: "destructive" }); return; }
-              const newMsg = { id: Date.now(), from: composeTo, initials: composeTo.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2), subject: composeSubject, body: composeBody, time: "Just now", read: true, starred: false, type: "direct" as const };
+              const senderInitials = userName ? userName.split(" ").filter(Boolean).map(n => n[0]?.toUpperCase() || "").join("").slice(0, 2) : "ME";
+              const newMsg = { id: Date.now(), from: userName || "Me", initials: senderInitials, subject: composeSubject, body: `To: ${composeTo} — ${composeBody}`, time: "Just now", read: true, starred: false, type: "direct" as const };
               setMessages(prev => [newMsg, ...prev]);
               setComposeTo(""); setComposeSubject(""); setComposeBody("");
               setComposeOpen(false);

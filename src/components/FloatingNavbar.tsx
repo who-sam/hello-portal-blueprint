@@ -39,9 +39,8 @@ interface Props {
 
 export function FloatingNavbar({ onMobileMenuToggle }: Props) {
   const navigate = useNavigate();
-  const { role } = useRole();
+  const { role, clearRole } = useRole();
   const { name, email } = useUser();
-  const { setRole } = useRole();
   const { setUser } = useUser();
   const { unreadCount } = useNotifications();
   const isMobile = useIsMobile();
@@ -50,11 +49,8 @@ export function FloatingNavbar({ onMobileMenuToggle }: Props) {
   const [searchQuery, setSearchQuery] = useState("");
 
   const initials = name
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase()
-    .slice(0, 2);
+    ? name.split(" ").filter(Boolean).map((n) => n[0]?.toUpperCase() || "").join("").slice(0, 2)
+    : "";
 
   // Keyboard shortcut for search
   useEffect(() => {
@@ -69,10 +65,9 @@ export function FloatingNavbar({ onMobileMenuToggle }: Props) {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("kernel-role");
     localStorage.removeItem("kernel-user-name");
     localStorage.removeItem("kernel-user-email");
-    setRole("student");
+    clearRole();
     setUser("", "");
     navigate("/");
   };

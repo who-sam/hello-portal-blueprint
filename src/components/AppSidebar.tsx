@@ -81,7 +81,7 @@ interface AppSidebarProps {
 }
 
 export function AppSidebar({ mobile, onNavigate }: AppSidebarProps) {
-  const { role, setRole } = useRole();
+  const { role, clearRole } = useRole();
   const { setUser } = useUser();
   const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
@@ -93,10 +93,9 @@ export function AppSidebar({ mobile, onNavigate }: AppSidebarProps) {
   const toggleTheme = () => setTheme(isDark ? "light" : "dark");
 
   const handleLogout = () => {
-    localStorage.removeItem("kernel-role");
     localStorage.removeItem("kernel-user-name");
     localStorage.removeItem("kernel-user-email");
-    setRole("student");
+    clearRole();
     setUser("", "");
     navigate("/");
   };

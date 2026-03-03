@@ -11,7 +11,7 @@ export default function DashboardLayout() {
 
   // Route guard: redirect to /auth if no role set
   const hasRole = localStorage.getItem("kernel-role");
-  if (!hasRole) {
+  if (!hasRole || hasRole === "") {
     return <Navigate to="/auth" replace />;
   }
 

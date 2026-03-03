@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Medal, TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { useUser } from "@/contexts/UserContext";
 import type { LeaderboardEntry } from "@/types/exam";
 
 interface ExtendedEntry extends LeaderboardEntry {
@@ -18,7 +19,7 @@ const classEntries: ExtendedEntry[] = [
   { rank: 1, studentName: "Alice Chen", avatar: "AC", score: 96, examsCompleted: 24, streak: 30, trend: "up", class: "cs201", weekScore: 98, monthScore: 97 },
   { rank: 2, studentName: "Bob Kumar", avatar: "BK", score: 93, examsCompleted: 22, streak: 18, trend: "up", class: "cs201", weekScore: 90, monthScore: 92 },
   { rank: 3, studentName: "Carla Ruiz", avatar: "CR", score: 91, examsCompleted: 23, streak: 25, trend: "same", class: "cs201", weekScore: 85, monthScore: 89 },
-  { rank: 4, studentName: "John Doe", avatar: "JD", score: 88, examsCompleted: 20, streak: 12, trend: "up", isCurrentUser: true, class: "cs201", weekScore: 92, monthScore: 88 },
+  { rank: 4, studentName: "John Doe", avatar: "JD", score: 88, examsCompleted: 20, streak: 12, trend: "up", class: "cs201", weekScore: 92, monthScore: 88 },
   { rank: 5, studentName: "Emily Park", avatar: "EP", score: 85, examsCompleted: 21, streak: 8, trend: "down", class: "cs301", weekScore: 80, monthScore: 83 },
   { rank: 6, studentName: "Farhan Ali", avatar: "FA", score: 82, examsCompleted: 19, streak: 5, trend: "same", class: "cs301", weekScore: 78, monthScore: 80 },
   { rank: 7, studentName: "Grace Liu", avatar: "GL", score: 79, examsCompleted: 18, streak: 3, trend: "down", class: "cs101", weekScore: 75, monthScore: 77 },
@@ -31,7 +32,7 @@ const globalEntries: ExtendedEntry[] = [
   { rank: 3, studentName: "Raj Patel", avatar: "RP", score: 95, examsCompleted: 35, streak: 45, trend: "same", class: "all", weekScore: 93, monthScore: 94 },
   { rank: 4, studentName: "Bob Kumar", avatar: "BK", score: 93, examsCompleted: 22, streak: 18, trend: "up", class: "all", weekScore: 90, monthScore: 92 },
   { rank: 5, studentName: "Carla Ruiz", avatar: "CR", score: 91, examsCompleted: 23, streak: 25, trend: "down", class: "all", weekScore: 85, monthScore: 89 },
-  { rank: 6, studentName: "John Doe", avatar: "JD", score: 88, examsCompleted: 20, streak: 12, trend: "up", isCurrentUser: true, class: "all", weekScore: 92, monthScore: 88 },
+  { rank: 6, studentName: "John Doe", avatar: "JD", score: 88, examsCompleted: 20, streak: 12, trend: "up", class: "all", weekScore: 92, monthScore: 88 },
   { rank: 7, studentName: "Emily Park", avatar: "EP", score: 85, examsCompleted: 21, streak: 8, trend: "down", class: "all", weekScore: 80, monthScore: 83 },
   { rank: 8, studentName: "Farhan Ali", avatar: "FA", score: 82, examsCompleted: 19, streak: 5, trend: "same", class: "all", weekScore: 78, monthScore: 80 },
 ];
@@ -44,11 +45,11 @@ function TrendIcon({ trend }: { trend: string }) {
   return <Minus className="h-4 w-4 text-muted-foreground" />;
 }
 
-function filterAndSort(entries: ExtendedEntry[], classFilter: string, timeFilter: string) {
+function filterAndSort(entries: ExtendedEntry[], classFilter: string, timeFilter: string, currentUserName: string) {
   let filtered = classFilter === "all" ? entries : entries.filter((e) => e.class === classFilter || e.class === "all");
   const scoreKey = timeFilter === "week" ? "weekScore" : timeFilter === "month" ? "monthScore" : "score";
   const sorted = [...filtered].sort((a, b) => b[scoreKey] - a[scoreKey]);
-  return sorted.map((e, i) => ({ ...e, rank: i + 1, displayScore: e[scoreKey] }));
+  return sorted.map((e, i) => ({ ...e, rank: i + 1, displayScore: e[scoreKey], isCurrentUser: e.studentName === currentUserName }));
 }
 
 function Podium({ entries }: { entries: (ExtendedEntry & { displayScore: number })[] }) {
@@ -120,11 +121,13 @@ function RankedTable({ entries }: { entries: (ExtendedEntry & { displayScore: nu
 }
 
 export default function Leaderboard() {
+  const { name: userName } = useUser();
   const [selectedClass, setSelectedClass] = useState("cs201");
-  const [timeFilter, setTimeFilter] = useState("all");
+  const [classTimeFilter, setClassTimeFilter] = useState("all");
+  const [globalTimeFilter, setGlobalTimeFilter] = useState("all");
 
-  const filteredClass = useMemo(() => filterAndSort(classEntries, selectedClass, timeFilter), [selectedClass, timeFilter]);
-  const filteredGlobal = useMemo(() => filterAndSort(globalEntries, "all", timeFilter), [timeFilter]);
+  const filteredClass = useMemo(() => filterAndSort(classEntries, selectedClass, classTimeFilter, userName), [selectedClass, classTimeFilter, userName]);
+  const filteredGlobal = useMemo(() => filterAndSort(globalEntries, "all", globalTimeFilter, userName), [globalTimeFilter, userName]);
 
   return (
     <div className="space-y-6">
@@ -150,8 +153,8 @@ export default function Leaderboard() {
               {["week", "month", "all"].map((f) => (
                 <button
                   key={f}
-                  onClick={() => setTimeFilter(f)}
-                  className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${timeFilter === f ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                  onClick={() => setClassTimeFilter(f)}
+                  className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${classTimeFilter === f ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
                 >
                   {f === "week" ? "This Week" : f === "month" ? "This Month" : "All Time"}
                 </button>
@@ -167,8 +170,8 @@ export default function Leaderboard() {
             {["week", "month", "all"].map((f) => (
               <button
                 key={f}
-                onClick={() => setTimeFilter(f)}
-                className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${timeFilter === f ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                onClick={() => setGlobalTimeFilter(f)}
+                className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${globalTimeFilter === f ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
               >
                 {f === "week" ? "This Week" : f === "month" ? "This Month" : "All Time"}
               </button>
