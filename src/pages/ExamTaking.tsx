@@ -122,15 +122,18 @@ export default function ExamTaking() {
 
   const getStatus = (i: number) => {
     const a = answers[i];
+    const isAnswered =
+      (a.type === "mcq" && a.selectedOptionIds && a.selectedOptionIds.length > 0) ||
+      (a.type === "written" && a.textAnswer && a.textAnswer.trim()) ||
+      (a.type === "coding" && a.code && a.code.trim());
+    if (isAnswered && a.flagged) return "answered-flagged";
+    if (isAnswered) return "answered";
     if (a.flagged) return "flagged";
-    if (a.type === "mcq" && a.selectedOptionIds && a.selectedOptionIds.length > 0) return "answered";
-    if (a.type === "written" && a.textAnswer && a.textAnswer.trim()) return "answered";
-    if (a.type === "coding" && a.code && a.code.trim()) return "answered";
     if (visitedQuestions.has(i)) return "visited";
     return "unvisited";
   };
 
-  const answeredCount = answers.filter((_, i) => getStatus(i) === "answered").length;
+  const answeredCount = answers.filter((_, i) => { const s = getStatus(i); return s === "answered" || s === "answered-flagged"; }).length;
   const flaggedCount = answers.filter((a) => a.flagged).length;
 
   const handleSubmit = () => {
@@ -211,6 +214,7 @@ export default function ExamTaking() {
                       "flex h-8 w-8 items-center justify-center rounded-md text-xs font-medium transition-colors",
                       i === currentIdx && "ring-2 ring-primary",
                       status === "answered" && "bg-primary/20 text-primary",
+                      status === "answered-flagged" && "bg-amber-500/20 text-primary ring-1 ring-amber-500",
                       status === "flagged" && "bg-amber-500/20 text-amber-400",
                       status === "visited" && "bg-secondary text-muted-foreground",
                       status === "unvisited" && "bg-muted/50 text-muted-foreground",

@@ -33,6 +33,9 @@ export default function MessagesPage() {
   const [search, setSearch] = useState("");
   const [composeOpen, setComposeOpen] = useState(false);
   const [replyText, setReplyText] = useState("");
+  const [composeTo, setComposeTo] = useState("");
+  const [composeSubject, setComposeSubject] = useState("");
+  const [composeBody, setComposeBody] = useState("");
 
   const selected = messages.find((m) => m.id === selectedId);
   const filtered = messages.filter((m) => m.subject.toLowerCase().includes(search.toLowerCase()) || m.from.toLowerCase().includes(search.toLowerCase()));
@@ -156,13 +159,20 @@ export default function MessagesPage() {
         <DialogContent className="max-w-md">
           <DialogHeader><DialogTitle>New Message</DialogTitle></DialogHeader>
           <div className="space-y-3">
-            <Input placeholder="To (recipient)" />
-            <Input placeholder="Subject" />
-            <Textarea placeholder="Write your message..." rows={4} />
+            <Input placeholder="To (recipient)" value={composeTo} onChange={(e) => setComposeTo(e.target.value)} />
+            <Input placeholder="Subject" value={composeSubject} onChange={(e) => setComposeSubject(e.target.value)} />
+            <Textarea placeholder="Write your message..." rows={4} value={composeBody} onChange={(e) => setComposeBody(e.target.value)} />
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setComposeOpen(false)}>Cancel</Button>
-            <Button onClick={() => { setComposeOpen(false); toast({ title: "Message sent" }); }} className="gap-2">
+            <Button onClick={() => {
+              if (!composeTo.trim() || !composeSubject.trim()) { toast({ title: "Missing fields", description: "Please fill in recipient and subject.", variant: "destructive" }); return; }
+              const newMsg = { id: Date.now(), from: composeTo, initials: composeTo.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2), subject: composeSubject, body: composeBody, time: "Just now", read: true, starred: false, type: "direct" as const };
+              setMessages(prev => [newMsg, ...prev]);
+              setComposeTo(""); setComposeSubject(""); setComposeBody("");
+              setComposeOpen(false);
+              toast({ title: "Message sent" });
+            }} className="gap-2">
               <Send className="h-4 w-4" /> Send
             </Button>
           </DialogFooter>

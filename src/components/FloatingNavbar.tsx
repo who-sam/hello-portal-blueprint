@@ -13,8 +13,9 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useNavigate } from "react-router-dom";
 import { useRole } from "@/contexts/RoleContext";
 import { useUser } from "@/contexts/UserContext";
+import { useNotifications } from "@/contexts/NotificationContext";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 
 const teacherNavTabs = [
   { label: "Overview", url: "/dashboard" },
@@ -32,24 +33,6 @@ const studentNavTabs = [
   { label: "Settings", url: "/dashboard/settings" },
 ];
 
-// Dynamic unread notifications count from shared mock data
-const MOCK_NOTIFICATIONS = [
-  { id: "1", read: false },
-  { id: "2", read: false },
-  { id: "3", read: true },
-  { id: "4", read: true },
-  { id: "5", read: true },
-  { id: "6", read: true },
-  { id: "7", read: true },
-  { id: "8", read: true },
-  { id: "9", read: true },
-  { id: "10", read: true },
-];
-
-const useUnreadCount = () => {
-  return useMemo(() => MOCK_NOTIFICATIONS.filter((n) => !n.read).length, []);
-};
-
 interface Props {
   onMobileMenuToggle?: () => void;
 }
@@ -58,10 +41,13 @@ export function FloatingNavbar({ onMobileMenuToggle }: Props) {
   const navigate = useNavigate();
   const { role } = useRole();
   const { name, email } = useUser();
+  const { setRole } = useRole();
+  const { setUser } = useUser();
+  const { unreadCount } = useNotifications();
   const isMobile = useIsMobile();
   const navTabs = role === "teacher" ? teacherNavTabs : studentNavTabs;
-  const unreadCount = useUnreadCount();
   const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const initials = name
     .split(" ")
@@ -86,6 +72,8 @@ export function FloatingNavbar({ onMobileMenuToggle }: Props) {
     localStorage.removeItem("kernel-role");
     localStorage.removeItem("kernel-user-name");
     localStorage.removeItem("kernel-user-email");
+    setRole("student");
+    setUser("", "");
     navigate("/");
   };
 
@@ -215,29 +203,34 @@ export function FloatingNavbar({ onMobileMenuToggle }: Props) {
       </header>
 
       {/* Search overlay */}
-      <Dialog open={searchOpen} onOpenChange={setSearchOpen}>
+      <Dialog open={searchOpen} onOpenChange={(open) => { setSearchOpen(open); if (!open) setSearchQuery(""); }}>
         <DialogContent className="sm:max-w-md p-0 bg-card/95 backdrop-blur-xl border-border/50 overflow-hidden">
           <div className="p-4 border-b border-border">
             <input
               autoFocus
               placeholder="Search pages..."
               className="w-full bg-transparent text-foreground placeholder:text-muted-foreground outline-none text-sm"
-              onChange={(e) => {
-                // Filter is handled inline
-              }}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               id="search-input"
             />
           </div>
           <div className="max-h-64 overflow-y-auto p-2">
-            {searchItems.map((item) => (
-              <button
-                key={item.url}
-                onClick={() => { navigate(item.url); setSearchOpen(false); }}
-                className="w-full text-left rounded-lg px-3 py-2 text-sm text-foreground hover:bg-secondary/50 transition-colors"
-              >
-                {item.label}
-              </button>
-            ))}
+            {(() => {
+              const filtered = searchItems.filter((item) => item.label.toLowerCase().includes(searchQuery.toLowerCase()));
+              if (filtered.length === 0) {
+                return <p className="text-sm text-muted-foreground text-center py-4">No results found</p>;
+              }
+              return filtered.map((item) => (
+                <button
+                  key={item.url}
+                  onClick={() => { navigate(item.url); setSearchOpen(false); setSearchQuery(""); }}
+                  className="w-full text-left rounded-lg px-3 py-2 text-sm text-foreground hover:bg-secondary/50 transition-colors"
+                >
+                  {item.label}
+                </button>
+              ));
+            })()}
           </div>
         </DialogContent>
       </Dialog>

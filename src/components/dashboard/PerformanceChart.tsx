@@ -37,20 +37,20 @@ export function PerformanceChart() {
             <BarChart data={data} barSize={28}>
               <CartesianGrid
                 strokeDasharray="3 3"
-                stroke="var(--border)"
+                stroke="hsl(var(--border))"
                 vertical={false}
               />
               <XAxis
                 dataKey="month"
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: "var(--muted-foreground)", fontSize: 12 }}
+                tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }}
               />
               <YAxis
                 domain={[0, 100]}
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: "var(--muted-foreground)", fontSize: 12 }}
+                tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }}
               />
               <Tooltip
                 contentStyle={{

@@ -4,20 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Bell, Clock, CheckCircle, Megaphone, UserPlus, Send } from "lucide-react";
-import type { AppNotification } from "@/types/exam";
-
-const mockNotifications: AppNotification[] = [
-  { id: "1", type: "exam", title: "Midterm Exam Tomorrow", description: "CS201 Midterm starts at 10:00 AM. Make sure to review your notes.", timestamp: "2 hours ago", read: false, linkTo: "/dashboard/upcoming" },
-  { id: "2", type: "result", title: "Quiz 3 Results Published", description: "Your score: 95%. View detailed breakdown.", timestamp: "5 hours ago", read: false, linkTo: "/dashboard/results" },
-  { id: "3", type: "class", title: "Welcome to CS301", description: "You have been enrolled in CS301 - Algorithms by Prof. Smith.", timestamp: "1 day ago", read: true, linkTo: "/dashboard/team" },
-  { id: "4", type: "submission", title: "Practice Set #12 Submitted", description: "Your submission has been received and is being graded.", timestamp: "2 days ago", read: true, linkTo: "/dashboard/results" },
-  { id: "5", type: "system", title: "Platform Update", description: "New coding editor features are now available. Try the improved autocomplete!", timestamp: "3 days ago", read: true, linkTo: "/dashboard/editor" },
-  { id: "6", type: "exam", title: "Pop Quiz in 30 Minutes", description: "CS201 pop quiz starting soon. Head to the exam page.", timestamp: "4 days ago", read: true, linkTo: "/dashboard/upcoming" },
-  { id: "7", type: "result", title: "Final CS101 Graded", description: "Your final exam has been graded. Score: 91%.", timestamp: "1 week ago", read: true, linkTo: "/dashboard/results" },
-  { id: "8", type: "class", title: "New Classmate Joined", description: "Grace Liu has joined CS201 - Data Structures.", timestamp: "1 week ago", read: true, linkTo: "/dashboard/team" },
-  { id: "9", type: "submission", title: "Code Review Ready", description: "Your coding submission for Linked Lists has been reviewed.", timestamp: "2 weeks ago", read: true, linkTo: "/dashboard/results" },
-  { id: "10", type: "system", title: "Scheduled Maintenance", description: "Platform will be down for maintenance on March 5 from 2-4 AM.", timestamp: "2 weeks ago", read: true, linkTo: "/dashboard/help" },
-];
+import { useNotifications } from "@/contexts/NotificationContext";
 
 const typeConfig: Record<string, { icon: React.ElementType; color: string }> = {
   exam: { icon: Clock, color: "text-amber-500 bg-amber-500/10" },
@@ -29,19 +16,10 @@ const typeConfig: Record<string, { icon: React.ElementType; color: string }> = {
 
 export default function Notifications() {
   const navigate = useNavigate();
-  const [notifications, setNotifications] = useState(mockNotifications);
+  const { notifications, unreadCount, markAllRead, markAsRead } = useNotifications();
   const [filter, setFilter] = useState("all");
 
   const filtered = filter === "all" ? notifications : notifications.filter((n) => n.type === filter);
-  const unreadCount = notifications.filter((n) => !n.read).length;
-
-  const markAllRead = () => setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
-
-  const handleNotificationClick = (n: AppNotification) => {
-    // Mark as read first, then navigate
-    setNotifications((prev) => prev.map((notif) => notif.id === n.id ? { ...notif, read: true } : notif));
-    navigate(n.linkTo);
-  };
 
   return (
     <div className="space-y-6">
@@ -83,7 +61,7 @@ export default function Notifications() {
                   <Card
                     key={n.id}
                     className={`bg-card/80 backdrop-blur-md border-border/50 cursor-pointer transition-all hover:bg-secondary/30 ${!n.read ? "border-l-2 border-l-primary" : ""}`}
-                    onClick={() => handleNotificationClick(n)}
+                    onClick={() => { markAsRead(n.id); navigate(n.linkTo); }}
                   >
                     <CardContent className="flex items-center gap-4 py-4">
                       <div className={`rounded-full p-2.5 shrink-0 ${config.color}`}>

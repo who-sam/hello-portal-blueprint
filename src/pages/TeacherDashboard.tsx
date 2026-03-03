@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -32,7 +33,7 @@ const quickActions = [
   { label: "Question Bank", desc: "Manage questions", icon: BookOpen, route: "/dashboard/exam-builder" },
 ];
 
-const activeExams = [
+const initialActiveExams = [
   { id: "mid-ds", name: "Midterm — Data Structures", className: "CS201-A", started: 18, total: 32, remaining: "1h 23m", status: "active" },
   { id: "quiz-alg", name: "Quiz 3 — Algorithms", className: "CS301-B", started: 25, total: 28, remaining: "45m", status: "active" },
   { id: "final-oop", name: "Final — OOP Concepts", className: "CS101-A", started: 0, total: 45, remaining: "Starts in 2d", status: "scheduled" },
@@ -59,6 +60,7 @@ export default function TeacherDashboard() {
   const navigate = useNavigate();
   const { name } = useUser();
   const { toast } = useToast();
+  const [activeExams, setActiveExams] = useState(initialActiveExams);
 
   return (
     <div className="space-y-6">
@@ -154,8 +156,8 @@ export default function TeacherDashboard() {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => navigate(`/dashboard/exam/${e.id}`)} className="gap-2">
-                              <Eye className="h-4 w-4" /> View
+                            <DropdownMenuItem onClick={() => navigate(`/dashboard/exam/${e.id}/review`)} className="gap-2">
+                              <Eye className="h-4 w-4" /> Preview as Student
                             </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => navigate("/dashboard/exam-builder")} className="gap-2">
                               <Pencil className="h-4 w-4" /> Edit
@@ -163,7 +165,7 @@ export default function TeacherDashboard() {
                             <DropdownMenuItem onClick={() => navigate("/dashboard/results")} className="gap-2">
                               <BarChart3 className="h-4 w-4" /> View Results
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => toast({ title: "Exam deleted", description: `${e.name} has been deleted.` })} className="gap-2 text-destructive focus:text-destructive">
+                            <DropdownMenuItem onClick={() => { setActiveExams(prev => prev.filter(x => x.id !== e.id)); toast({ title: "Exam deleted", description: `${e.name} has been deleted.` }); }} className="gap-2 text-destructive focus:text-destructive">
                               <Trash2 className="h-4 w-4" /> Delete
                             </DropdownMenuItem>
                           </DropdownMenuContent>
@@ -207,9 +209,9 @@ export default function TeacherDashboard() {
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={classPerformance}>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                <XAxis dataKey="name" tick={{ fill: "var(--muted-foreground)", fontSize: 12 }} />
-                <YAxis tick={{ fill: "var(--muted-foreground)", fontSize: 12 }} domain={[0, 100]} />
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis dataKey="name" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }} />
+                <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }} domain={[0, 100]} />
                 <Tooltip
                   contentStyle={{
                     backgroundColor: "hsl(var(--card))",
