@@ -5,7 +5,7 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { GraduationCap, BookOpen, ArrowLeft, Eye, EyeOff, Loader2 } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff, Loader2 } from "lucide-react";
 import authBg from "@/assets/auth-bg.jpg";
 import authHero from "@/assets/auth-hero.jpg";
 import KernelLogo from "@/components/KernelLogo";
@@ -14,8 +14,7 @@ import { useUser } from "@/contexts/UserContext";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 
-type Role = "teacher" | "student";
-type AuthMode = "select" | "signup" | "login" | "forgot" | "login-role";
+type AuthMode = "login" | "signup" | "forgot";
 
 const signupSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters").max(100),
@@ -36,8 +35,7 @@ type SignupData = z.infer<typeof signupSchema>;
 type LoginData = z.infer<typeof loginSchema>;
 
 const AuthPage = () => {
-  const [mode, setMode] = useState<AuthMode>("select");
-  const [role, setLocalRole] = useState<Role>("student");
+  const [mode, setMode] = useState<AuthMode>("login");
   const [showPassword, setShowPassword] = useState(false);
   const [termsOpen, setTermsOpen] = useState(false);
   const [privacyOpen, setPrivacyOpen] = useState(false);
@@ -50,20 +48,19 @@ const AuthPage = () => {
   const signupForm = useForm<SignupData>({ resolver: zodResolver(signupSchema) });
   const loginForm = useForm<LoginData>({ resolver: zodResolver(loginSchema) });
 
-  const selectRole = (r: Role) => { setLocalRole(r); setMode("signup"); };
-  const selectLoginRole = (r: Role) => { setLocalRole(r); setMode("login"); };
-
   const onSignup = async (data: SignupData) => {
     await new Promise((r) => setTimeout(r, 500));
-    setRole(role);
+    // Role would be determined by backend; default to student for now
+    setRole("student");
     setUser(data.name, data.email);
     navigate("/dashboard");
   };
 
   const onLogin = async (data: LoginData) => {
     await new Promise((r) => setTimeout(r, 500));
-    setRole(role);
-    setUser(role === "teacher" ? "Dr. Smith" : "John Doe", data.email);
+    // Role would come from backend response
+    setRole("student");
+    setUser("John Doe", data.email);
     navigate("/dashboard");
   };
 
@@ -86,71 +83,62 @@ const AuthPage = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 overflow-hidden rounded-2xl border border-white/10 shadow-2xl">
           {/* Left: Form */}
           <div className="bg-card/95 backdrop-blur-xl p-8 flex flex-col justify-center">
-            {/* Logo */}
             <div className="flex items-center gap-2 mb-8">
               <KernelLogo className="h-7 w-7" />
               <span className="text-xl font-bold tracking-tight text-foreground">Kernel</span>
             </div>
 
-            {/* Role Selection */}
-            {mode === "select" && (
-              <div className="space-y-6">
+            {/* Login Form */}
+            {mode === "login" && (
+              <form onSubmit={loginForm.handleSubmit(onLogin)} className="space-y-4">
                 <div>
-                  <h1 className="text-2xl font-bold text-foreground">Welcome to Kernel</h1>
-                  <p className="mt-1 text-sm text-muted-foreground">Choose your role to get started</p>
+                  <h1 className="text-2xl font-bold text-foreground">Welcome Back</h1>
+                  <p className="text-sm text-muted-foreground mt-1">Log in to your account</p>
                 </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <button onClick={() => selectRole("teacher")} className="group flex flex-col items-center gap-2 rounded-xl border border-border/50 bg-muted/30 p-5 transition-all hover:border-primary/50 hover:bg-primary/10">
-                    <GraduationCap className="h-6 w-6 text-primary" />
-                    <span className="text-sm font-semibold text-foreground">Teacher</span>
-                  </button>
-                  <button onClick={() => selectRole("student")} className="group flex flex-col items-center gap-2 rounded-xl border border-border/50 bg-muted/30 p-5 transition-all hover:border-primary/50 hover:bg-primary/10">
-                    <BookOpen className="h-6 w-6 text-accent" />
-                    <span className="text-sm font-semibold text-foreground">Student</span>
-                  </button>
-                </div>
-                <p className="text-center text-sm text-muted-foreground">
-                  Already have an account?{" "}
-                  <button onClick={() => setMode("login-role")} className="font-medium text-primary hover:underline">Log in</button>
-                </p>
-              </div>
-            )}
-
-            {/* Login Role Selection */}
-            {mode === "login-role" && (
-              <div className="space-y-6">
-                <div className="flex items-center gap-3">
-                  <button type="button" onClick={() => setMode("select")} className="text-muted-foreground hover:text-foreground"><ArrowLeft className="h-5 w-5" /></button>
+                <div className="space-y-3">
                   <div>
-                    <h1 className="text-2xl font-bold text-foreground">Log In</h1>
-                    <p className="text-sm text-muted-foreground">Select your role</p>
+                    <Input type="email" placeholder="Email Address" className="h-11" {...loginForm.register("email")} />
+                    {loginForm.formState.errors.email && <p className="mt-1 text-xs text-destructive">{loginForm.formState.errors.email.message}</p>}
+                  </div>
+                  <div className="relative">
+                    <Input type={showPassword ? "text" : "password"} placeholder="Password" className="h-11 pr-10" {...loginForm.register("password")} />
+                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-3 text-muted-foreground hover:text-foreground">
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                    {loginForm.formState.errors.password && <p className="mt-1 text-xs text-destructive">{loginForm.formState.errors.password.message}</p>}
                   </div>
                 </div>
+                <div className="flex items-center justify-end">
+                  <button type="button" onClick={() => setMode("forgot")} className="text-sm text-primary hover:underline">Forgot Password?</button>
+                </div>
+                <Button type="submit" className="h-11 w-full text-base font-semibold" disabled={loginForm.formState.isSubmitting}>
+                  {loginForm.formState.isSubmitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                  Log In
+                </Button>
+                <div className="flex items-center gap-3">
+                  <div className="h-px flex-1 bg-border" />
+                  <span className="text-xs text-muted-foreground">or continue with</span>
+                  <div className="h-px flex-1 bg-border" />
+                </div>
                 <div className="grid grid-cols-2 gap-3">
-                  <button onClick={() => selectLoginRole("teacher")} className="group flex flex-col items-center gap-2 rounded-xl border border-border/50 bg-muted/30 p-5 transition-all hover:border-primary/50 hover:bg-primary/10">
-                    <GraduationCap className="h-6 w-6 text-primary" />
-                    <span className="text-sm font-semibold text-foreground">Teacher</span>
-                  </button>
-                  <button onClick={() => selectLoginRole("student")} className="group flex flex-col items-center gap-2 rounded-xl border border-border/50 bg-muted/30 p-5 transition-all hover:border-primary/50 hover:bg-primary/10">
-                    <BookOpen className="h-6 w-6 text-accent" />
-                    <span className="text-sm font-semibold text-foreground">Student</span>
-                  </button>
+                  <Button type="button" variant="outline" className="h-10 gap-2" onClick={handleSocialLogin}><GoogleIcon /> Google</Button>
+                  <Button type="button" variant="outline" className="h-10 gap-2" onClick={handleSocialLogin}><GithubIcon /> GitHub</Button>
                 </div>
                 <p className="text-center text-sm text-muted-foreground">
                   Don't have an account?{" "}
-                  <button onClick={() => setMode("select")} className="font-medium text-primary hover:underline">Sign up</button>
+                  <button type="button" onClick={() => setMode("signup")} className="font-medium text-primary hover:underline">Sign up</button>
                 </p>
-              </div>
+              </form>
             )}
 
             {/* Signup Form */}
             {mode === "signup" && (
               <form onSubmit={signupForm.handleSubmit(onSignup)} className="space-y-4">
                 <div className="flex items-center gap-3">
-                  <button type="button" onClick={() => setMode("select")} className="text-muted-foreground hover:text-foreground"><ArrowLeft className="h-5 w-5" /></button>
+                  <button type="button" onClick={() => setMode("login")} className="text-muted-foreground hover:text-foreground"><ArrowLeft className="h-5 w-5" /></button>
                   <div>
                     <h1 className="text-2xl font-bold text-foreground">Create Account</h1>
-                    <p className="text-sm text-muted-foreground">Sign up as a <span className="capitalize text-primary font-medium">{role}</span></p>
+                    <p className="text-sm text-muted-foreground">Sign up to get started</p>
                   </div>
                 </div>
                 <div className="space-y-3">
@@ -189,53 +177,7 @@ const AuthPage = () => {
                 </div>
                 <p className="text-center text-sm text-muted-foreground">
                   Already have an account?{" "}
-                  <button type="button" onClick={() => setMode("login-role")} className="font-medium text-primary hover:underline">Log in</button>
-                </p>
-              </form>
-            )}
-
-            {/* Login Form */}
-            {mode === "login" && (
-              <form onSubmit={loginForm.handleSubmit(onLogin)} className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <button type="button" onClick={() => setMode("login-role")} className="text-muted-foreground hover:text-foreground"><ArrowLeft className="h-5 w-5" /></button>
-                  <div>
-                    <h1 className="text-2xl font-bold text-foreground">Welcome Back</h1>
-                    <p className="text-sm text-muted-foreground">Log in as a <span className="capitalize text-primary font-medium">{role}</span></p>
-                  </div>
-                </div>
-                <div className="space-y-3">
-                  <div>
-                    <Input type="email" placeholder="Email Address" className="h-11" {...loginForm.register("email")} />
-                    {loginForm.formState.errors.email && <p className="mt-1 text-xs text-destructive">{loginForm.formState.errors.email.message}</p>}
-                  </div>
-                  <div className="relative">
-                    <Input type={showPassword ? "text" : "password"} placeholder="Password" className="h-11 pr-10" {...loginForm.register("password")} />
-                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-3 text-muted-foreground hover:text-foreground">
-                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </button>
-                    {loginForm.formState.errors.password && <p className="mt-1 text-xs text-destructive">{loginForm.formState.errors.password.message}</p>}
-                  </div>
-                </div>
-                <div className="flex items-center justify-end">
-                  <button type="button" onClick={() => setMode("forgot")} className="text-sm text-primary hover:underline">Forgot Password?</button>
-                </div>
-                <Button type="submit" className="h-11 w-full text-base font-semibold" disabled={loginForm.formState.isSubmitting}>
-                  {loginForm.formState.isSubmitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-                  Log In
-                </Button>
-                <div className="flex items-center gap-3">
-                  <div className="h-px flex-1 bg-border" />
-                  <span className="text-xs text-muted-foreground">or continue with</span>
-                  <div className="h-px flex-1 bg-border" />
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <Button type="button" variant="outline" className="h-10 gap-2" onClick={handleSocialLogin}><GoogleIcon /> Google</Button>
-                  <Button type="button" variant="outline" className="h-10 gap-2" onClick={handleSocialLogin}><GithubIcon /> GitHub</Button>
-                </div>
-                <p className="text-center text-sm text-muted-foreground">
-                  Don't have an account?{" "}
-                  <button type="button" onClick={() => setMode("select")} className="font-medium text-primary hover:underline">Sign up</button>
+                  <button type="button" onClick={() => setMode("login")} className="font-medium text-primary hover:underline">Log in</button>
                 </p>
               </form>
             )}
@@ -267,7 +209,6 @@ const AuthPage = () => {
         </div>
       </div>
 
-      {/* Terms Dialog */}
       <Dialog open={termsOpen} onOpenChange={setTermsOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader><DialogTitle>Terms of Service</DialogTitle></DialogHeader>
@@ -282,7 +223,6 @@ const AuthPage = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Privacy Dialog */}
       <Dialog open={privacyOpen} onOpenChange={setPrivacyOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader><DialogTitle>Privacy Policy</DialogTitle></DialogHeader>
