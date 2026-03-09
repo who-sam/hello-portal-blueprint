@@ -4,10 +4,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { GraduationCap, BookOpen, ArrowLeft, Eye, EyeOff, Loader2 } from "lucide-react";
 import authBg from "@/assets/auth-bg.jpg";
+import authHero from "@/assets/auth-hero.jpg";
 import KernelLogo from "@/components/KernelLogo";
 import { useRole } from "@/contexts/RoleContext";
 import { useUser } from "@/contexts/UserContext";
@@ -50,20 +50,11 @@ const AuthPage = () => {
   const signupForm = useForm<SignupData>({ resolver: zodResolver(signupSchema) });
   const loginForm = useForm<LoginData>({ resolver: zodResolver(loginSchema) });
 
-  const selectRole = (r: Role) => {
-    setLocalRole(r);
-    setMode("signup");
-  };
-
-  const selectLoginRole = (r: Role) => {
-    setLocalRole(r);
-    setMode("login");
-  };
+  const selectRole = (r: Role) => { setLocalRole(r); setMode("signup"); };
+  const selectLoginRole = (r: Role) => { setLocalRole(r); setMode("login"); };
 
   const onSignup = async (data: SignupData) => {
-    // Simulate async
     await new Promise((r) => setTimeout(r, 500));
-    console.log("Signup:", { ...data, role });
     setRole(role);
     setUser(data.name, data.email);
     navigate("/dashboard");
@@ -71,7 +62,6 @@ const AuthPage = () => {
 
   const onLogin = async (data: LoginData) => {
     await new Promise((r) => setTimeout(r, 500));
-    console.log("Login:", data);
     setRole(role);
     setUser(role === "teacher" ? "Dr. Smith" : "John Doe", data.email);
     navigate("/dashboard");
@@ -88,286 +78,193 @@ const AuthPage = () => {
   };
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center p-6 overflow-hidden">
+    <div className="relative flex min-h-screen items-center justify-center p-4 sm:p-6 overflow-hidden">
       <img src={authBg} alt="" className="absolute inset-0 h-full w-full object-cover" />
       <div className="absolute inset-0 bg-black/65" />
 
-      <div className="relative z-10 w-full max-w-xl">
-        {/* Logo */}
-        <div className="flex items-center justify-center gap-2 mb-8">
-          <KernelLogo className="h-8 w-8" />
-          <span className="text-2xl font-bold tracking-tight text-white">Kernel</span>
-        </div>
-
-        {/* Card */}
-        <div className="rounded-2xl border border-white/15 bg-card/90 backdrop-blur-xl shadow-2xl p-8 transition-all duration-300">
-          {/* Role Selection */}
-          {mode === "select" && (
-            <div className="space-y-6">
-              <div className="text-center">
-                <h1 className="text-2xl font-bold text-foreground">Welcome to Kernel</h1>
-                <p className="mt-2 text-sm text-muted-foreground">Choose your role to get started</p>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <button
-                  onClick={() => selectRole("teacher")}
-                  className="group flex flex-col items-center gap-3 rounded-xl border border-border/50 bg-card/60 backdrop-blur-md p-6 transition-all hover:border-primary/50 hover:bg-primary/10"
-                >
-                  <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/15 text-primary transition-colors group-hover:bg-primary/25">
-                    <GraduationCap className="h-7 w-7" />
-                  </div>
-                  <span className="text-base font-semibold text-foreground">I'm a Teacher</span>
-                  <span className="text-xs text-muted-foreground text-center">Create exams, manage classes, and grade students</span>
-                </button>
-                <button
-                  onClick={() => selectRole("student")}
-                  className="group flex flex-col items-center gap-3 rounded-xl border border-border/50 bg-card/60 backdrop-blur-md p-6 transition-all hover:border-primary/50 hover:bg-primary/10"
-                >
-                  <div className="flex h-14 w-14 items-center justify-center rounded-full bg-accent/15 text-accent transition-colors group-hover:bg-accent/25">
-                    <BookOpen className="h-7 w-7" />
-                  </div>
-                  <span className="text-base font-semibold text-foreground">I'm a Student</span>
-                  <span className="text-xs text-muted-foreground text-center">Take exams, track progress, and improve skills</span>
-                </button>
-              </div>
-              <p className="text-center text-sm text-muted-foreground">
-                Already have an account?{" "}
-                <button onClick={() => setMode("login-role")} className="font-medium text-primary hover:underline">
-                  Log in
-                </button>
-              </p>
+      <div className="relative z-10 w-full max-w-4xl">
+        <div className="grid grid-cols-1 md:grid-cols-2 overflow-hidden rounded-2xl border border-white/10 shadow-2xl">
+          {/* Left: Form */}
+          <div className="bg-card/95 backdrop-blur-xl p-8 flex flex-col justify-center">
+            {/* Logo */}
+            <div className="flex items-center gap-2 mb-8">
+              <KernelLogo className="h-7 w-7" />
+              <span className="text-xl font-bold tracking-tight text-foreground">Kernel</span>
             </div>
-          )}
 
-          {/* Login Role Selection */}
-          {mode === "login-role" && (
-            <div className="space-y-6">
-              <div className="flex items-center gap-3">
-                <button type="button" onClick={() => setMode("select")} className="text-muted-foreground hover:text-foreground">
-                  <ArrowLeft className="h-5 w-5" />
-                </button>
+            {/* Role Selection */}
+            {mode === "select" && (
+              <div className="space-y-6">
                 <div>
-                  <h1 className="text-2xl font-bold text-foreground">Log In</h1>
-                  <p className="text-sm text-muted-foreground">Select your role to continue</p>
+                  <h1 className="text-2xl font-bold text-foreground">Welcome to Kernel</h1>
+                  <p className="mt-1 text-sm text-muted-foreground">Choose your role to get started</p>
                 </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <button
-                  onClick={() => selectLoginRole("teacher")}
-                  className="group flex flex-col items-center gap-3 rounded-xl border border-border/50 bg-card/60 backdrop-blur-md p-6 transition-all hover:border-primary/50 hover:bg-primary/10"
-                >
-                  <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/15 text-primary transition-colors group-hover:bg-primary/25">
-                    <GraduationCap className="h-7 w-7" />
-                  </div>
-                  <span className="text-base font-semibold text-foreground">Teacher</span>
-                </button>
-                <button
-                  onClick={() => selectLoginRole("student")}
-                  className="group flex flex-col items-center gap-3 rounded-xl border border-border/50 bg-card/60 backdrop-blur-md p-6 transition-all hover:border-primary/50 hover:bg-primary/10"
-                >
-                  <div className="flex h-14 w-14 items-center justify-center rounded-full bg-accent/15 text-accent transition-colors group-hover:bg-accent/25">
-                    <BookOpen className="h-7 w-7" />
-                  </div>
-                  <span className="text-base font-semibold text-foreground">Student</span>
-                </button>
-              </div>
-              <p className="text-center text-sm text-muted-foreground">
-                Don't have an account?{" "}
-                <button onClick={() => setMode("select")} className="font-medium text-primary hover:underline">
-                  Sign up
-                </button>
-              </p>
-            </div>
-          )}
-
-          {/* Signup Form */}
-          {mode === "signup" && (
-            <form onSubmit={signupForm.handleSubmit(onSignup)} className="space-y-5">
-              <div className="flex items-center gap-3">
-                <button type="button" onClick={() => setMode("select")} className="text-muted-foreground hover:text-foreground">
-                  <ArrowLeft className="h-5 w-5" />
-                </button>
-                <div>
-                  <h1 className="text-2xl font-bold text-foreground">Create Account</h1>
-                  <p className="text-sm text-muted-foreground">
-                    Sign up as a <span className="capitalize text-primary font-medium">{role}</span>
-                  </p>
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                <div>
-                  <Input placeholder="Full Name" className="h-11" {...signupForm.register("name")} />
-                  {signupForm.formState.errors.name && (
-                    <p className="mt-1 text-xs text-destructive">{signupForm.formState.errors.name.message}</p>
-                  )}
-                </div>
-                <div>
-                  <Input type="email" placeholder="Email Address" className="h-11" {...signupForm.register("email")} />
-                  {signupForm.formState.errors.email && (
-                    <p className="mt-1 text-xs text-destructive">{signupForm.formState.errors.email.message}</p>
-                  )}
-                </div>
-                <div className="relative">
-                  <Input
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Password"
-                    className="h-11 pr-10"
-                    {...signupForm.register("password")}
-                  />
-                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-3 text-muted-foreground hover:text-foreground">
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                <div className="grid grid-cols-2 gap-3">
+                  <button onClick={() => selectRole("teacher")} className="group flex flex-col items-center gap-2 rounded-xl border border-border/50 bg-muted/30 p-5 transition-all hover:border-primary/50 hover:bg-primary/10">
+                    <GraduationCap className="h-6 w-6 text-primary" />
+                    <span className="text-sm font-semibold text-foreground">Teacher</span>
                   </button>
-                  {signupForm.formState.errors.password && (
-                    <p className="mt-1 text-xs text-destructive">{signupForm.formState.errors.password.message}</p>
-                  )}
-                </div>
-                <div>
-                  <Input type="password" placeholder="Confirm Password" className="h-11" {...signupForm.register("confirmPassword")} />
-                  {signupForm.formState.errors.confirmPassword && (
-                    <p className="mt-1 text-xs text-destructive">{signupForm.formState.errors.confirmPassword.message}</p>
-                  )}
-                </div>
-              </div>
-
-              <Button type="submit" className="h-11 w-full text-base font-semibold" disabled={signupForm.formState.isSubmitting}>
-                {signupForm.formState.isSubmitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-                Create Account
-              </Button>
-
-              <div className="flex items-center gap-3">
-                <div className="h-px flex-1 bg-border" />
-                <span className="text-xs text-muted-foreground">or sign up with</span>
-                <div className="h-px flex-1 bg-border" />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <Button type="button" variant="outline" className="h-10 gap-2" onClick={handleSocialLogin}>
-                  <GoogleIcon /> Google
-                </Button>
-                <Button type="button" variant="outline" className="h-10 gap-2" onClick={handleSocialLogin}>
-                  <GithubIcon /> GitHub
-                </Button>
-              </div>
-
-              <p className="text-center text-sm text-muted-foreground">
-                Already have an account?{" "}
-                <button type="button" onClick={() => setMode("login-role")} className="font-medium text-primary hover:underline">
-                  Log in
-                </button>
-              </p>
-            </form>
-          )}
-
-          {/* Login Form */}
-          {mode === "login" && (
-            <form onSubmit={loginForm.handleSubmit(onLogin)} className="space-y-5">
-              <div className="flex items-center gap-3">
-                <button type="button" onClick={() => setMode("login-role")} className="text-muted-foreground hover:text-foreground">
-                  <ArrowLeft className="h-5 w-5" />
-                </button>
-                <div>
-                  <h1 className="text-2xl font-bold text-foreground">Welcome Back</h1>
-                  <p className="text-sm text-muted-foreground">
-                    Log in as a <span className="capitalize text-primary font-medium">{role}</span>
-                  </p>
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                <div>
-                  <Input type="email" placeholder="Email Address" className="h-11" {...loginForm.register("email")} />
-                  {loginForm.formState.errors.email && (
-                    <p className="mt-1 text-xs text-destructive">{loginForm.formState.errors.email.message}</p>
-                  )}
-                </div>
-                <div className="relative">
-                  <Input
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Password"
-                    className="h-11 pr-10"
-                    {...loginForm.register("password")}
-                  />
-                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-3 text-muted-foreground hover:text-foreground">
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  <button onClick={() => selectRole("student")} className="group flex flex-col items-center gap-2 rounded-xl border border-border/50 bg-muted/30 p-5 transition-all hover:border-primary/50 hover:bg-primary/10">
+                    <BookOpen className="h-6 w-6 text-accent" />
+                    <span className="text-sm font-semibold text-foreground">Student</span>
                   </button>
-                  {loginForm.formState.errors.password && (
-                    <p className="mt-1 text-xs text-destructive">{loginForm.formState.errors.password.message}</p>
-                  )}
                 </div>
+                <p className="text-center text-sm text-muted-foreground">
+                  Already have an account?{" "}
+                  <button onClick={() => setMode("login-role")} className="font-medium text-primary hover:underline">Log in</button>
+                </p>
               </div>
+            )}
 
-              <div className="flex items-center justify-end">
-                <button type="button" onClick={() => setMode("forgot")} className="text-sm text-primary hover:underline">Forgot Password?</button>
-              </div>
-
-              <Button type="submit" className="h-11 w-full text-base font-semibold" disabled={loginForm.formState.isSubmitting}>
-                {loginForm.formState.isSubmitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-                Log In
-              </Button>
-
-              <div className="flex items-center gap-3">
-                <div className="h-px flex-1 bg-border" />
-                <span className="text-xs text-muted-foreground">or continue with</span>
-                <div className="h-px flex-1 bg-border" />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <Button type="button" variant="outline" className="h-10 gap-2" onClick={handleSocialLogin}>
-                  <GoogleIcon /> Google
-                </Button>
-                <Button type="button" variant="outline" className="h-10 gap-2" onClick={handleSocialLogin}>
-                  <GithubIcon /> GitHub
-                </Button>
-              </div>
-
-              <p className="text-center text-sm text-muted-foreground">
-                Don't have an account?{" "}
-                <button type="button" onClick={() => setMode("select")} className="font-medium text-primary hover:underline">
-                  Sign up
-                </button>
-              </p>
-            </form>
-          )}
-
-          {/* Forgot Password */}
-          {mode === "forgot" && (
-            <div className="space-y-5">
-              <div className="flex items-center gap-3">
-                <button type="button" onClick={() => setMode("login")} className="text-muted-foreground hover:text-foreground">
-                  <ArrowLeft className="h-5 w-5" />
-                </button>
-                <div>
-                  <h1 className="text-2xl font-bold text-foreground">Reset Password</h1>
-                  <p className="text-sm text-muted-foreground">Enter your email to receive a reset link</p>
+            {/* Login Role Selection */}
+            {mode === "login-role" && (
+              <div className="space-y-6">
+                <div className="flex items-center gap-3">
+                  <button type="button" onClick={() => setMode("select")} className="text-muted-foreground hover:text-foreground"><ArrowLeft className="h-5 w-5" /></button>
+                  <div>
+                    <h1 className="text-2xl font-bold text-foreground">Log In</h1>
+                    <p className="text-sm text-muted-foreground">Select your role</p>
+                  </div>
                 </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <button onClick={() => selectLoginRole("teacher")} className="group flex flex-col items-center gap-2 rounded-xl border border-border/50 bg-muted/30 p-5 transition-all hover:border-primary/50 hover:bg-primary/10">
+                    <GraduationCap className="h-6 w-6 text-primary" />
+                    <span className="text-sm font-semibold text-foreground">Teacher</span>
+                  </button>
+                  <button onClick={() => selectLoginRole("student")} className="group flex flex-col items-center gap-2 rounded-xl border border-border/50 bg-muted/30 p-5 transition-all hover:border-primary/50 hover:bg-primary/10">
+                    <BookOpen className="h-6 w-6 text-accent" />
+                    <span className="text-sm font-semibold text-foreground">Student</span>
+                  </button>
+                </div>
+                <p className="text-center text-sm text-muted-foreground">
+                  Don't have an account?{" "}
+                  <button onClick={() => setMode("select")} className="font-medium text-primary hover:underline">Sign up</button>
+                </p>
               </div>
-              <Input
-                type="email"
-                placeholder="Email Address"
-                className="h-11"
-                value={forgotEmail}
-                onChange={(e) => setForgotEmail(e.target.value)}
-              />
-              <Button onClick={handleForgotPassword} className="h-11 w-full text-base font-semibold">
-                Send Reset Link
-              </Button>
-              <p className="text-center text-sm text-muted-foreground">
-                Remember your password?{" "}
-                <button onClick={() => setMode("login")} className="font-medium text-primary hover:underline">
-                  Log in
-                </button>
-              </p>
-            </div>
-          )}
+            )}
+
+            {/* Signup Form */}
+            {mode === "signup" && (
+              <form onSubmit={signupForm.handleSubmit(onSignup)} className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <button type="button" onClick={() => setMode("select")} className="text-muted-foreground hover:text-foreground"><ArrowLeft className="h-5 w-5" /></button>
+                  <div>
+                    <h1 className="text-2xl font-bold text-foreground">Create Account</h1>
+                    <p className="text-sm text-muted-foreground">Sign up as a <span className="capitalize text-primary font-medium">{role}</span></p>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  <div>
+                    <Input placeholder="Full Name" className="h-11" {...signupForm.register("name")} />
+                    {signupForm.formState.errors.name && <p className="mt-1 text-xs text-destructive">{signupForm.formState.errors.name.message}</p>}
+                  </div>
+                  <div>
+                    <Input type="email" placeholder="Email Address" className="h-11" {...signupForm.register("email")} />
+                    {signupForm.formState.errors.email && <p className="mt-1 text-xs text-destructive">{signupForm.formState.errors.email.message}</p>}
+                  </div>
+                  <div className="relative">
+                    <Input type={showPassword ? "text" : "password"} placeholder="Password" className="h-11 pr-10" {...signupForm.register("password")} />
+                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-3 text-muted-foreground hover:text-foreground">
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                    {signupForm.formState.errors.password && <p className="mt-1 text-xs text-destructive">{signupForm.formState.errors.password.message}</p>}
+                  </div>
+                  <div>
+                    <Input type="password" placeholder="Confirm Password" className="h-11" {...signupForm.register("confirmPassword")} />
+                    {signupForm.formState.errors.confirmPassword && <p className="mt-1 text-xs text-destructive">{signupForm.formState.errors.confirmPassword.message}</p>}
+                  </div>
+                </div>
+                <Button type="submit" className="h-11 w-full text-base font-semibold" disabled={signupForm.formState.isSubmitting}>
+                  {signupForm.formState.isSubmitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                  Create Account
+                </Button>
+                <div className="flex items-center gap-3">
+                  <div className="h-px flex-1 bg-border" />
+                  <span className="text-xs text-muted-foreground">or sign up with</span>
+                  <div className="h-px flex-1 bg-border" />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <Button type="button" variant="outline" className="h-10 gap-2" onClick={handleSocialLogin}><GoogleIcon /> Google</Button>
+                  <Button type="button" variant="outline" className="h-10 gap-2" onClick={handleSocialLogin}><GithubIcon /> GitHub</Button>
+                </div>
+                <p className="text-center text-sm text-muted-foreground">
+                  Already have an account?{" "}
+                  <button type="button" onClick={() => setMode("login-role")} className="font-medium text-primary hover:underline">Log in</button>
+                </p>
+              </form>
+            )}
+
+            {/* Login Form */}
+            {mode === "login" && (
+              <form onSubmit={loginForm.handleSubmit(onLogin)} className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <button type="button" onClick={() => setMode("login-role")} className="text-muted-foreground hover:text-foreground"><ArrowLeft className="h-5 w-5" /></button>
+                  <div>
+                    <h1 className="text-2xl font-bold text-foreground">Welcome Back</h1>
+                    <p className="text-sm text-muted-foreground">Log in as a <span className="capitalize text-primary font-medium">{role}</span></p>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  <div>
+                    <Input type="email" placeholder="Email Address" className="h-11" {...loginForm.register("email")} />
+                    {loginForm.formState.errors.email && <p className="mt-1 text-xs text-destructive">{loginForm.formState.errors.email.message}</p>}
+                  </div>
+                  <div className="relative">
+                    <Input type={showPassword ? "text" : "password"} placeholder="Password" className="h-11 pr-10" {...loginForm.register("password")} />
+                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-3 text-muted-foreground hover:text-foreground">
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                    {loginForm.formState.errors.password && <p className="mt-1 text-xs text-destructive">{loginForm.formState.errors.password.message}</p>}
+                  </div>
+                </div>
+                <div className="flex items-center justify-end">
+                  <button type="button" onClick={() => setMode("forgot")} className="text-sm text-primary hover:underline">Forgot Password?</button>
+                </div>
+                <Button type="submit" className="h-11 w-full text-base font-semibold" disabled={loginForm.formState.isSubmitting}>
+                  {loginForm.formState.isSubmitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                  Log In
+                </Button>
+                <div className="flex items-center gap-3">
+                  <div className="h-px flex-1 bg-border" />
+                  <span className="text-xs text-muted-foreground">or continue with</span>
+                  <div className="h-px flex-1 bg-border" />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <Button type="button" variant="outline" className="h-10 gap-2" onClick={handleSocialLogin}><GoogleIcon /> Google</Button>
+                  <Button type="button" variant="outline" className="h-10 gap-2" onClick={handleSocialLogin}><GithubIcon /> GitHub</Button>
+                </div>
+                <p className="text-center text-sm text-muted-foreground">
+                  Don't have an account?{" "}
+                  <button type="button" onClick={() => setMode("select")} className="font-medium text-primary hover:underline">Sign up</button>
+                </p>
+              </form>
+            )}
+
+            {/* Forgot Password */}
+            {mode === "forgot" && (
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <button type="button" onClick={() => setMode("login")} className="text-muted-foreground hover:text-foreground"><ArrowLeft className="h-5 w-5" /></button>
+                  <div>
+                    <h1 className="text-2xl font-bold text-foreground">Reset Password</h1>
+                    <p className="text-sm text-muted-foreground">Enter your email to receive a reset link</p>
+                  </div>
+                </div>
+                <Input type="email" placeholder="Email Address" className="h-11" value={forgotEmail} onChange={(e) => setForgotEmail(e.target.value)} />
+                <Button onClick={handleForgotPassword} className="h-11 w-full text-base font-semibold">Send Reset Link</Button>
+                <p className="text-center text-sm text-muted-foreground">
+                  Remember your password?{" "}
+                  <button onClick={() => setMode("login")} className="font-medium text-primary hover:underline">Log in</button>
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Right: Hero Image */}
+          <div className="hidden md:block">
+            <img src={authHero} alt="Kernel platform" className="h-full w-full object-cover" />
+          </div>
         </div>
-
-        <p className="mt-6 text-center text-xs text-white/40">
-          By continuing, you agree to our{" "}
-          <button onClick={() => setTermsOpen(true)} className="underline hover:text-white/60">Terms of Service</button>
-          {" "}and{" "}
-          <button onClick={() => setPrivacyOpen(true)} className="underline hover:text-white/60">Privacy Policy</button>
-        </p>
       </div>
 
       {/* Terms Dialog */}
