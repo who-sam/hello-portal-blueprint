@@ -1,4 +1,4 @@
-import { Bell, Clock, ChevronDown, User, Settings, LogOut, Code2, Menu, Command } from "lucide-react";
+import { Bell, Clock, ChevronDown, User, Settings, LogOut, Menu, Command, Sun, Moon } from "lucide-react";
 import KernelLogo from "@/components/KernelLogo";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { NavLink } from "@/components/NavLink";
@@ -10,11 +10,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { useNavigate } from "react-router-dom";
 import { useRole } from "@/contexts/RoleContext";
 import { useUser } from "@/contexts/UserContext";
 import { useNotifications } from "@/contexts/NotificationContext";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useTheme } from "next-themes";
 import { useState, useEffect } from "react";
 
 const teacherNavTabs = [
@@ -33,25 +35,23 @@ const studentNavTabs = [
   { label: "Settings", url: "/dashboard/settings" },
 ];
 
-interface Props {
-  onMobileMenuToggle?: () => void;
-}
-
-export function FloatingNavbar({ onMobileMenuToggle }: Props) {
+export function FloatingNavbar() {
   const navigate = useNavigate();
   const { role, clearRole } = useRole();
   const { name, email, setUser } = useUser();
   const { unreadCount } = useNotifications();
   const isMobile = useIsMobile();
+  const { theme, setTheme } = useTheme();
+  const isDark = theme === "dark";
   const navTabs = role === "teacher" ? teacherNavTabs : studentNavTabs;
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const initials = name
     ? name.split(" ").filter(Boolean).map((n) => n[0]?.toUpperCase() || "").join("").slice(0, 2)
     : "";
 
-  // Keyboard shortcut for search
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
@@ -71,6 +71,8 @@ export function FloatingNavbar({ onMobileMenuToggle }: Props) {
     navigate("/");
   };
 
+  const toggleTheme = () => setTheme(isDark ? "light" : "dark");
+
   const searchItems = [
     { label: "Dashboard", url: "/dashboard" },
     { label: "Profile", url: "/dashboard/profile" },
@@ -89,11 +91,11 @@ export function FloatingNavbar({ onMobileMenuToggle }: Props) {
 
   return (
     <>
-      <header className={`fixed ${isMobile ? "left-4" : "left-20"} right-6 top-4 z-50 flex items-center gap-3 h-12`}>
+      <header className="fixed left-6 right-6 top-4 z-50 flex items-center gap-3 h-12">
         {/* Mobile hamburger */}
-        {isMobile && onMobileMenuToggle && (
+        {isMobile && (
           <button
-            onClick={onMobileMenuToggle}
+            onClick={() => setMobileMenuOpen(true)}
             aria-label="Open menu"
             className="flex items-center justify-center border border-border bg-card/80 px-3 py-1.5 shadow-lg backdrop-blur-md rounded-full"
           >
@@ -101,7 +103,7 @@ export function FloatingNavbar({ onMobileMenuToggle }: Props) {
           </button>
         )}
 
-        {/* Logo — left pill */}
+        {/* Logo */}
         <div className="flex items-center gap-2 border border-border bg-card/80 px-4 py-1.5 shadow-lg backdrop-blur-md rounded-full">
           <KernelLogo className="h-6 w-6" />
           <span className="text-lg font-bold tracking-tight text-foreground">Kernel</span>
@@ -109,7 +111,7 @@ export function FloatingNavbar({ onMobileMenuToggle }: Props) {
 
         <div className="flex-1" />
 
-        {/* Nav tabs — centered pill (hidden on mobile) */}
+        {/* Nav tabs — desktop only */}
         {!isMobile && (
           <div className="flex items-center gap-1 rounded-full border border-border bg-card/80 px-2 py-1.5 shadow-lg backdrop-blur-md">
             {navTabs.map((tab) => (
@@ -128,7 +130,7 @@ export function FloatingNavbar({ onMobileMenuToggle }: Props) {
 
         <div className="flex-1" />
 
-        {/* Action icons — separate rounded pill */}
+        {/* Action icons */}
         <div className="flex items-center gap-1 rounded-full border border-border bg-card/80 px-2 py-1.5 shadow-lg backdrop-blur-md">
           <button
             onClick={() => setSearchOpen(true)}
@@ -160,7 +162,7 @@ export function FloatingNavbar({ onMobileMenuToggle }: Props) {
           )}
         </div>
 
-        {/* Profile — dropdown pill */}
+        {/* Profile dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className="flex items-center gap-2 rounded-full border border-border bg-card/80 px-3 py-1.5 shadow-lg backdrop-blur-md transition-colors hover:bg-secondary/50 focus:outline-none">
@@ -195,6 +197,42 @@ export function FloatingNavbar({ onMobileMenuToggle }: Props) {
           </DropdownMenuContent>
         </DropdownMenu>
       </header>
+
+      {/* Mobile nav sheet */}
+      <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+        <SheetContent side="left" className="w-72 p-4 bg-background border-border">
+          <div className="flex flex-col gap-2 pt-4">
+            <p className="text-xs font-medium text-muted-foreground px-2 mb-2">Navigation</p>
+            {navTabs.map((tab) => (
+              <NavLink
+                key={tab.label}
+                to={tab.url}
+                end={tab.url === "/dashboard"}
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+                activeClassName="bg-primary/15 text-primary font-medium"
+              >
+                {tab.label}
+              </NavLink>
+            ))}
+            <div className="border-t border-border my-2" />
+            <button
+              onClick={toggleTheme}
+              className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+            >
+              {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              {isDark ? "Light Mode" : "Dark Mode"}
+            </button>
+            <button
+              onClick={() => { handleLogout(); setMobileMenuOpen(false); }}
+              className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-destructive transition-colors hover:bg-destructive/10"
+            >
+              <LogOut className="h-4 w-4" />
+              Log out
+            </button>
+          </div>
+        </SheetContent>
+      </Sheet>
 
       {/* Search overlay */}
       <Dialog open={searchOpen} onOpenChange={(open) => { setSearchOpen(open); if (!open) setSearchQuery(""); }}>
