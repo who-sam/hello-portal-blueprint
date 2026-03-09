@@ -20,17 +20,17 @@ import { useTheme } from "next-themes";
 import { useState, useEffect } from "react";
 
 const teacherNavTabs = [
-  { label: "Overview", url: "/dashboard" },
-  { label: "Exams", url: "/dashboard/upcoming" },
+  { label: "Dashboard", url: "/dashboard" },
+  { label: "Courses", url: "/dashboard/courses" },
   { label: "Exam Builder", url: "/dashboard/exam-builder" },
   { label: "Results", url: "/dashboard/results" },
   { label: "Settings", url: "/dashboard/settings" },
 ];
 
 const studentNavTabs = [
-  { label: "Overview", url: "/dashboard" },
-  { label: "Exams", url: "/dashboard/upcoming" },
-  { label: "Practice", url: "/dashboard/start" },
+  { label: "Dashboard", url: "/dashboard" },
+  { label: "Exams", url: "/dashboard/exams" },
+  { label: "Playground", url: "/dashboard/playground" },
   { label: "Results", url: "/dashboard/results" },
   { label: "Settings", url: "/dashboard/settings" },
 ];
@@ -76,23 +76,17 @@ export function FloatingNavbar() {
   const searchItems = [
     { label: "Dashboard", url: "/dashboard" },
     { label: "Profile", url: "/dashboard/profile" },
-    { label: "Code Editor", url: "/dashboard/editor" },
-    { label: "Upcoming Exams", url: "/dashboard/upcoming" },
+    { label: "Playground", url: "/dashboard/playground" },
+    { label: "Exams", url: "/dashboard/exams" },
     { label: "Results", url: "/dashboard/results" },
-    { label: "Practice", url: "/dashboard/start" },
-    { label: "Messages", url: "/dashboard/messages" },
     { label: "Settings", url: "/dashboard/settings" },
-    { label: "Leaderboard", url: "/dashboard/leaderboard" },
-    { label: "Team", url: "/dashboard/team" },
-    { label: "Help", url: "/dashboard/help" },
+    { label: "Courses", url: "/dashboard/courses" },
     { label: "Exam Builder", url: "/dashboard/exam-builder" },
-    { label: "Notifications", url: "/dashboard/notifications" },
   ];
 
   return (
     <>
       <header className="fixed left-6 right-6 top-4 z-50 flex items-center gap-3 h-12">
-        {/* Mobile hamburger */}
         {isMobile && (
           <button
             onClick={() => setMobileMenuOpen(true)}
@@ -103,7 +97,6 @@ export function FloatingNavbar() {
           </button>
         )}
 
-        {/* Logo */}
         <div className="flex items-center gap-2 border border-border bg-card/80 px-4 py-1.5 shadow-lg backdrop-blur-md rounded-full">
           <KernelLogo className="h-6 w-6" />
           <span className="text-lg font-bold tracking-tight text-foreground">Kernel</span>
@@ -111,7 +104,6 @@ export function FloatingNavbar() {
 
         <div className="flex-1" />
 
-        {/* Nav tabs — desktop only */}
         {!isMobile && (
           <div className="flex items-center gap-1 rounded-full border border-border bg-card/80 px-2 py-1.5 shadow-lg backdrop-blur-md">
             {navTabs.map((tab) => (
@@ -130,7 +122,6 @@ export function FloatingNavbar() {
 
         <div className="flex-1" />
 
-        {/* Action icons */}
         <div className="flex items-center gap-1 rounded-full border border-border bg-card/80 px-2 py-1.5 shadow-lg backdrop-blur-md">
           <button
             onClick={() => setSearchOpen(true)}
@@ -139,30 +130,17 @@ export function FloatingNavbar() {
           >
             <Command className="h-4 w-4" />
           </button>
-          <button
-            onClick={() => navigate("/dashboard/notifications")}
-            aria-label="Notifications"
-            className="relative flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-          >
-            <Bell className="h-4 w-4" />
-            {unreadCount > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 h-3.5 w-3.5 rounded-full bg-primary text-[9px] font-bold text-primary-foreground flex items-center justify-center">
-                {unreadCount}
-              </span>
-            )}
-          </button>
           {!isMobile && (
             <button
-              onClick={() => navigate("/dashboard/upcoming")}
-              aria-label="Upcoming exams"
+              onClick={toggleTheme}
+              aria-label="Toggle theme"
               className="flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
             >
-              <Clock className="h-4 w-4" />
+              {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </button>
           )}
         </div>
 
-        {/* Profile dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className="flex items-center gap-2 rounded-full border border-border bg-card/80 px-3 py-1.5 shadow-lg backdrop-blur-md transition-colors hover:bg-secondary/50 focus:outline-none">
@@ -216,6 +194,15 @@ export function FloatingNavbar() {
               </NavLink>
             ))}
             <div className="border-t border-border my-2" />
+            <NavLink
+              to="/dashboard/profile"
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+              activeClassName="bg-primary/15 text-primary font-medium"
+            >
+              <User className="h-4 w-4" />
+              Profile
+            </NavLink>
             <button
               onClick={toggleTheme}
               className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
