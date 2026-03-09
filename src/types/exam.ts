@@ -34,6 +34,7 @@ export interface TestCase {
   input: string;
   expectedOutput: string;
   isSample: boolean;
+  points?: number;
 }
 
 export interface CodingQuestion extends BaseQuestion {

@@ -88,6 +88,10 @@ const AuthPage = () => {
                   {loginForm.formState.isSubmitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
                   Log In
                 </Button>
+                <p className="text-center text-sm text-muted-foreground">
+                  First time here?{" "}
+                  <button type="button" onClick={() => navigate("/setup")} className="font-medium text-primary hover:underline">Set up your account</button>
+                </p>
               </form>
             )}
 
