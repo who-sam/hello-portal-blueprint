@@ -14,17 +14,12 @@ import DashboardIndex from "./pages/DashboardIndex";
 import CodeEditor from "./pages/CodeEditor";
 import UpcomingExams from "./pages/UpcomingExams";
 import Results from "./pages/Results";
-import Practice from "./pages/Practice";
 import Settings from "./pages/Settings";
-import Messages from "./pages/Messages";
-import Team from "./pages/Team";
-import Help from "./pages/Help";
 import ExamBuilder from "./pages/ExamBuilder";
 import ExamTaking from "./pages/ExamTaking";
 import Profile from "./pages/Profile";
-import Leaderboard from "./pages/Leaderboard";
 import ExamReview from "./pages/ExamReview";
-import Notifications from "./pages/Notifications";
+import Courses from "./pages/Courses";
 
 const queryClient = new QueryClient();
 
@@ -42,20 +37,15 @@ const App = () => (
                 <Route path="/auth" element={<AuthPage />} />
                 <Route path="/dashboard" element={<DashboardLayout />}>
                   <Route index element={<DashboardIndex />} />
-                  <Route path="editor" element={<CodeEditor />} />
-                  <Route path="upcoming" element={<UpcomingExams />} />
+                  <Route path="exams" element={<UpcomingExams />} />
+                  <Route path="playground" element={<CodeEditor />} />
                   <Route path="results" element={<Results />} />
-                  <Route path="start" element={<Practice />} />
+                  <Route path="profile" element={<Profile />} />
                   <Route path="settings" element={<Settings />} />
-                  <Route path="messages" element={<Messages />} />
-                  <Route path="team" element={<Team />} />
-                  <Route path="help" element={<Help />} />
+                  <Route path="courses" element={<Courses />} />
                   <Route path="exam-builder" element={<ExamBuilder />} />
                   <Route path="exam/:id" element={<ExamTaking />} />
-                  <Route path="profile" element={<Profile />} />
-                  <Route path="leaderboard" element={<Leaderboard />} />
                   <Route path="exam/:id/review" element={<ExamReview />} />
-                  <Route path="notifications" element={<Notifications />} />
                 </Route>
                 <Route path="*" element={<NotFound />} />
               </Routes>
