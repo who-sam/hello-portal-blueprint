@@ -187,21 +187,16 @@ const AuthPage = () => {
             </div>
           </div>
 
-          {/* Right: Transparent panel showing background through */}
+          {/* Right: Transparent panel - background shows through */}
           <div
             className="hidden md:block relative"
             style={{
               background: "rgba(255,255,255,0.03)",
-              backdropFilter: "blur(2px)",
-              WebkitBackdropFilter: "blur(2px)",
+              backdropFilter: "blur(1px)",
+              WebkitBackdropFilter: "blur(1px)",
             }}
           >
-            <img
-              src={authHero}
-              alt="Kernel platform"
-              className="h-full w-full object-cover opacity-80"
-            />
-            {/* Subtle glossy overlay on the image side */}
+            {/* Subtle glossy highlight */}
             <div
               className="pointer-events-none absolute inset-0"
               style={{
