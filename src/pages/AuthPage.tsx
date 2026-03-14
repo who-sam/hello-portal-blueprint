@@ -52,7 +52,7 @@ const AuthPage = () => {
       <img src={authBg} alt="" className="absolute inset-0 h-full w-full object-cover" />
       <div className="absolute inset-0 bg-black/65" />
 
-      <div className="relative z-10 w-full max-w-4xl">
+      <div className="relative z-10 w-full max-w-5xl">
         <div className="grid grid-cols-1 md:grid-cols-2 overflow-hidden rounded-2xl border border-white/10 shadow-2xl">
           {/* Left: Form */}
           <div className="bg-card/95 backdrop-blur-xl p-8 flex flex-col justify-center">
