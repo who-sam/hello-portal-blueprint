@@ -33,12 +33,25 @@ const AuthPage = () => {
 
   const loginForm = useForm<LoginData>({ resolver: zodResolver(loginSchema) });
 
+  const demoAccounts = {
+    student: { email: "student@kernel.edu", password: "demo1234", name: "John Doe", role: "student" as const },
+    teacher: { email: "teacher@kernel.edu", password: "demo1234", name: "Dr. Sarah Miller", role: "teacher" as const },
+  };
+
   const onLogin = async (data: LoginData) => {
     await new Promise((r) => setTimeout(r, 500));
-    // Role would come from backend response
-    setRole("student");
-    setUser("John Doe", data.email);
+    const demo = Object.values(demoAccounts).find((a) => a.email === data.email);
+    const role = demo?.role ?? "student";
+    const name = demo?.name ?? "John Doe";
+    setRole(role);
+    setUser(name, data.email);
     navigate("/dashboard");
+  };
+
+  const fillDemo = (type: "student" | "teacher") => {
+    const account = demoAccounts[type];
+    loginForm.setValue("email", account.email);
+    loginForm.setValue("password", account.password);
   };
 
   const handleForgotPassword = () => {
@@ -88,6 +101,18 @@ const AuthPage = () => {
                   {loginForm.formState.isSubmitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
                   Log In
                 </Button>
+                <div className="relative my-2">
+                  <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-border" /></div>
+                  <div className="relative flex justify-center text-xs"><span className="bg-card px-2 text-muted-foreground">Demo Accounts</span></div>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <Button type="button" variant="outline" className="h-10 text-sm" onClick={() => fillDemo("student")}>
+                    🎓 Student Demo
+                  </Button>
+                  <Button type="button" variant="outline" className="h-10 text-sm" onClick={() => fillDemo("teacher")}>
+                    👩‍🏫 Teacher Demo
+                  </Button>
+                </div>
                 <p className="text-center text-sm text-muted-foreground">
                   First time here?{" "}
                   <button type="button" onClick={() => navigate("/setup")} className="font-medium text-primary hover:underline">Set up your account</button>
