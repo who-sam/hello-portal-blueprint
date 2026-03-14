@@ -33,12 +33,25 @@ const AuthPage = () => {
 
   const loginForm = useForm<LoginData>({ resolver: zodResolver(loginSchema) });
 
+  const demoAccounts = {
+    student: { email: "student@kernel.edu", password: "demo1234", name: "John Doe", role: "student" as const },
+    teacher: { email: "teacher@kernel.edu", password: "demo1234", name: "Dr. Sarah Miller", role: "teacher" as const },
+  };
+
   const onLogin = async (data: LoginData) => {
     await new Promise((r) => setTimeout(r, 500));
-    // Role would come from backend response
-    setRole("student");
-    setUser("John Doe", data.email);
+    const demo = Object.values(demoAccounts).find((a) => a.email === data.email);
+    const role = demo?.role ?? "student";
+    const name = demo?.name ?? "John Doe";
+    setRole(role);
+    setUser(name, data.email);
     navigate("/dashboard");
+  };
+
+  const fillDemo = (type: "student" | "teacher") => {
+    const account = demoAccounts[type];
+    loginForm.setValue("email", account.email);
+    loginForm.setValue("password", account.password);
   };
 
   const handleForgotPassword = () => {
