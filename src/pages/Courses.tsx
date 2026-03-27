@@ -96,7 +96,8 @@ function TeacherCourses() {
         {courses.map((course) => (
           <Card
             key={course.id}
-            className="border-border/50 bg-card/80 backdrop-blur-sm hover:shadow-md transition-shadow"
+            className="border-border/50 bg-card/80 backdrop-blur-sm hover:shadow-md transition-shadow cursor-pointer"
+            onClick={() => navigate(`/dashboard/courses/${course.id}`)}
           >
             <CardHeader className="pb-3 flex flex-row items-start justify-between space-y-0">
               <CardTitle className="text-lg flex items-center gap-2">
