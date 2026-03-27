@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -41,6 +42,7 @@ function generateCourseId() {
    TEACHER VIEW
    ================================================================ */
 function TeacherCourses() {
+  const navigate = useNavigate();
   const { toast } = useToast();
   const [courses, setCourses] = useState(initialTeacherCourses);
   const [createOpen, setCreateOpen] = useState(false);
@@ -94,7 +96,8 @@ function TeacherCourses() {
         {courses.map((course) => (
           <Card
             key={course.id}
-            className="border-border/50 bg-card/80 backdrop-blur-sm hover:shadow-md transition-shadow"
+            className="border-border/50 bg-card/80 backdrop-blur-sm hover:shadow-md transition-shadow cursor-pointer"
+            onClick={() => navigate(`/dashboard/courses/${course.id}`)}
           >
             <CardHeader className="pb-3 flex flex-row items-start justify-between space-y-0">
               <CardTitle className="text-lg flex items-center gap-2">
@@ -198,6 +201,7 @@ function TeacherCourses() {
    STUDENT VIEW
    ================================================================ */
 function StudentCourses() {
+  const navigate = useNavigate();
   const { toast } = useToast();
   const [courses, setCourses] = useState(initialStudentCourses);
   const [enrollOpen, setEnrollOpen] = useState(false);
@@ -270,6 +274,7 @@ function StudentCourses() {
             <Card
               key={course.id}
               className="border-border/50 bg-card/80 backdrop-blur-sm hover:shadow-md transition-shadow cursor-pointer"
+              onClick={() => navigate(`/dashboard/courses/${course.id}`)}
             >
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg flex items-center gap-2">
