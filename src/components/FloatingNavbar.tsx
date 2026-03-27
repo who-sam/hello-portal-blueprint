@@ -31,7 +31,6 @@ const studentNavTabs = [
   { label: "Exams", url: "/dashboard/exams" },
   { label: "Playground", url: "/dashboard/playground" },
   { label: "Results", url: "/dashboard/results" },
-  { label: "Settings", url: "/dashboard/settings" },
 ];
 
 export function FloatingNavbar() {
