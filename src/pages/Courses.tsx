@@ -274,6 +274,7 @@ function StudentCourses() {
             <Card
               key={course.id}
               className="border-border/50 bg-card/80 backdrop-blur-sm hover:shadow-md transition-shadow cursor-pointer"
+              onClick={() => navigate(`/dashboard/courses/${course.id}`)}
             >
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg flex items-center gap-2">
