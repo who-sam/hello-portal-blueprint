@@ -2,8 +2,8 @@ const KernelLogo = ({ className = "h-6 w-6" }: { className?: string }) => (
   <svg viewBox="0 0 100 100" fill="none" className={className} xmlns="http://www.w3.org/2000/svg">
     <defs>
       <linearGradient id="kernelGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stopColor="hsl(25, 95%, 55%)" />
-        <stop offset="100%" stopColor="hsl(35, 100%, 60%)" />
+        <stop offset="0%" stopColor="hsl(217, 92%, 66%)" />
+        <stop offset="100%" stopColor="hsl(217, 80%, 76%)" />
       </linearGradient>
     </defs>
     {/* Eye outer shape */}
