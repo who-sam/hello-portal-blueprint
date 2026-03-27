@@ -96,25 +96,27 @@ export function FloatingNavbar() {
           <span className="text-lg font-bold tracking-tight text-foreground">Kernel</span>
         </button>
 
-        <div className="flex-1" />
-
         {!isMobile && (
-          <div className="flex items-center gap-1 rounded-full border border-border bg-card/80 px-2 py-1.5 shadow-lg backdrop-blur-md">
-            {navTabs.map((tab) => (
-              <NavLink
-                key={tab.label}
-                to={tab.url}
-                end={tab.url === "/dashboard"}
-                className="rounded-full px-4 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-                activeClassName="bg-primary text-primary-foreground"
-              >
-                {tab.label}
-              </NavLink>
-            ))}
-          </div>
+          <>
+            <div className="flex-1" />
+            <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-1 rounded-full border border-border bg-card/80 px-2 py-1.5 shadow-lg backdrop-blur-md">
+              {navTabs.map((tab) => (
+                <NavLink
+                  key={tab.label}
+                  to={tab.url}
+                  end={tab.url === "/dashboard"}
+                  className="rounded-full px-4 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                  activeClassName="bg-primary text-primary-foreground"
+                >
+                  {tab.label}
+                </NavLink>
+              ))}
+            </div>
+            <div className="flex-1" />
+          </>
         )}
 
-        <div className="flex-1" />
+        {isMobile && <div className="flex-1" />}
 
         <div className="flex items-center gap-1 rounded-full border border-border bg-card/80 px-2 py-1.5 shadow-lg backdrop-blur-md">
           <button
