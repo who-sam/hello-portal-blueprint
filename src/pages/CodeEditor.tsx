@@ -1,24 +1,13 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import Editor from "@monaco-editor/react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
 import {
   ResizablePanelGroup,
   ResizablePanel,
   ResizableHandle,
 } from "@/components/ui/resizable";
-import {
-  Play,
-  Send,
-  CheckCircle2,
-  XCircle,
-  Clock,
-  ThumbsUp,
-  ThumbsDown,
-  BookmarkPlus,
-  Share2,
-} from "lucide-react";
+import { Play, Loader2, Terminal, Code2, ArrowRightLeft } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -27,556 +16,205 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useTheme } from "next-themes";
-import { useToast } from "@/hooks/use-toast";
 
-const PROBLEMS = [
-  {
-    id: 1, title: "Two Sum", difficulty: "Easy",
-    tags: ["Array", "Hash Table"], likes: 12453, dislikes: 342,
-    description: `Given an array of integers \`nums\` and an integer \`target\`, return *indices of the two numbers such that they add up to \`target\`*.\n\nYou may assume that each input would have **exactly one solution**, and you may not use the same element twice.\n\nYou can return the answer in any order.`,
-    examples: [
-      { input: "nums = [2,7,11,15], target = 9", output: "[0,1]", explanation: "Because nums[0] + nums[1] == 9, we return [0, 1]." },
-      { input: "nums = [3,2,4], target = 6", output: "[1,2]", explanation: "" },
-      { input: "nums = [3,3], target = 6", output: "[0,1]", explanation: "" },
-    ],
-    constraints: ["2 ≤ nums.length ≤ 10⁴", "-10⁹ ≤ nums[i] ≤ 10⁹", "-10⁹ ≤ target ≤ 10⁹", "Only one valid answer exists."],
-    defaultCode: {
-      javascript: `function twoSum(nums, target) {\n    // Write your solution here\n    \n};`,
-      python: `class Solution:\n    def twoSum(self, nums: list[int], target: int) -> list[int]:\n        # Write your solution here\n        pass`,
-      typescript: `function twoSum(nums: number[], target: number): number[] {\n    // Write your solution here\n    \n};`,
-      java: `class Solution {\n    public int[] twoSum(int[] nums, int target) {\n        // Write your solution here\n        \n    }\n}`,
-    },
-  },
-  {
-    id: 2, title: "Valid Parentheses", difficulty: "Easy",
-    tags: ["String", "Stack"], likes: 9812, dislikes: 201,
-    description: `Given a string \`s\` containing just the characters '(', ')', '{', '}', '[' and ']', determine if the input string is valid.\n\nAn input string is valid if:\n1. Open brackets must be closed by the same type of brackets.\n2. Open brackets must be closed in the correct order.\n3. Every close bracket has a corresponding open bracket of the same type.`,
-    examples: [
-      { input: 's = "()"', output: "true", explanation: "" },
-      { input: 's = "()[]{}"', output: "true", explanation: "" },
-      { input: 's = "(]"', output: "false", explanation: "" },
-    ],
-    constraints: ["1 ≤ s.length ≤ 10⁴", "s consists of parentheses only '()[]{}'."],
-    defaultCode: {
-      javascript: `function isValid(s) {\n    // Write your solution here\n    \n};`,
-      python: `class Solution:\n    def isValid(self, s: str) -> bool:\n        # Write your solution here\n        pass`,
-      typescript: `function isValid(s: string): boolean {\n    // Write your solution here\n    \n};`,
-      java: `class Solution {\n    public boolean isValid(String s) {\n        // Write your solution here\n        \n    }\n}`,
-    },
-  },
-  {
-    id: 3, title: "Merge Two Sorted Lists", difficulty: "Easy",
-    tags: ["Linked List", "Recursion"], likes: 8445, dislikes: 156,
-    description: `You are given the heads of two sorted linked lists \`list1\` and \`list2\`.\n\nMerge the two lists into one **sorted** list. The list should be made by splicing together the nodes of the first two lists.\n\nReturn the head of the merged linked list.`,
-    examples: [
-      { input: "list1 = [1,2,4], list2 = [1,3,4]", output: "[1,1,2,3,4,4]", explanation: "" },
-      { input: "list1 = [], list2 = []", output: "[]", explanation: "" },
-    ],
-    constraints: ["The number of nodes in both lists is in the range [0, 50].", "-100 ≤ Node.val ≤ 100"],
-    defaultCode: {
-      javascript: `function mergeTwoLists(list1, list2) {\n    // Write your solution here\n    \n};`,
-      python: `class Solution:\n    def mergeTwoLists(self, list1, list2):\n        # Write your solution here\n        pass`,
-      typescript: `function mergeTwoLists(list1: ListNode | null, list2: ListNode | null): ListNode | null {\n    // Write your solution here\n    \n};`,
-      java: `class Solution {\n    public ListNode mergeTwoLists(ListNode list1, ListNode list2) {\n        // Write your solution here\n        \n    }\n}`,
-    },
-  },
-  {
-    id: 4, title: "Best Time to Buy and Sell Stock", difficulty: "Easy",
-    tags: ["Array", "Dynamic Programming"], likes: 11234, dislikes: 289,
-    description: `You are given an array \`prices\` where \`prices[i]\` is the price of a given stock on the \`ith\` day.\n\nYou want to maximize your profit by choosing a single day to buy and another day in the future to sell.\n\nReturn the maximum profit you can achieve. If no profit, return 0.`,
-    examples: [
-      { input: "prices = [7,1,5,3,6,4]", output: "5", explanation: "Buy on day 2 (price = 1) and sell on day 5 (price = 6), profit = 6-1 = 5." },
-      { input: "prices = [7,6,4,3,1]", output: "0", explanation: "No profitable transaction possible." },
-    ],
-    constraints: ["1 ≤ prices.length ≤ 10⁵", "0 ≤ prices[i] ≤ 10⁴"],
-    defaultCode: {
-      javascript: `function maxProfit(prices) {\n    // Write your solution here\n    \n};`,
-      python: `class Solution:\n    def maxProfit(self, prices: list[int]) -> int:\n        # Write your solution here\n        pass`,
-      typescript: `function maxProfit(prices: number[]): number {\n    // Write your solution here\n    \n};`,
-      java: `class Solution {\n    public int maxProfit(int[] prices) {\n        // Write your solution here\n        \n    }\n}`,
-    },
-  },
-  {
-    id: 5, title: "Contains Duplicate", difficulty: "Easy",
-    tags: ["Array", "Hash Table", "Sorting"], likes: 7632, dislikes: 412,
-    description: `Given an integer array \`nums\`, return \`true\` if any value appears **at least twice** in the array, and return \`false\` if every element is distinct.`,
-    examples: [
-      { input: "nums = [1,2,3,1]", output: "true", explanation: "" },
-      { input: "nums = [1,2,3,4]", output: "false", explanation: "" },
-    ],
-    constraints: ["1 ≤ nums.length ≤ 10⁵", "-10⁹ ≤ nums[i] ≤ 10⁹"],
-    defaultCode: {
-      javascript: `function containsDuplicate(nums) {\n    // Write your solution here\n    \n};`,
-      python: `class Solution:\n    def containsDuplicate(self, nums: list[int]) -> bool:\n        # Write your solution here\n        pass`,
-      typescript: `function containsDuplicate(nums: number[]): boolean {\n    // Write your solution here\n    \n};`,
-      java: `class Solution {\n    public boolean containsDuplicate(int[] nums) {\n        // Write your solution here\n        \n    }\n}`,
-    },
-  },
+const LANGUAGES = [
+  { value: "python", label: "Python" },
+  { value: "javascript", label: "JavaScript" },
+  { value: "typescript", label: "TypeScript" },
+  { value: "java", label: "Java" },
+  { value: "c", label: "C" },
+  { value: "cpp", label: "C++" },
 ];
 
-const LANG_MAP: Record<string, string> = {
-  javascript: "javascript",
-  python: "python",
-  typescript: "typescript",
-  java: "java",
+const DEFAULT_CODE: Record<string, string> = {
+  python: `# Write your code here\nprint("Hello, World!")`,
+  javascript: `// Write your code here\nconsole.log("Hello, World!");`,
+  typescript: `// Write your code here\nconsole.log("Hello, World!");`,
+  java: `public class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello, World!");\n    }\n}`,
+  c: `#include <stdio.h>\n\nint main() {\n    printf("Hello, World!\\n");\n    return 0;\n}`,
+  cpp: `#include <iostream>\nusing namespace std;\n\nint main() {\n    cout << "Hello, World!" << endl;\n    return 0;\n}`,
 };
-
-interface TestResult {
-  id: number;
-  input: string;
-  expected: string;
-  output: string;
-  passed: boolean;
-  time: string;
-}
-
-// Simple markdown-like renderer
-function renderDescription(text: string) {
-  return text.split("\n").map((line, i) => {
-    const rendered = line
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-      .replace(/\*(.*?)\*/g, '<em>$1</em>')
-      .replace(/`(.*?)`/g, '<code class="rounded bg-muted px-1 py-0.5 text-xs font-mono text-primary">$1</code>');
-    return <p key={i} className="text-foreground/90 leading-relaxed" dangerouslySetInnerHTML={{ __html: rendered || "&nbsp;" }} />;
-  });
-}
 
 export default function CodeEditorPage() {
   const { theme } = useTheme();
-  const { toast } = useToast();
-  const [problemIdx, setProblemIdx] = useState(0);
-  const [language, setLanguage] = useState("javascript");
-  const [codePerLang, setCodePerLang] = useState<Record<string, Record<string, string>>>({});
-  const [activeTab, setActiveTab] = useState("description");
-  const [bottomTab, setBottomTab] = useState("testcase");
-  const [testResults, setTestResults] = useState<TestResult[] | null>(null);
+  const [language, setLanguage] = useState("python");
+  const [code, setCode] = useState(DEFAULT_CODE["python"]);
+  const [input, setInput] = useState("");
+  const [output, setOutput] = useState("");
   const [isRunning, setIsRunning] = useState(false);
-  const [liked, setLiked] = useState<Record<number, boolean>>({});
-  const [disliked, setDisliked] = useState<Record<number, boolean>>({});
-  const [bookmarked, setBookmarked] = useState<Record<number, boolean>>({});
-  const [expandedSolution, setExpandedSolution] = useState<number | null>(null);
-
-  const problem = PROBLEMS[problemIdx];
-
-  const getCode = () => {
-    return codePerLang[problem.id]?.[language] ?? problem.defaultCode[language as keyof typeof problem.defaultCode] ?? "";
-  };
-
-  const setCode = (value: string) => {
-    setCodePerLang((prev) => ({
-      ...prev,
-      [problem.id]: { ...(prev[problem.id] || {}), [language]: value },
-    }));
-  };
+  const [codeStore, setCodeStore] = useState<Record<string, string>>({ ...DEFAULT_CODE });
 
   const handleLanguageChange = (lang: string) => {
+    // Save current code
+    setCodeStore((prev) => ({ ...prev, [language]: code }));
     setLanguage(lang);
-    // Code is preserved per language automatically
+    setCode(codeStore[lang] || DEFAULT_CODE[lang] || "");
   };
 
   const handleRun = useCallback(() => {
     setIsRunning(true);
-    setBottomTab("result");
+    setOutput("");
+    // Mock compilation/execution
     setTimeout(() => {
-      setTestResults(
-        problem.examples.map((ex, i) => ({
-          id: i + 1,
-          input: ex.input,
-          expected: ex.output,
-          output: ex.output,
-          passed: true,
-          time: `${2 + i}ms`,
-        }))
-      );
-      setIsRunning(false);
-    }, 1500);
-  }, [problem]);
+      const lines: string[] = [];
+      lines.push(`[${LANGUAGES.find(l => l.value === language)?.label}] Compiling...`);
+      lines.push(`[${LANGUAGES.find(l => l.value === language)?.label}] Running...`);
+      lines.push("");
 
-  const handleSubmit = useCallback(() => {
-    setIsRunning(true);
-    setBottomTab("result");
-    setTimeout(() => {
-      setTestResults(
-        problem.examples.map((ex, i) => ({
-          id: i + 1,
-          input: ex.input,
-          expected: ex.output,
-          output: ex.output,
-          passed: true,
-          time: `${2 + i}ms`,
-        }))
-      );
-      setIsRunning(false);
-    }, 2000);
-  }, [problem]);
+      // Simple mock output based on language
+      if (code.includes("Hello, World") || code.includes("Hello, World!")) {
+        lines.push("Hello, World!");
+      } else if (code.includes("print") || code.includes("console.log") || code.includes("cout") || code.includes("printf") || code.includes("println")) {
+        lines.push("Program executed successfully.");
+      } else {
+        lines.push("Program executed with no output.");
+      }
 
-  // Keyboard shortcuts
+      if (input.trim()) {
+        lines.push("");
+        lines.push(`--- Input received (${input.split("\n").length} line(s)) ---`);
+      }
+
+      lines.push("");
+      lines.push(`Process finished with exit code 0`);
+      lines.push(`Execution time: ${Math.floor(Math.random() * 50 + 5)}ms | Memory: ${Math.floor(Math.random() * 5 + 2)}MB`);
+
+      setOutput(lines.join("\n"));
+      setIsRunning(false);
+    }, 1200);
+  }, [code, input, language]);
+
+  // Ctrl+Enter to run
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
         e.preventDefault();
-        if (e.shiftKey) {
-          handleSubmit();
-        } else {
-          handleRun();
-        }
+        handleRun();
       }
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [handleRun, handleSubmit]);
-
-  const difficultyColor: Record<string, string> = {
-    Easy: "text-green-600 dark:text-green-400",
-    Medium: "text-yellow-600 dark:text-yellow-400",
-    Hard: "text-red-600 dark:text-red-400",
-  };
+  }, [handleRun]);
 
   return (
     <div className="h-[calc(100vh-5.5rem)] flex flex-col gap-3">
       {/* Top bar */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Select value={String(problemIdx)} onValueChange={(v) => { setProblemIdx(Number(v)); setTestResults(null); }}>
-            <SelectTrigger className="w-[260px] h-8 rounded-full text-sm">
+          <div className="flex items-center gap-2 text-foreground">
+            <Terminal className="h-5 w-5 text-primary" />
+            <span className="font-semibold text-sm">Playground</span>
+          </div>
+          <Select value={language} onValueChange={handleLanguageChange}>
+            <SelectTrigger className="w-[160px] h-8 rounded-full text-sm">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {PROBLEMS.map((p, i) => (
-                <SelectItem key={p.id} value={String(i)}>
-                  {p.id}. {p.title}
+              {LANGUAGES.map((l) => (
+                <SelectItem key={l.value} value={l.value}>
+                  {l.label}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
-          <span className={`text-sm font-semibold ${difficultyColor[problem.difficulty]}`}>
-            {problem.difficulty}
-          </span>
         </div>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            className="gap-2 rounded-full"
-            onClick={handleRun}
-            disabled={isRunning}
-          >
+        <Button
+          size="sm"
+          className="gap-2 rounded-full"
+          onClick={handleRun}
+          disabled={isRunning}
+        >
+          {isRunning ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
             <Play className="h-4 w-4" />
-            Run
-          </Button>
-          <Button
-            size="sm"
-            className="gap-2 rounded-full"
-            onClick={handleSubmit}
-            disabled={isRunning}
-          >
-            <Send className="h-4 w-4" />
-            Submit
-          </Button>
-        </div>
+          )}
+          {isRunning ? "Running..." : "Run"}
+        </Button>
       </div>
 
-      {/* Main split */}
-      <ResizablePanelGroup direction="horizontal" className="flex-1 rounded-2xl border border-border overflow-hidden bg-card/60 backdrop-blur-sm">
-        {/* Left panel — Problem */}
-        <ResizablePanel defaultSize={40} minSize={25}>
-          <div className="flex h-full flex-col">
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="flex flex-col h-full">
-              <TabsList className="w-full justify-start rounded-none border-b border-border bg-transparent px-4 pt-2">
-                <TabsTrigger value="description" className="rounded-full data-[state=active]:bg-primary/15 data-[state=active]:text-primary">
-                  Description
-                </TabsTrigger>
-                <TabsTrigger value="editorial" className="rounded-full data-[state=active]:bg-primary/15 data-[state=active]:text-primary">
-                  Editorial
-                </TabsTrigger>
-                <TabsTrigger value="solutions" className="rounded-full data-[state=active]:bg-primary/15 data-[state=active]:text-primary">
-                  Solutions
-                </TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="description" className="flex-1 overflow-y-auto p-5 m-0 space-y-5">
-                {/* Tags */}
-                <div className="flex flex-wrap gap-2">
-                  {problem.tags.map((tag) => (
-                    <Badge key={tag} variant="secondary" className="rounded-full text-xs">
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-
-                {/* Description */}
-                <div className="prose prose-sm max-w-none space-y-1">
-                  {renderDescription(problem.description)}
-                </div>
-
-                {/* Examples */}
-                <div className="space-y-4">
-                  {problem.examples.map((ex, i) => (
-                    <div key={i} className="space-y-2">
-                      <h4 className="text-sm font-semibold text-foreground">Example {i + 1}:</h4>
-                      <div className="rounded-xl bg-muted/50 border border-border p-4 font-mono text-sm space-y-1">
-                        <div><span className="text-muted-foreground">Input: </span><span className="text-foreground">{ex.input}</span></div>
-                        <div><span className="text-muted-foreground">Output: </span><span className="text-primary font-semibold">{ex.output}</span></div>
-                        {ex.explanation && (
-                          <div><span className="text-muted-foreground">Explanation: </span><span className="text-foreground/80">{ex.explanation}</span></div>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Constraints */}
-                <div className="space-y-2">
-                  <h4 className="text-sm font-semibold text-foreground">Constraints:</h4>
-                  <ul className="list-disc pl-5 space-y-1 text-sm text-foreground/80">
-                    {problem.constraints.map((c, i) => (
-                      <li key={i} className="font-mono text-xs">{c}</li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* Actions */}
-                <div className="flex items-center gap-4 text-muted-foreground pt-2">
-                  <button
-                    onClick={() => { setLiked(prev => ({ ...prev, [problem.id]: !prev[problem.id] })); if (disliked[problem.id]) setDisliked(prev => ({ ...prev, [problem.id]: false })); }}
-                    className={`flex items-center gap-1.5 text-sm transition-colors ${liked[problem.id] ? "text-primary" : "hover:text-primary"}`}
-                    aria-label="Like"
-                  >
-                    <ThumbsUp className="h-4 w-4" /> {problem.likes + (liked[problem.id] ? 1 : 0)}
-                  </button>
-                  <button
-                    onClick={() => { setDisliked(prev => ({ ...prev, [problem.id]: !prev[problem.id] })); if (liked[problem.id]) setLiked(prev => ({ ...prev, [problem.id]: false })); }}
-                    className={`flex items-center gap-1.5 text-sm transition-colors ${disliked[problem.id] ? "text-destructive" : "hover:text-destructive"}`}
-                    aria-label="Dislike"
-                  >
-                    <ThumbsDown className="h-4 w-4" /> {problem.dislikes + (disliked[problem.id] ? 1 : 0)}
-                  </button>
-                  <button
-                    onClick={() => setBookmarked(prev => ({ ...prev, [problem.id]: !prev[problem.id] }))}
-                    className={`flex items-center gap-1.5 text-sm transition-colors ${bookmarked[problem.id] ? "text-accent" : "hover:text-accent"}`}
-                    aria-label="Bookmark"
-                  >
-                    <BookmarkPlus className="h-4 w-4" />
-                  </button>
-                  <button
-                    onClick={() => toast({ title: "Link copied!", description: "Problem link copied to clipboard." })}
-                    className="flex items-center gap-1.5 text-sm hover:text-accent transition-colors"
-                    aria-label="Share"
-                  >
-                    <Share2 className="h-4 w-4" />
-                  </button>
-                </div>
-              </TabsContent>
-
-              <TabsContent value="editorial" className="flex-1 overflow-y-auto p-5 m-0 space-y-4">
-                {(() => {
-                  const editorials: Record<number, { approach: string; steps: string[]; time: string; space: string }> = {
-                    1: { approach: "Hash Map", steps: ["Create an empty hash map to store values and their indices.", "Iterate through the array. For each element, calculate the complement (target - current).", "Check if the complement exists in the hash map. If it does, return both indices.", "If not, add the current element and its index to the hash map."], time: "O(n)", space: "O(n)" },
-                    2: { approach: "Stack", steps: ["Initialize an empty stack.", "Iterate through each character in the string.", "If the character is an opening bracket, push it onto the stack.", "If it's a closing bracket, check if the stack is non-empty and the top matches. If not, return false.", "After iteration, return true if the stack is empty."], time: "O(n)", space: "O(n)" },
-                    3: { approach: "Iterative Merge", steps: ["Create a dummy head node.", "Compare the heads of both lists and attach the smaller one to the merged list.", "Move the pointer of the list from which the node was taken.", "After one list is exhausted, attach the remaining nodes of the other list."], time: "O(n + m)", space: "O(1)" },
-                    4: { approach: "One-Pass Min Tracking", steps: ["Initialize minPrice to Infinity and maxProfit to 0.", "Iterate through each price in the array.", "Update minPrice if the current price is lower than minPrice.", "Compute profit as currentPrice − minPrice, and update maxProfit if this profit is larger."], time: "O(n)", space: "O(1)" },
-                    5: { approach: "Hash Set", steps: ["Create an empty hash set.", "Iterate through each element in the array.", "If the element already exists in the set, return true (duplicate found).", "Otherwise, add the element to the set. If the loop finishes, return false."], time: "O(n)", space: "O(n)" },
-                  };
-                  const ed = editorials[problem.id] || editorials[1];
-                  return (
-                    <>
-                      <h3 className="text-base font-semibold text-foreground">Approach: {ed.approach}</h3>
-                      <div className="space-y-2 text-sm text-muted-foreground">
-                        {ed.steps.map((step, i) => (
-                          <p key={i}><strong className="text-foreground">Step {i + 1}:</strong> {step}</p>
-                        ))}
-                      </div>
-                      <div className="rounded-xl bg-muted/50 border border-border p-4 font-mono text-xs">
-                        <p className="text-muted-foreground">Time Complexity: {ed.time}</p>
-                        <p className="text-muted-foreground">Space Complexity: {ed.space}</p>
-                      </div>
-                    </>
-                  );
-                })()}
-              </TabsContent>
-
-              <TabsContent value="solutions" className="flex-1 overflow-y-auto p-5 m-0 space-y-3">
-                {(() => {
-                  const SOLUTIONS: Record<number, { author: string; lang: string; votes: number; time: string; code: string }[]> = {
-                    1: [
-                      { author: "Alice C.", lang: "Python", votes: 234, time: "2 weeks ago", code: "def twoSum(nums, target):\n    seen = {}\n    for i, n in enumerate(nums):\n        comp = target - n\n        if comp in seen:\n            return [seen[comp], i]\n        seen[n] = i" },
-                      { author: "Bob K.", lang: "JavaScript", votes: 189, time: "1 month ago", code: "function twoSum(nums, target) {\n  const map = new Map();\n  for (let i = 0; i < nums.length; i++) {\n    const comp = target - nums[i];\n    if (map.has(comp)) return [map.get(comp), i];\n    map.set(nums[i], i);\n  }\n}" },
-                    ],
-                    2: [
-                      { author: "Dan W.", lang: "Python", votes: 198, time: "1 week ago", code: "def isValid(s):\n    stack = []\n    pairs = {')': '(', '}': '{', ']': '['}\n    for c in s:\n        if c in pairs.values():\n            stack.append(c)\n        elif c in pairs:\n            if not stack or stack[-1] != pairs[c]:\n                return False\n            stack.pop()\n    return len(stack) == 0" },
-                      { author: "Eva M.", lang: "JavaScript", votes: 165, time: "3 weeks ago", code: "function isValid(s) {\n  const stack = [];\n  const map = { ')': '(', '}': '{', ']': '[' };\n  for (const c of s) {\n    if ('({['.includes(c)) stack.push(c);\n    else if (stack.pop() !== map[c]) return false;\n  }\n  return stack.length === 0;\n}" },
-                    ],
-                    3: [
-                      { author: "Faye L.", lang: "Python", votes: 210, time: "2 weeks ago", code: "def mergeTwoLists(l1, l2):\n    dummy = ListNode(0)\n    curr = dummy\n    while l1 and l2:\n        if l1.val <= l2.val:\n            curr.next = l1\n            l1 = l1.next\n        else:\n            curr.next = l2\n            l2 = l2.next\n        curr = curr.next\n    curr.next = l1 or l2\n    return dummy.next" },
-                      { author: "Greg T.", lang: "JavaScript", votes: 145, time: "1 month ago", code: "function mergeTwoLists(l1, l2) {\n  if (!l1) return l2;\n  if (!l2) return l1;\n  if (l1.val <= l2.val) {\n    l1.next = mergeTwoLists(l1.next, l2);\n    return l1;\n  }\n  l2.next = mergeTwoLists(l1, l2.next);\n  return l2;\n}" },
-                    ],
-                    4: [
-                      { author: "Hana S.", lang: "Python", votes: 276, time: "1 week ago", code: "def maxProfit(prices):\n    min_price = float('inf')\n    max_profit = 0\n    for price in prices:\n        min_price = min(min_price, price)\n        max_profit = max(max_profit, price - min_price)\n    return max_profit" },
-                      { author: "Ivan P.", lang: "JavaScript", votes: 201, time: "2 weeks ago", code: "function maxProfit(prices) {\n  let minPrice = Infinity, maxProfit = 0;\n  for (const price of prices) {\n    minPrice = Math.min(minPrice, price);\n    maxProfit = Math.max(maxProfit, price - minPrice);\n  }\n  return maxProfit;\n}" },
-                    ],
-                    5: [
-                      { author: "Jade K.", lang: "Python", votes: 188, time: "3 weeks ago", code: "def containsDuplicate(nums):\n    return len(nums) != len(set(nums))" },
-                      { author: "Kyle R.", lang: "JavaScript", votes: 162, time: "1 month ago", code: "function containsDuplicate(nums) {\n  const seen = new Set();\n  for (const n of nums) {\n    if (seen.has(n)) return true;\n    seen.add(n);\n  }\n  return false;\n}" },
-                    ],
-                  };
-                  const solutions = SOLUTIONS[problem.id] || SOLUTIONS[1];
-                  return solutions.map((s, i) => (
-                  <div
-                    key={i}
-                    onClick={() => setExpandedSolution(expandedSolution === i ? null : i)}
-                    className="rounded-xl border border-border/50 bg-secondary/20 p-4 hover:bg-secondary/40 transition-colors cursor-pointer"
-                  >
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm font-medium text-foreground">{s.author}</p>
-                        <p className="text-xs text-muted-foreground">{s.lang} • {s.time}</p>
-                      </div>
-                      <Badge variant="secondary" className="text-xs">▲ {s.votes}</Badge>
-                    </div>
-                    {expandedSolution === i && (
-                      <pre className="mt-3 rounded-lg bg-muted/50 border border-border p-3 text-xs font-mono text-foreground overflow-x-auto whitespace-pre-wrap">
-                        {s.code}
-                      </pre>
-                    )}
-                  </div>
-                  ));
-                })()}
-              </TabsContent>
-            </Tabs>
+      {/* Main layout */}
+      <ResizablePanelGroup
+        direction="horizontal"
+        className="flex-1 rounded-2xl border border-border overflow-hidden bg-card/60 backdrop-blur-sm"
+      >
+        {/* Code editor panel */}
+        <ResizablePanel defaultSize={60} minSize={35}>
+          <div className="flex flex-col h-full">
+            <div className="flex items-center gap-2 px-4 py-2 border-b border-border bg-muted/30">
+              <Code2 className="h-4 w-4 text-muted-foreground" />
+              <span className="text-xs font-medium text-muted-foreground">Code</span>
+              <span className="text-[10px] text-muted-foreground/60 ml-auto">Ctrl+Enter to run</span>
+            </div>
+            <div className="flex-1">
+              <Editor
+                height="100%"
+                language={language === "cpp" ? "cpp" : language}
+                value={code}
+                onChange={(v) => setCode(v || "")}
+                theme={theme === "dark" ? "vs-dark" : "light"}
+                options={{
+                  fontSize: 14,
+                  minimap: { enabled: false },
+                  scrollBeyondLastLine: false,
+                  padding: { top: 12 },
+                  lineNumbers: "on",
+                  renderLineHighlight: "line",
+                  automaticLayout: true,
+                  tabSize: 4,
+                  wordWrap: "on",
+                }}
+              />
+            </div>
           </div>
         </ResizablePanel>
 
         <ResizableHandle withHandle />
 
-        {/* Right panel — Editor + Console */}
-        <ResizablePanel defaultSize={60} minSize={35}>
+        {/* Right panel: Input + Output stacked */}
+        <ResizablePanel defaultSize={40} minSize={25}>
           <ResizablePanelGroup direction="vertical">
-            {/* Code editor */}
-            <ResizablePanel defaultSize={65} minSize={30}>
-              <div className="flex h-full flex-col">
-                {/* Editor toolbar */}
-                <div className="flex items-center justify-between border-b border-border px-4 py-2">
-                  <Select value={language} onValueChange={handleLanguageChange}>
-                    <SelectTrigger className="w-[160px] h-8 rounded-full text-sm">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="rounded-xl">
-                      <SelectItem value="javascript">JavaScript</SelectItem>
-                      <SelectItem value="typescript">TypeScript</SelectItem>
-                      <SelectItem value="python">Python</SelectItem>
-                      <SelectItem value="java">Java</SelectItem>
-                    </SelectContent>
-                  </Select>
+            {/* Input */}
+            <ResizablePanel defaultSize={35} minSize={15}>
+              <div className="flex flex-col h-full">
+                <div className="flex items-center gap-2 px-4 py-2 border-b border-border bg-muted/30">
+                  <ArrowRightLeft className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-xs font-medium text-muted-foreground">Input</span>
                 </div>
-
-                {/* Monaco */}
-                <div className="flex-1">
-                  <Editor
-                    height="100%"
-                    language={LANG_MAP[language]}
-                    value={getCode()}
-                    onChange={(v) => setCode(v || "")}
-                    theme={theme === "dark" ? "vs-dark" : "light"}
-                    options={{
-                      fontSize: 14,
-                      fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
-                      minimap: { enabled: false },
-                      padding: { top: 16 },
-                      scrollBeyondLastLine: false,
-                      wordWrap: "on",
-                      lineNumbers: "on",
-                      renderLineHighlight: "line",
-                      cursorBlinking: "smooth",
-                      smoothScrolling: true,
-                      bracketPairColorization: { enabled: true },
-                      autoClosingBrackets: "always",
-                      tabSize: 4,
-                    }}
-                  />
-                </div>
+                <Textarea
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  placeholder="Enter input here..."
+                  className="flex-1 resize-none rounded-none border-0 bg-transparent font-mono text-sm focus-visible:ring-0 focus-visible:ring-offset-0"
+                />
               </div>
             </ResizablePanel>
 
-            <ResizableHandle withHandle />
+            <ResizableHandle />
 
-            {/* Bottom — Test cases / Results */}
-            <ResizablePanel defaultSize={35} minSize={15}>
-              <Tabs value={bottomTab} onValueChange={setBottomTab} className="flex flex-col h-full">
-                <TabsList className="w-full justify-start rounded-none border-b border-border bg-transparent px-4 pt-1">
-                  <TabsTrigger value="testcase" className="rounded-full text-xs data-[state=active]:bg-primary/15 data-[state=active]:text-primary">
-                    Test Cases
-                  </TabsTrigger>
-                  <TabsTrigger value="result" className="rounded-full text-xs data-[state=active]:bg-primary/15 data-[state=active]:text-primary">
-                    Results
-                    {testResults && (
-                      <span className="ml-1.5">
-                        {testResults.every((t) => t.passed) ? (
-                          <CheckCircle2 className="h-3.5 w-3.5 text-green-600 dark:text-green-400 inline" />
-                        ) : (
-                          <XCircle className="h-3.5 w-3.5 text-red-600 dark:text-red-400 inline" />
-                        )}
-                      </span>
-                    )}
-                  </TabsTrigger>
-                </TabsList>
-
-                <TabsContent value="testcase" className="flex-1 overflow-y-auto p-4 m-0 space-y-3">
-                  {problem.examples.map((ex, i) => (
-                    <div key={i} className="rounded-xl bg-muted/40 border border-border p-3 font-mono text-xs space-y-1">
-                      <div className="text-muted-foreground">Case {i + 1}</div>
-                      <div className="text-foreground">{ex.input}</div>
-                    </div>
-                  ))}
-                </TabsContent>
-
-                <TabsContent value="result" className="flex-1 overflow-y-auto p-4 m-0">
-                  {isRunning ? (
-                    <div className="flex items-center gap-2 text-muted-foreground text-sm">
-                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-                      Running tests…
-                    </div>
-                  ) : testResults ? (
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-2">
-                        {testResults.every((t) => t.passed) ? (
-                          <Badge className="rounded-full bg-green-500/15 text-green-600 dark:text-green-400 border-green-500/30">
-                            <CheckCircle2 className="h-3.5 w-3.5 mr-1" />
-                            All Passed
-                          </Badge>
-                        ) : (
-                          <Badge className="rounded-full bg-red-500/15 text-red-600 dark:text-red-400 border-red-500/30">
-                            <XCircle className="h-3.5 w-3.5 mr-1" />
-                            Some Failed
-                          </Badge>
-                        )}
-                      </div>
-                      {testResults.map((t) => (
-                        <div
-                          key={t.id}
-                          className={`rounded-xl border p-3 font-mono text-xs space-y-1 ${
-                            t.passed ? "border-green-500/20 bg-green-500/5" : "border-red-500/20 bg-red-500/5"
-                          }`}
-                        >
-                          <div className="flex items-center justify-between">
-                            <span className="font-semibold text-foreground">Case {t.id}</span>
-                            <span className="flex items-center gap-1 text-muted-foreground">
-                              <Clock className="h-3 w-3" /> {t.time}
-                            </span>
-                          </div>
-                          <div><span className="text-muted-foreground">Input: </span>{t.input}</div>
-                          <div><span className="text-muted-foreground">Expected: </span>{t.expected}</div>
-                          <div>
-                            <span className="text-muted-foreground">Output: </span>
-                            <span className={t.passed ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}>{t.output}</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-sm text-muted-foreground">Run or submit your code to see results.</p>
+            {/* Output */}
+            <ResizablePanel defaultSize={65} minSize={20}>
+              <div className="flex flex-col h-full">
+                <div className="flex items-center gap-2 px-4 py-2 border-b border-border bg-muted/30">
+                  <Terminal className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-xs font-medium text-muted-foreground">Output</span>
+                  {isRunning && (
+                    <Loader2 className="h-3 w-3 animate-spin text-primary ml-1" />
                   )}
-                </TabsContent>
-              </Tabs>
+                </div>
+                <div className="flex-1 overflow-auto p-4">
+                  {output ? (
+                    <pre className="text-sm font-mono text-foreground/90 whitespace-pre-wrap leading-relaxed">
+                      {output}
+                    </pre>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center h-full text-muted-foreground/50 gap-2">
+                      <Terminal className="h-8 w-8" />
+                      <span className="text-xs">Run your code to see output here</span>
+                    </div>
+                  )}
+                </div>
+              </div>
             </ResizablePanel>
           </ResizablePanelGroup>
         </ResizablePanel>
