@@ -467,11 +467,16 @@ export default function ExamTaking() {
   const handleRunCode = (qId: string) => {
     setIsRunning(true);
     setCodeOutput((prev) => ({ ...prev, [qId]: "" }));
+    const userInput = codeInput[qId] || "";
     setTimeout(() => {
+      const lines: string[] = ["Compiling...", "Running..."];
+      if (userInput.trim()) {
+        lines.push("", `--- stdin (${userInput.split("\n").length} line(s)) ---`);
+      }
+      lines.push("", "Program executed successfully.", "", `Process finished with exit code 0`, `Execution time: ${Math.floor(Math.random() * 50 + 5)}ms | Memory: ${Math.floor(Math.random() * 5 + 2)}MB`);
       setCodeOutput((prev) => ({
         ...prev,
-        [qId]:
-          "Compiling...\nRunning...\n\nProgram executed successfully.\n\nProcess finished with exit code 0\nExecution time: 12ms | Memory: 3MB",
+        [qId]: lines.join("\n"),
       }));
       setIsRunning(false);
     }, 1200);
