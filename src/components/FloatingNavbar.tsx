@@ -95,10 +95,13 @@ export function FloatingNavbar() {
           </button>
         )}
 
-        <div className="flex items-center gap-2 border border-border bg-card/80 px-4 py-1.5 shadow-lg backdrop-blur-md rounded-full">
+        <button
+          onClick={() => navigate("/")}
+          className="flex items-center gap-2 border border-border bg-card/80 px-4 py-1.5 shadow-lg backdrop-blur-md rounded-full cursor-pointer"
+        >
           <KernelLogo className="h-6 w-6" />
           <span className="text-lg font-bold tracking-tight text-foreground">Kernel</span>
-        </div>
+        </button>
 
         <div className="flex-1" />
 
