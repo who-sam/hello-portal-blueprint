@@ -2,8 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Play, Clock, BookOpen, Calendar as CalendarIcon, AlertTriangle, ChevronRight } from "lucide-react";
-import { Calendar } from "@/components/ui/calendar";
+import { Play, Clock, BookOpen, AlertTriangle, ChevronRight } from "lucide-react";
 import { useUser } from "@/contexts/UserContext";
 import { useState } from "react";
 
