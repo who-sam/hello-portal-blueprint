@@ -374,8 +374,9 @@ export default function ExamTaking() {
   );
   const [submitted, setSubmitted] = useState(false);
 
-  // Coding: run state & output
+  // Coding: run state, input & output
   const [isRunning, setIsRunning] = useState(false);
+  const [codeInput, setCodeInput] = useState<Record<string, string>>({});
   const [codeOutput, setCodeOutput] = useState<Record<string, string>>({});
 
   const questions = exam?.questions || [];
