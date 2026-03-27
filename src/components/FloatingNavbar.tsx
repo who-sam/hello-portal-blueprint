@@ -24,7 +24,6 @@ const teacherNavTabs = [
   { label: "Courses", url: "/dashboard/courses" },
   { label: "Exam Builder", url: "/dashboard/exam-builder" },
   { label: "Results", url: "/dashboard/results" },
-  { label: "Settings", url: "/dashboard/settings" },
 ];
 
 const studentNavTabs = [
@@ -32,7 +31,6 @@ const studentNavTabs = [
   { label: "Exams", url: "/dashboard/exams" },
   { label: "Playground", url: "/dashboard/playground" },
   { label: "Results", url: "/dashboard/results" },
-  { label: "Settings", url: "/dashboard/settings" },
 ];
 
 export function FloatingNavbar() {
@@ -74,14 +72,7 @@ export function FloatingNavbar() {
   const toggleTheme = () => setTheme(isDark ? "light" : "dark");
 
   const searchItems = [
-    { label: "Dashboard", url: "/dashboard" },
-    { label: "Profile", url: "/dashboard/profile" },
-    { label: "Playground", url: "/dashboard/playground" },
-    { label: "Exams", url: "/dashboard/exams" },
-    { label: "Results", url: "/dashboard/results" },
-    { label: "Settings", url: "/dashboard/settings" },
     { label: "Courses", url: "/dashboard/courses" },
-    { label: "Exam Builder", url: "/dashboard/exam-builder" },
   ];
 
   return (
@@ -97,10 +88,13 @@ export function FloatingNavbar() {
           </button>
         )}
 
-        <div className="flex items-center gap-2 border border-border bg-card/80 px-4 py-1.5 shadow-lg backdrop-blur-md rounded-full">
+        <button
+          onClick={() => navigate("/")}
+          className="flex items-center gap-2 border border-border bg-card/80 px-4 py-1.5 shadow-lg backdrop-blur-md rounded-full cursor-pointer"
+        >
           <KernelLogo className="h-6 w-6" />
           <span className="text-lg font-bold tracking-tight text-foreground">Kernel</span>
-        </div>
+        </button>
 
         <div className="flex-1" />
 
