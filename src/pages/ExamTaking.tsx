@@ -858,6 +858,27 @@ export default function ExamTaking() {
                     />
                   </div>
 
+                  {/* Custom Input */}
+                  <div className="rounded-xl border border-border overflow-hidden">
+                    <div className="flex items-center gap-2 px-3 py-2 bg-muted/30 border-b border-border">
+                      <ArrowRightLeft className="h-3.5 w-3.5 text-muted-foreground" />
+                      <span className="text-xs font-medium text-muted-foreground">
+                        Custom Input
+                      </span>
+                    </div>
+                    <Textarea
+                      value={codeInput[q.id] || ""}
+                      onChange={(e) =>
+                        setCodeInput((prev) => ({
+                          ...prev,
+                          [q.id]: e.target.value,
+                        }))
+                      }
+                      placeholder="Enter your test input here (stdin)..."
+                      className="min-h-[70px] max-h-[100px] resize-none rounded-none border-0 bg-transparent font-mono text-xs focus-visible:ring-0 focus-visible:ring-offset-0"
+                    />
+                  </div>
+
                   {/* Output console */}
                   <div className="rounded-xl border border-border overflow-hidden">
                     <div className="flex items-center gap-2 px-3 py-2 bg-muted/30 border-b border-border">
