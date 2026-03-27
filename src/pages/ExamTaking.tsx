@@ -31,6 +31,7 @@ import {
   Play,
   Loader2,
   Terminal,
+  ArrowRightLeft,
 } from "lucide-react";
 import Editor from "@monaco-editor/react";
 import { cn } from "@/lib/utils";
