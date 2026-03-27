@@ -42,6 +42,7 @@ function generateCourseId() {
    TEACHER VIEW
    ================================================================ */
 function TeacherCourses() {
+  const navigate = useNavigate();
   const { toast } = useToast();
   const [courses, setCourses] = useState(initialTeacherCourses);
   const [createOpen, setCreateOpen] = useState(false);
