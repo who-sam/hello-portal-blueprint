@@ -48,7 +48,7 @@ export default function Dashboard() {
   const firstName = name.split(" ")[0];
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
-  const [calendarDate, setCalendarDate] = useState<Date | undefined>(new Date());
+  
 
   const hasActiveExam = !!activeExam;
 
