@@ -4,7 +4,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Play, Clock, BookOpen, AlertTriangle, ChevronRight } from "lucide-react";
 import { useUser } from "@/contexts/UserContext";
-import { useState } from "react";
 
 const activeExam = {
   id: "mid-ds",
