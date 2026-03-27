@@ -31,6 +31,7 @@ import {
   Play,
   Loader2,
   Terminal,
+  ArrowRightLeft,
 } from "lucide-react";
 import Editor from "@monaco-editor/react";
 import { cn } from "@/lib/utils";
@@ -374,8 +375,9 @@ export default function ExamTaking() {
   );
   const [submitted, setSubmitted] = useState(false);
 
-  // Coding: run state & output
+  // Coding: run state, input & output
   const [isRunning, setIsRunning] = useState(false);
+  const [codeInput, setCodeInput] = useState<Record<string, string>>({});
   const [codeOutput, setCodeOutput] = useState<Record<string, string>>({});
 
   const questions = exam?.questions || [];
@@ -466,11 +468,16 @@ export default function ExamTaking() {
   const handleRunCode = (qId: string) => {
     setIsRunning(true);
     setCodeOutput((prev) => ({ ...prev, [qId]: "" }));
+    const userInput = codeInput[qId] || "";
     setTimeout(() => {
+      const lines: string[] = ["Compiling...", "Running..."];
+      if (userInput.trim()) {
+        lines.push("", `--- stdin (${userInput.split("\n").length} line(s)) ---`);
+      }
+      lines.push("", "Program executed successfully.", "", `Process finished with exit code 0`, `Execution time: ${Math.floor(Math.random() * 50 + 5)}ms | Memory: ${Math.floor(Math.random() * 5 + 2)}MB`);
       setCodeOutput((prev) => ({
         ...prev,
-        [qId]:
-          "Compiling...\nRunning...\n\nProgram executed successfully.\n\nProcess finished with exit code 0\nExecution time: 12ms | Memory: 3MB",
+        [qId]: lines.join("\n"),
       }));
       setIsRunning(false);
     }, 1200);
@@ -849,6 +856,27 @@ export default function ExamTaking() {
                         automaticLayout: true,
                         wordWrap: "on",
                       }}
+                    />
+                  </div>
+
+                  {/* Custom Input */}
+                  <div className="rounded-xl border border-border overflow-hidden">
+                    <div className="flex items-center gap-2 px-3 py-2 bg-muted/30 border-b border-border">
+                      <ArrowRightLeft className="h-3.5 w-3.5 text-muted-foreground" />
+                      <span className="text-xs font-medium text-muted-foreground">
+                        Custom Input
+                      </span>
+                    </div>
+                    <Textarea
+                      value={codeInput[q.id] || ""}
+                      onChange={(e) =>
+                        setCodeInput((prev) => ({
+                          ...prev,
+                          [q.id]: e.target.value,
+                        }))
+                      }
+                      placeholder="Enter your test input here (stdin)..."
+                      className="min-h-[70px] max-h-[100px] resize-none rounded-none border-0 bg-transparent font-mono text-xs focus-visible:ring-0 focus-visible:ring-offset-0"
                     />
                   </div>
 
