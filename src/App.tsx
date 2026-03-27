@@ -48,6 +48,7 @@ const App = () => (
                   <Route path="profile" element={<Profile />} />
                   <Route path="settings" element={<Settings />} />
                   <Route path="courses" element={<Courses />} />
+                  <Route path="courses/:id" element={<CourseDetail />} />
                   <Route path="exam-builder" element={<ExamBuilder />} />
                   <Route path="exam/:id" element={<ExamTaking />} />
                   <Route path="exam/:id/review" element={<ExamReview />} />
