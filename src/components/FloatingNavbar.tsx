@@ -24,7 +24,6 @@ const teacherNavTabs = [
   { label: "Courses", url: "/dashboard/courses" },
   { label: "Exam Builder", url: "/dashboard/exam-builder" },
   { label: "Results", url: "/dashboard/results" },
-  { label: "Settings", url: "/dashboard/settings" },
 ];
 
 const studentNavTabs = [
