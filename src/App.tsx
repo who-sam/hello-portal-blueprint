@@ -22,6 +22,7 @@ import ExamTaking from "./pages/ExamTaking";
 import Profile from "./pages/Profile";
 import ExamReview from "./pages/ExamReview";
 import Courses from "./pages/Courses";
+import CourseDetail from "./pages/CourseDetail";
 
 const queryClient = new QueryClient();
 
