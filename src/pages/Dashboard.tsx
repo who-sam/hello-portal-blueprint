@@ -2,10 +2,8 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Play, Clock, BookOpen, Calendar as CalendarIcon, AlertTriangle, ChevronRight } from "lucide-react";
-import { Calendar } from "@/components/ui/calendar";
+import { Play, Clock, BookOpen, AlertTriangle, ChevronRight } from "lucide-react";
 import { useUser } from "@/contexts/UserContext";
-import { useState } from "react";
 
 const activeExam = {
   id: "mid-ds",
@@ -50,7 +48,7 @@ export default function Dashboard() {
   const firstName = name.split(" ")[0];
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
-  const [calendarDate, setCalendarDate] = useState<Date | undefined>(new Date());
+  
 
   const hasActiveExam = !!activeExam;
 
@@ -112,58 +110,37 @@ export default function Dashboard() {
         </Card>
       )}
 
-      {/* Main grid: Upcoming Exams + Calendar */}
-      <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
-        {/* Upcoming Exams */}
-        <Card className="xl:col-span-2 border-border/50 bg-card/80 backdrop-blur-md">
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <Clock className="h-5 w-5 text-primary" />
-              Upcoming Exams
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {upcomingExams.map((exam) => (
-              <div
-                key={exam.id}
-                className="flex items-center justify-between rounded-xl border border-border/50 bg-secondary/30 p-4 transition-colors hover:bg-secondary/60"
-              >
-                <div className="space-y-1">
-                  <p className="font-medium text-foreground">{exam.name}</p>
-                  <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                    <span>{exam.date}</span>
-                    <span>•</span>
-                    <span>{exam.duration}</span>
-                    <span>•</span>
-                    <span>{exam.questions} questions</span>
-                  </div>
+      {/* Upcoming Exams */}
+      <Card className="border-border/50 bg-card/80 backdrop-blur-md">
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <Clock className="h-5 w-5 text-primary" />
+            Upcoming Exams
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {upcomingExams.map((exam) => (
+            <div
+              key={exam.id}
+              className="flex items-center justify-between rounded-xl border border-border/50 bg-secondary/30 p-4 transition-colors hover:bg-secondary/60"
+            >
+              <div className="space-y-1">
+                <p className="font-medium text-foreground">{exam.name}</p>
+                <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                  <span>{exam.date}</span>
+                  <span>•</span>
+                  <span>{exam.duration}</span>
+                  <span>•</span>
+                  <span>{exam.questions} questions</span>
                 </div>
-                <Badge variant="outline" className={difficultyColor(exam.difficulty)}>
-                  {exam.difficulty}
-                </Badge>
               </div>
-            ))}
-          </CardContent>
-        </Card>
-
-        {/* Calendar */}
-        <Card className="border-border/50 bg-card/80 backdrop-blur-md">
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <CalendarIcon className="h-5 w-5 text-primary" />
-              Calendar
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="flex justify-center">
-            <Calendar
-              mode="single"
-              selected={calendarDate}
-              onSelect={setCalendarDate}
-              className="rounded-md"
-            />
-          </CardContent>
-        </Card>
-      </div>
+              <Badge variant="outline" className={difficultyColor(exam.difficulty)}>
+                {exam.difficulty}
+              </Badge>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
 
       {/* Bottom row: Recent Activity + Courses */}
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
