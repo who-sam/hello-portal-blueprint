@@ -28,6 +28,7 @@ const teacherNavTabs = [
 
 const studentNavTabs = [
   { label: "Dashboard", url: "/dashboard" },
+  { label: "Courses", url: "/dashboard/courses" },
   { label: "Exams", url: "/dashboard/exams" },
   { label: "Playground", url: "/dashboard/playground" },
   { label: "Results", url: "/dashboard/results" },
