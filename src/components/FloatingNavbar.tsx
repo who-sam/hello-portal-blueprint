@@ -72,14 +72,7 @@ export function FloatingNavbar() {
   const toggleTheme = () => setTheme(isDark ? "light" : "dark");
 
   const searchItems = [
-    { label: "Dashboard", url: "/dashboard" },
-    { label: "Profile", url: "/dashboard/profile" },
-    { label: "Playground", url: "/dashboard/playground" },
-    { label: "Exams", url: "/dashboard/exams" },
-    { label: "Results", url: "/dashboard/results" },
-    { label: "Settings", url: "/dashboard/settings" },
     { label: "Courses", url: "/dashboard/courses" },
-    { label: "Exam Builder", url: "/dashboard/exam-builder" },
   ];
 
   return (
