@@ -200,6 +200,7 @@ function TeacherCourses() {
    STUDENT VIEW
    ================================================================ */
 function StudentCourses() {
+  const navigate = useNavigate();
   const { toast } = useToast();
   const [courses, setCourses] = useState(initialStudentCourses);
   const [enrollOpen, setEnrollOpen] = useState(false);
