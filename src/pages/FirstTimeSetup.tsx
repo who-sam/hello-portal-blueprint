@@ -50,7 +50,7 @@ export default function FirstTimeSetup() {
   const onSetup = async (data: SetupData) => {
     await new Promise((r) => setTimeout(r, 600));
     setRole("student");
-    setUser({ firstName: "Ahmed", middleName: "Mohamed", lastName: "Hassan", email: data.email, studentId: data.nationalId || "STU-2026-0001" });
+    setUser({ firstName: "Ahmed", middleName: "Mohamed", lastName: "Hassan", email: data.email, studentId: "STU-2026-0001" });
     setStep("done");
     setTimeout(() => navigate("/dashboard"), 1500);
   };
