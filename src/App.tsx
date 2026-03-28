@@ -38,7 +38,7 @@ const App = () => (
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/auth" element={<AuthPage />} />
-                <Route path="/setup" element={<FirstTimeSetup />} />
+                
                 <Route path="/unauthorized" element={<Unauthorized />} />
                 <Route path="/dashboard" element={<DashboardLayout />}>
                   <Route index element={<DashboardIndex />} />
