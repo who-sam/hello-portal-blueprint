@@ -9,7 +9,7 @@ import { NotificationProvider } from "@/contexts/NotificationContext";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import AuthPage from "./pages/AuthPage";
-import FirstTimeSetup from "./pages/FirstTimeSetup";
+
 import Unauthorized from "./pages/Unauthorized";
 import DashboardLayout from "./components/DashboardLayout";
 import DashboardIndex from "./pages/DashboardIndex";
