@@ -34,17 +34,22 @@ const AuthPage = () => {
   const loginForm = useForm<LoginData>({ resolver: zodResolver(loginSchema) });
 
   const demoAccounts = {
-    student: { email: "student@kernel.edu", password: "demo1234", name: "John Doe", role: "student" as const },
-    teacher: { email: "teacher@kernel.edu", password: "demo1234", name: "Dr. Sarah Miller", role: "teacher" as const },
+    student: { email: "student@kernel.edu", password: "demo1234", firstName: "John", middleName: "", lastName: "Doe", studentId: "STU-2026-0042", role: "student" as const },
+    teacher: { email: "teacher@kernel.edu", password: "demo1234", firstName: "Sarah", middleName: "", lastName: "Miller", studentId: "", role: "teacher" as const },
   };
 
   const onLogin = async (data: LoginData) => {
     await new Promise((r) => setTimeout(r, 500));
     const demo = Object.values(demoAccounts).find((a) => a.email === data.email);
     const role = demo?.role ?? "student";
-    const name = demo?.name ?? "John Doe";
     setRole(role);
-    setUser(name, data.email);
+    setUser({
+      firstName: demo?.firstName ?? "John",
+      middleName: demo?.middleName ?? "",
+      lastName: demo?.lastName ?? "Doe",
+      email: data.email,
+      studentId: demo?.studentId ?? "STU-2026-0001",
+    });
     navigate("/dashboard");
   };
 

@@ -42,7 +42,6 @@ export default function FirstTimeSetup() {
 
   const onVerify = async (data: VerifyData) => {
     await new Promise((r) => setTimeout(r, 800));
-    // Mock: any national ID resolves to a student
     setVerifiedName("Ahmed Hassan");
     setStep("setup");
     toast({ title: "Identity verified", description: "Please set up your email and password." });
@@ -51,7 +50,7 @@ export default function FirstTimeSetup() {
   const onSetup = async (data: SetupData) => {
     await new Promise((r) => setTimeout(r, 600));
     setRole("student");
-    setUser(verifiedName, data.email);
+    setUser({ firstName: "Ahmed", middleName: "Mohamed", lastName: "Hassan", email: data.email, studentId: data.nationalId || "STU-2026-0001" });
     setStep("done");
     setTimeout(() => navigate("/dashboard"), 1500);
   };

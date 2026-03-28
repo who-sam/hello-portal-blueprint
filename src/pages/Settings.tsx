@@ -14,9 +14,9 @@ import { useTheme } from "next-themes";
 
 export default function SettingsPage() {
   const { toast } = useToast();
-  const { name, email, setUser } = useUser();
+  const { firstName, middleName, lastName, studentId, email, setUser } = useUser();
   const { theme, setTheme } = useTheme();
-  const [profile, setProfile] = useState({ name, email, bio: "Full-stack developer passionate about clean code." });
+  const [profile, setProfile] = useState({ firstName, middleName, lastName, email, bio: "Full-stack developer passionate about clean code." });
   const [notifications, setNotifications] = useState(() => {
     const stored = localStorage.getItem("kernel-notification-prefs");
     return stored ? JSON.parse(stored) : { email: true, push: true, examReminders: true, results: false, marketing: false };
@@ -25,7 +25,7 @@ export default function SettingsPage() {
   const [newPassword, setNewPassword] = useState("");
 
   const handleSave = () => {
-    setUser(profile.name, profile.email);
+    setUser({ firstName: profile.firstName, middleName: profile.middleName, lastName: profile.lastName, email: profile.email, studentId });
     toast({ title: "Settings saved", description: "Your profile has been updated." });
   };
 
