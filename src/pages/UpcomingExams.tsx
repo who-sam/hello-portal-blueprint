@@ -221,6 +221,10 @@ export default function UpcomingExamsPage() {
               selected={selectedDate}
               onSelect={setSelectedDate}
               className="p-0 pointer-events-auto"
+              classNames={{
+                cell: "relative p-0 text-center text-sm focus-within:relative focus-within:z-20 [&:has([aria-selected])]:rounded-md [&:has([aria-selected])]:bg-transparent h-9 w-9",
+                day_selected: "rounded-md bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
+              }}
               modifiers={{ exam: examDates }}
               modifiersClassNames={{ exam: "bg-primary/20 text-primary font-bold rounded-full" }}
             />
