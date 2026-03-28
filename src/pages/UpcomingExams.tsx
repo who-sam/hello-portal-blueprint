@@ -85,67 +85,7 @@ export default function UpcomingExamsPage() {
         <p className="mt-1 text-muted-foreground">View your exam schedule and prepare ahead.</p>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[auto_minmax(0,1fr)]">
-        {/* Calendar */}
-        <Card className="self-start border-border/50 bg-card/80 backdrop-blur-md w-fit">
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <CalendarIcon className="h-5 w-5 text-primary" />
-              Calendar
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <Calendar
-              mode="single"
-              selected={selectedDate}
-              onSelect={setSelectedDate}
-              className="p-0 pointer-events-auto"
-              modifiers={{ exam: examDates }}
-              modifiersClassNames={{ exam: "bg-primary/20 text-primary font-bold rounded-full" }}
-            />
-
-            {/* Mini stats */}
-            <div className="grid grid-cols-3 gap-2">
-              <div className="rounded-lg bg-secondary/50 p-2.5 text-center">
-                <p className="text-lg font-bold text-foreground">{stats.total}</p>
-                <p className="text-[10px] text-muted-foreground">Total</p>
-              </div>
-              <div className="rounded-lg bg-green-500/10 p-2.5 text-center">
-                <p className="text-lg font-bold text-green-500">{stats.completed}</p>
-                <p className="text-[10px] text-muted-foreground">Done</p>
-              </div>
-              <div className="rounded-lg bg-primary/10 p-2.5 text-center">
-                <p className="text-lg font-bold text-primary">{stats.upcoming}</p>
-                <p className="text-[10px] text-muted-foreground">Upcoming</p>
-              </div>
-            </div>
-
-            {/* Selected date detail */}
-            {selectedExam && (
-              <div className="rounded-xl border border-primary/30 bg-primary/5 p-4 space-y-2">
-                <p className="font-semibold text-foreground">{selectedExam.name}</p>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Clock className="h-4 w-4" />
-                  {selectedExam.duration} · {selectedExam.questions} questions
-                </div>
-                <div className="flex items-center gap-2">
-                  <Badge variant="outline" className={difficultyColor(selectedExam.difficulty)}>
-                    {selectedExam.difficulty}
-                  </Badge>
-                  {selectedExam.status === "completed" && (
-                    <Badge className="bg-green-500/15 text-green-500 border-green-500/30" variant="outline">
-                      {selectedExam.score}%
-                    </Badge>
-                  )}
-                  {selectedExam.status === "missed" && (
-                    <Badge variant="destructive">Missed</Badge>
-                  )}
-                </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_auto]">
         {/* Exam list */}
         <Card className="border-border/50 bg-card/80 backdrop-blur-md">
           <CardHeader className="pb-3">
@@ -262,6 +202,66 @@ export default function UpcomingExamsPage() {
                     </div>
                   );
                 })}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Calendar */}
+        <Card className="self-start border-border/50 bg-card/80 backdrop-blur-md w-fit">
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <CalendarIcon className="h-5 w-5 text-primary" />
+              Calendar
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Calendar
+              mode="single"
+              selected={selectedDate}
+              onSelect={setSelectedDate}
+              className="p-0 pointer-events-auto"
+              modifiers={{ exam: examDates }}
+              modifiersClassNames={{ exam: "bg-primary/20 text-primary font-bold rounded-full" }}
+            />
+
+            {/* Mini stats */}
+            <div className="grid grid-cols-3 gap-2">
+              <div className="rounded-lg bg-secondary/50 p-2.5 text-center">
+                <p className="text-lg font-bold text-foreground">{stats.total}</p>
+                <p className="text-[10px] text-muted-foreground">Total</p>
+              </div>
+              <div className="rounded-lg bg-green-500/10 p-2.5 text-center">
+                <p className="text-lg font-bold text-green-500">{stats.completed}</p>
+                <p className="text-[10px] text-muted-foreground">Done</p>
+              </div>
+              <div className="rounded-lg bg-primary/10 p-2.5 text-center">
+                <p className="text-lg font-bold text-primary">{stats.upcoming}</p>
+                <p className="text-[10px] text-muted-foreground">Upcoming</p>
+              </div>
+            </div>
+
+            {/* Selected date detail */}
+            {selectedExam && (
+              <div className="rounded-xl border border-primary/30 bg-primary/5 p-4 space-y-2">
+                <p className="font-semibold text-foreground">{selectedExam.name}</p>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Clock className="h-4 w-4" />
+                  {selectedExam.duration} · {selectedExam.questions} questions
+                </div>
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline" className={difficultyColor(selectedExam.difficulty)}>
+                    {selectedExam.difficulty}
+                  </Badge>
+                  {selectedExam.status === "completed" && (
+                    <Badge className="bg-green-500/15 text-green-500 border-green-500/30" variant="outline">
+                      {selectedExam.score}%
+                    </Badge>
+                  )}
+                  {selectedExam.status === "missed" && (
+                    <Badge variant="destructive">Missed</Badge>
+                  )}
+                </div>
               </div>
             )}
           </CardContent>
