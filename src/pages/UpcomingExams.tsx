@@ -85,9 +85,9 @@ export default function UpcomingExamsPage() {
         <p className="mt-1 text-muted-foreground">View your exam schedule and prepare ahead.</p>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[380px_minmax(0,1fr)]">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[auto_minmax(0,1fr)]">
         {/* Calendar */}
-        <Card className="self-start border-border/50 bg-card/80 backdrop-blur-md">
+        <Card className="self-start border-border/50 bg-card/80 backdrop-blur-md w-fit">
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center gap-2 text-lg">
               <CalendarIcon className="h-5 w-5 text-primary" />
