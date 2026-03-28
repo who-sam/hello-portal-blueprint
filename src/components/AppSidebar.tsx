@@ -93,10 +93,8 @@ export function AppSidebar({ mobile, onNavigate }: AppSidebarProps) {
   const toggleTheme = () => setTheme(isDark ? "light" : "dark");
 
   const handleLogout = () => {
-    localStorage.removeItem("kernel-user-name");
-    localStorage.removeItem("kernel-user-email");
     clearRole();
-    setUser("", "");
+    setUser({ firstName: "", lastName: "", email: "" });
     navigate("/");
   };
 
