@@ -7,6 +7,7 @@ export interface BaseQuestion {
   text: string;
   points: number;
   difficulty: Difficulty;
+  imageUrl?: string;
 }
 
 export interface MCQOption {

@@ -12,7 +12,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import {
   Users, FileText, GraduationCap, TrendingUp, TrendingDown,
-  Plus, School, BarChart3, BookOpen, Clock, MoreHorizontal, Eye, Pencil, Trash2,
+  Plus, BarChart3, BookOpen, Clock, MoreHorizontal, Eye, Pencil, Trash2,
+  ClipboardCheck,
 } from "lucide-react";
 import { format } from "date-fns";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
@@ -28,7 +29,7 @@ const stats = [
 
 const quickActions = [
   { label: "Create Exam", desc: "Build a new exam", icon: Plus, route: "/dashboard/exam-builder" },
-  { label: "Create Class", desc: "Start a new class", icon: School, route: "/dashboard/team" },
+  { label: "Create Course", desc: "Start a new course", icon: BookOpen, route: "/dashboard/courses", state: { openCreate: true } },
   { label: "View Results", desc: "Check submissions", icon: BarChart3, route: "/dashboard/results" },
   { label: "Question Bank", desc: "Manage questions", icon: BookOpen, route: "/dashboard/exam-builder" },
 ];
@@ -37,6 +38,18 @@ const initialActiveExams = [
   { id: "mid-ds", name: "Midterm — Data Structures", className: "CS201-A", started: 18, total: 32, remaining: "1h 23m", status: "active" },
   { id: "quiz-alg", name: "Quiz 3 — Algorithms", className: "CS301-B", started: 25, total: 28, remaining: "45m", status: "active" },
   { id: "final-oop", name: "Final — OOP Concepts", className: "CS101-A", started: 0, total: 45, remaining: "Starts in 2d", status: "scheduled" },
+];
+
+const activeCourses = [
+  { id: "KRN-CS101", name: "CS101 — Intro to Programming", students: 45, exams: 3, image: "https://images.unsplash.com/photo-1515879218367-8466d910auj7?w=400&h=200&fit=crop" },
+  { id: "KRN-CS201", name: "CS201 — Data Structures", students: 38, exams: 5, image: "https://images.unsplash.com/photo-1516116216624-53e697fedbea?w=400&h=200&fit=crop" },
+  { id: "KRN-CS301", name: "CS301 — Algorithms", students: 32, exams: 2, image: "https://images.unsplash.com/photo-1509228468518-180dd4864904?w=400&h=200&fit=crop" },
+];
+
+const pendingGrading = [
+  { examName: "Quiz 3 — Algorithms", course: "CS301-B", pending: 12, total: 28, type: "written" },
+  { examName: "Midterm — Data Structures", course: "CS201-A", pending: 5, total: 32, type: "written" },
+  { examName: "Lab 2 — Linked Lists", course: "CS201-A", pending: 8, total: 38, type: "coding" },
 ];
 
 const recentActivity = [
@@ -98,7 +111,7 @@ export default function TeacherDashboard() {
         {quickActions.map((a) => (
           <button
             key={a.label}
-            onClick={() => navigate(a.route)}
+            onClick={() => navigate(a.route, a.state ? { state: a.state } : undefined)}
             className="flex items-center gap-3 rounded-lg border border-border/50 bg-card/80 backdrop-blur-md p-4 text-left transition-all hover:border-primary/50 hover:bg-primary/5"
           >
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/15 text-primary">
@@ -110,6 +123,69 @@ export default function TeacherDashboard() {
             </div>
           </button>
         ))}
+      </div>
+
+      {/* Active Courses + Pending Grading */}
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+        {/* Active Courses */}
+        <Card className="lg:col-span-3 bg-card/80 backdrop-blur-md border-border/50">
+          <CardHeader className="pb-3 flex flex-row items-center justify-between space-y-0">
+            <CardTitle className="text-base font-semibold">Active Courses</CardTitle>
+            <Button variant="ghost" size="sm" className="text-xs" onClick={() => navigate("/dashboard/courses")}>
+              View All
+            </Button>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {activeCourses.map((c) => (
+              <div
+                key={c.id}
+                onClick={() => navigate(`/dashboard/courses/${c.id}`)}
+                className="flex items-center gap-3 rounded-lg border border-border/30 p-3 hover:bg-muted/30 transition-colors cursor-pointer"
+              >
+                <img
+                  src={c.image}
+                  alt={c.name}
+                  className="h-12 w-20 rounded-md object-cover shrink-0"
+                />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-foreground truncate">{c.name}</p>
+                  <p className="text-xs text-muted-foreground">{c.students} students • {c.exams} exams</p>
+                </div>
+                <Badge variant="secondary" className="font-mono text-[10px] shrink-0">{c.id}</Badge>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+
+        {/* Pending Grading */}
+        <Card className="lg:col-span-2 bg-card/80 backdrop-blur-md border-border/50">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base font-semibold flex items-center gap-2">
+              <ClipboardCheck className="h-4 w-4 text-primary" />
+              Pending Grading
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {pendingGrading.map((g, i) => (
+              <div
+                key={i}
+                className="flex items-start gap-3 rounded-lg border border-border/30 p-3 hover:bg-muted/30 transition-colors cursor-pointer"
+                onClick={() => navigate("/dashboard/results")}
+              >
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-destructive/15 text-destructive">
+                  <ClipboardCheck className="h-4 w-4" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-foreground truncate">{g.examName}</p>
+                  <p className="text-xs text-muted-foreground">{g.course}</p>
+                </div>
+                <Badge variant="destructive" className="text-[10px] shrink-0">
+                  {g.pending} pending
+                </Badge>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
       </div>
 
       {/* Active Exams + Activity */}

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Editor from "@monaco-editor/react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Trash2, GripVertical, Copy, ChevronDown, ChevronUp } from "lucide-react";
+import { Plus, Trash2, GripVertical, Copy, ChevronDown, ChevronUp, ImagePlus, X } from "lucide-react";
 import { useTheme } from "next-themes";
 import type { CodingQuestion, Difficulty } from "@/types/exam";
 
@@ -24,6 +24,13 @@ export default function CodingEditor({ question, onChange }: Props) {
   const [lang, setLang] = useState("python");
   const [expandedTC, setExpandedTC] = useState<string | null>(null);
   const { theme } = useTheme();
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    update({ imageUrl: URL.createObjectURL(file) });
+  };
 
   const addTestCase = () => {
     const newTC = { id: crypto.randomUUID(), input: "", expectedOutput: "", isSample: true, points: 0 };
@@ -74,6 +81,25 @@ export default function CodingEditor({ question, onChange }: Props) {
         <div className="col-span-2">
           <label className="text-xs font-medium text-muted-foreground mb-1 block">Description</label>
           <Textarea value={question.description} onChange={(e) => update({ description: e.target.value })} placeholder="Problem description (Markdown)..." rows={4} />
+        </div>
+        <div className="col-span-2">
+          <label className="text-xs font-medium text-muted-foreground mb-1 block">Question Image (optional)</label>
+          <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
+          {question.imageUrl ? (
+            <div className="relative inline-block">
+              <img src={question.imageUrl} alt="Question" className="max-h-40 rounded-lg border border-border" />
+              <button
+                onClick={() => update({ imageUrl: "" })}
+                className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center"
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </div>
+          ) : (
+            <Button variant="outline" size="sm" className="gap-1.5" onClick={() => fileRef.current?.click()}>
+              <ImagePlus className="h-4 w-4" /> Upload Image
+            </Button>
+          )}
         </div>
         <div>
           <label className="text-xs font-medium text-muted-foreground mb-1 block">Total Points</label>

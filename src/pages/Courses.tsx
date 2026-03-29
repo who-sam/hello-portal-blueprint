@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,6 +19,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 /* ── mock data ── */
+const courseImages: Record<string, string> = {
+  "KRN-CS101": "https://images.unsplash.com/photo-1515879218367-8466d910auj7?w=400&h=200&fit=crop",
+  "KRN-CS201": "https://images.unsplash.com/photo-1516116216624-53e697fedbea?w=400&h=200&fit=crop",
+  "KRN-CS301": "https://images.unsplash.com/photo-1509228468518-180dd4864904?w=400&h=200&fit=crop",
+};
+
 const initialTeacherCourses = [
   { id: "KRN-CS101", name: "CS101 — Intro to Programming", students: 45, exams: 3 },
   { id: "KRN-CS201", name: "CS201 — Data Structures", students: 38, exams: 5 },
@@ -43,11 +49,21 @@ function generateCourseId() {
    ================================================================ */
 function TeacherCourses() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
   const [courses, setCourses] = useState(initialTeacherCourses);
   const [createOpen, setCreateOpen] = useState(false);
   const [newName, setNewName] = useState("");
   const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  // Open create dialog if navigated with state
+  useEffect(() => {
+    if ((location.state as any)?.openCreate) {
+      setCreateOpen(true);
+      // Clear the state so it doesn't re-open on back navigation
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
   const handleCreate = () => {
     if (!newName.trim()) return;
@@ -96,9 +112,20 @@ function TeacherCourses() {
         {courses.map((course) => (
           <Card
             key={course.id}
-            className="border-border/50 bg-card/80 backdrop-blur-sm hover:shadow-md transition-shadow cursor-pointer"
+            className="border-border/50 bg-card/80 backdrop-blur-sm hover:shadow-md transition-shadow cursor-pointer overflow-hidden"
             onClick={() => navigate(`/dashboard/courses/${course.id}`)}
           >
+            {/* Cover image */}
+            {courseImages[course.id] && (
+              <div className="h-32 overflow-hidden">
+                <img src={courseImages[course.id]} alt={course.name} className="w-full h-full object-cover" />
+              </div>
+            )}
+            {!courseImages[course.id] && (
+              <div className="h-32 bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+                <BookOpen className="h-10 w-10 text-primary/40" />
+              </div>
+            )}
             <CardHeader className="pb-3 flex flex-row items-start justify-between space-y-0">
               <CardTitle className="text-lg flex items-center gap-2">
                 <BookOpen className="h-5 w-5 text-primary" />
@@ -106,7 +133,7 @@ function TeacherCourses() {
               </CardTitle>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0">
+                  <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0" onClick={(e) => e.stopPropagation()}>
                     <MoreHorizontal className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
@@ -119,7 +146,7 @@ function TeacherCourses() {
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     className="gap-2 text-destructive focus:text-destructive"
-                    onClick={() => deleteCourse(course.id)}
+                    onClick={(e) => { e.stopPropagation(); deleteCourse(course.id); }}
                   >
                     <Trash2 className="h-4 w-4" /> Delete
                   </DropdownMenuItem>
@@ -127,13 +154,12 @@ function TeacherCourses() {
               </DropdownMenu>
             </CardHeader>
             <CardContent className="space-y-3">
-              {/* Course ID row */}
               <div className="flex items-center gap-2">
                 <Badge variant="secondary" className="font-mono text-xs tracking-wider">
                   {course.id}
                 </Badge>
                 <button
-                  onClick={() => copyId(course.id)}
+                  onClick={(e) => { e.stopPropagation(); copyId(course.id); }}
                   className="flex h-6 w-6 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
                   aria-label="Copy course ID"
                 >
@@ -153,7 +179,7 @@ function TeacherCourses() {
                 <span className="text-muted-foreground">{course.exams} exams</span>
               </div>
 
-              <Button variant="outline" size="sm" className="w-full gap-1.5">
+              <Button variant="outline" size="sm" className="w-full gap-1.5" onClick={(e) => e.stopPropagation()}>
                 <Upload className="h-3.5 w-3.5" />
                 Enroll via CSV
               </Button>
@@ -215,7 +241,6 @@ function StudentCourses() {
       toast({ title: "Already enrolled", description: "You are already in this course.", variant: "destructive" });
       return;
     }
-    // Mock: pretend enrollment succeeded
     setCourses((prev) => [
       { id, name: `Course ${id}`, teacher: "Instructor", exams: 0 },
       ...prev,
@@ -246,7 +271,6 @@ function StudentCourses() {
         </Button>
       </div>
 
-      {/* Search */}
       <div className="relative max-w-sm">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
@@ -257,7 +281,6 @@ function StudentCourses() {
         />
       </div>
 
-      {/* Course cards */}
       {filtered.length === 0 ? (
         <Card className="border-border/50 bg-card/80 backdrop-blur-sm">
           <CardContent className="flex flex-col items-center justify-center py-12 text-center">
@@ -273,9 +296,20 @@ function StudentCourses() {
           {filtered.map((course) => (
             <Card
               key={course.id}
-              className="border-border/50 bg-card/80 backdrop-blur-sm hover:shadow-md transition-shadow cursor-pointer"
+              className="border-border/50 bg-card/80 backdrop-blur-sm hover:shadow-md transition-shadow cursor-pointer overflow-hidden"
               onClick={() => navigate(`/dashboard/courses/${course.id}`)}
             >
+              {/* Cover image */}
+              {courseImages[course.id] && (
+                <div className="h-32 overflow-hidden">
+                  <img src={courseImages[course.id]} alt={course.name} className="w-full h-full object-cover" />
+                </div>
+              )}
+              {!courseImages[course.id] && (
+                <div className="h-32 bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+                  <BookOpen className="h-10 w-10 text-primary/40" />
+                </div>
+              )}
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg flex items-center gap-2">
                   <BookOpen className="h-5 w-5 text-primary" />
