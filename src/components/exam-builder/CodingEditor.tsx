@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Editor from "@monaco-editor/react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Trash2, GripVertical, Copy, ChevronDown, ChevronUp } from "lucide-react";
+import { Plus, Trash2, GripVertical, Copy, ChevronDown, ChevronUp, ImagePlus, X } from "lucide-react";
 import { useTheme } from "next-themes";
 import type { CodingQuestion, Difficulty } from "@/types/exam";
 
