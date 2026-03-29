@@ -15,7 +15,15 @@ interface Props {
 
 export default function MCQEditor({ question, onChange }: Props) {
   const { toast } = useToast();
+  const fileRef = useRef<HTMLInputElement>(null);
   const update = (partial: Partial<MCQQuestion>) => onChange({ ...question, ...partial });
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    update({ imageUrl: url });
+  };
 
   const addOption = () => {
     if (question.options.length >= 6) return;
