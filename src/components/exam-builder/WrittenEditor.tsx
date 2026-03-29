@@ -13,7 +13,14 @@ interface Props {
 }
 
 export default function WrittenEditor({ question, onChange }: Props) {
+  const fileRef = useRef<HTMLInputElement>(null);
   const update = (partial: Partial<WrittenQuestion>) => onChange({ ...question, ...partial });
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    update({ imageUrl: URL.createObjectURL(file) });
+  };
 
   return (
     <div className="space-y-5 p-5 overflow-y-auto h-full">
