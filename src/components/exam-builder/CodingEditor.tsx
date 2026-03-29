@@ -24,6 +24,13 @@ export default function CodingEditor({ question, onChange }: Props) {
   const [lang, setLang] = useState("python");
   const [expandedTC, setExpandedTC] = useState<string | null>(null);
   const { theme } = useTheme();
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    update({ imageUrl: URL.createObjectURL(file) });
+  };
 
   const addTestCase = () => {
     const newTC = { id: crypto.randomUUID(), input: "", expectedOutput: "", isSample: true, points: 0 };
