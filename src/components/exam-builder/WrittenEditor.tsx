@@ -29,6 +29,25 @@ export default function WrittenEditor({ question, onChange }: Props) {
           <label className="text-xs font-medium text-muted-foreground mb-1 block">Question Text</label>
           <Textarea value={question.text} onChange={(e) => update({ text: e.target.value })} placeholder="Enter the question..." rows={3} />
         </div>
+        <div className="col-span-2">
+          <label className="text-xs font-medium text-muted-foreground mb-1 block">Question Image (optional)</label>
+          <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
+          {question.imageUrl ? (
+            <div className="relative inline-block">
+              <img src={question.imageUrl} alt="Question" className="max-h-40 rounded-lg border border-border" />
+              <button
+                onClick={() => update({ imageUrl: "" })}
+                className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center"
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </div>
+          ) : (
+            <Button variant="outline" size="sm" className="gap-1.5" onClick={() => fileRef.current?.click()}>
+              <ImagePlus className="h-4 w-4" /> Upload Image
+            </Button>
+          )}
+        </div>
         <div>
           <label className="text-xs font-medium text-muted-foreground mb-1 block">Points</label>
           <Input type="number" value={question.points} onChange={(e) => update({ points: Number(e.target.value) })} min={1} />
