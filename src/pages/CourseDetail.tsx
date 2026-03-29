@@ -11,7 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import {
   BookOpen, ArrowLeft, Clock, FileText, Megaphone, Trophy,
   Users, Copy, Check, Upload, Plus, Search, MoreHorizontal,
-  Trash2, Eye,
+  Trash2, Eye, Download, Send, BarChart3,
 } from "lucide-react";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
@@ -23,6 +23,12 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
 /* ── Mock data ── */
+const courseImages: Record<string, string> = {
+  "KRN-CS101": "https://images.unsplash.com/photo-1515879218367-8466d910auj7?w=800&h=300&fit=crop",
+  "KRN-CS201": "https://images.unsplash.com/photo-1516116216624-53e697fedbea?w=800&h=300&fit=crop",
+  "KRN-CS301": "https://images.unsplash.com/photo-1509228468518-180dd4864904?w=800&h=300&fit=crop",
+};
+
 const courseData: Record<string, { name: string; teacher: string; id: string }> = {
   "KRN-CS101": { name: "CS101 — Intro to Programming", teacher: "Dr. Smith", id: "KRN-CS101" },
   "KRN-CS201": { name: "CS201 — Data Structures", teacher: "Prof. Johnson", id: "KRN-CS201" },
@@ -56,6 +62,17 @@ const enrolledStudents = [
   { id: "S005", name: "James Liu", nationalId: "29908XXXXXX", avg: 65 },
 ];
 
+/* Grades spreadsheet mock data */
+const gradesSpreadsheet = [
+  { studentId: "S001", studentName: "Ahmed Salem", "Quiz 1 — Arrays": 82, "Quiz 2 — Stacks & Queues": 90, "Quiz 3 — Linked Lists": 85 },
+  { studentId: "S002", studentName: "Maria Khan", "Quiz 1 — Arrays": 95, "Quiz 2 — Stacks & Queues": 88, "Quiz 3 — Linked Lists": 91 },
+  { studentId: "S003", studentName: "Liam Park", "Quiz 1 — Arrays": 68, "Quiz 2 — Stacks & Queues": 72, "Quiz 3 — Linked Lists": 70 },
+  { studentId: "S004", studentName: "Sara Reda", "Quiz 1 — Arrays": 90, "Quiz 2 — Stacks & Queues": 85, "Quiz 3 — Linked Lists": 88 },
+  { studentId: "S005", studentName: "James Liu", "Quiz 1 — Arrays": 55, "Quiz 2 — Stacks & Queues": 62, "Quiz 3 — Linked Lists": 65 },
+];
+
+const examNames = ["Quiz 1 — Arrays", "Quiz 2 — Stacks & Queues", "Quiz 3 — Linked Lists"];
+
 const statusColor = (s: string) => {
   if (s === "upcoming") return "bg-accent/15 text-accent border-accent/30";
   if (s === "completed") return "bg-green-500/15 text-green-600 dark:text-green-400 border-green-500/30";
@@ -81,6 +98,13 @@ function StudentCourseDetail({ course }: { course: { name: string; teacher: stri
 
   return (
     <div className="space-y-6">
+      {/* Cover image */}
+      {courseImages[course.id] && (
+        <div className="rounded-xl overflow-hidden h-40 sm:h-52">
+          <img src={courseImages[course.id]} alt={course.name} className="w-full h-full object-cover" />
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex items-start gap-4">
         <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard/courses")} className="mt-1 shrink-0">
@@ -178,7 +202,6 @@ function StudentCourseDetail({ course }: { course: { name: string; teacher: stri
             </CardContent>
           </Card>
 
-          {/* Summary card */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <Card className="border-border/50 bg-card/80">
               <CardContent className="p-4 text-center">
@@ -235,6 +258,7 @@ function TeacherCourseDetail({ course }: { course: { name: string; teacher: stri
   const [announceTitle, setAnnounceTitle] = useState("");
   const [announceBody, setAnnounceBody] = useState("");
   const [announcements, setAnnouncements] = useState(courseAnnouncements);
+  const [gradesAnnounced, setGradesAnnounced] = useState(false);
 
   const copyId = () => {
     navigator.clipboard.writeText(course.id);
@@ -266,8 +290,47 @@ function TeacherCourseDetail({ course }: { course: { name: string; teacher: stri
     toast({ title: "Announcement posted" });
   };
 
+  const exportGradesCSV = () => {
+    const headers = ["Student ID", "Student Name", ...examNames];
+    const rows = gradesSpreadsheet.map((row) => [
+      row.studentId,
+      row.studentName,
+      ...examNames.map((e) => String((row as Record<string, any>)[e] ?? "")),
+    ]);
+    const csv = [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${course.id}_grades.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast({ title: "Exported!", description: "Grades CSV downloaded." });
+  };
+
+  const announceGrades = () => {
+    setAnnouncements((prev) => [
+      {
+        id: Date.now(),
+        title: "Grades Published",
+        body: "All current grades have been published and are now visible to students.",
+        date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+      },
+      ...prev,
+    ]);
+    setGradesAnnounced(true);
+    toast({ title: "Grades announced!", description: "Students can now view their grades." });
+  };
+
   return (
     <div className="space-y-6">
+      {/* Cover image */}
+      {courseImages[course.id] && (
+        <div className="rounded-xl overflow-hidden h-40 sm:h-52">
+          <img src={courseImages[course.id]} alt={course.name} className="w-full h-full object-cover" />
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex items-start gap-4">
         <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard/courses")} className="mt-1 shrink-0">
@@ -299,6 +362,9 @@ function TeacherCourseDetail({ course }: { course: { name: string; teacher: stri
           </TabsTrigger>
           <TabsTrigger value="exams" className="gap-1.5">
             <FileText className="h-4 w-4" /> Exams
+          </TabsTrigger>
+          <TabsTrigger value="grades" className="gap-1.5">
+            <BarChart3 className="h-4 w-4" /> Grades
           </TabsTrigger>
           <TabsTrigger value="announcements" className="gap-1.5">
             <Megaphone className="h-4 w-4" /> Announcements
@@ -393,6 +459,68 @@ function TeacherCourseDetail({ course }: { course: { name: string; teacher: stri
               </CardContent>
             </Card>
           ))}
+        </TabsContent>
+
+        {/* GRADES TAB (Teacher spreadsheet view) */}
+        <TabsContent value="grades" className="space-y-4">
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-muted-foreground">
+              Full grade spreadsheet for all students and exams in this course.
+            </p>
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="sm" className="gap-1.5" onClick={exportGradesCSV}>
+                <Download className="h-4 w-4" /> Export CSV
+              </Button>
+              <Button
+                size="sm"
+                className="gap-1.5"
+                onClick={announceGrades}
+                disabled={gradesAnnounced}
+              >
+                <Send className="h-4 w-4" />
+                {gradesAnnounced ? "Announced" : "Announce Grades"}
+              </Button>
+            </div>
+          </div>
+
+          <Card className="border-border/50 bg-card/80 backdrop-blur-sm">
+            <CardContent className="p-0">
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-border/50 text-muted-foreground">
+                      <th className="px-4 py-3 text-left font-medium sticky left-0 bg-card/90 backdrop-blur-sm z-10">Student</th>
+                      <th className="px-3 py-3 text-left font-medium">ID</th>
+                      {examNames.map((e) => (
+                        <th key={e} className="px-3 py-3 text-center font-medium whitespace-nowrap">{e}</th>
+                      ))}
+                      <th className="px-3 py-3 text-center font-medium">Average</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {gradesSpreadsheet.map((row) => {
+                      const scores = examNames.map((e) => (row as Record<string, any>)[e] as number);
+                      const avg = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
+                      return (
+                        <tr key={row.studentId} className="border-b border-border/30 hover:bg-muted/30 transition-colors">
+                          <td className="px-4 py-3 font-medium text-foreground sticky left-0 bg-card/90 backdrop-blur-sm z-10">
+                            {row.studentName}
+                          </td>
+                          <td className="px-3 py-3 text-muted-foreground font-mono text-xs">{row.studentId}</td>
+                          {scores.map((score, i) => (
+                            <td key={i} className={`px-3 py-3 text-center font-semibold ${gradeColor(score)}`}>
+                              {score}
+                            </td>
+                          ))}
+                          <td className={`px-3 py-3 text-center font-bold ${gradeColor(avg)}`}>{avg}%</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
 
         {/* ANNOUNCEMENTS TAB */}

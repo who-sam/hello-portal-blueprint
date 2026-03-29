@@ -3,9 +3,14 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Save } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { Save, CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import type { Question, QuestionType, MCQQuestion, WrittenQuestion, CodingQuestion } from "@/types/exam";
 import QuestionTypeDialog from "@/components/exam-builder/QuestionTypeDialog";
@@ -14,8 +19,14 @@ import MCQEditor from "@/components/exam-builder/MCQEditor";
 import WrittenEditor from "@/components/exam-builder/WrittenEditor";
 import CodingEditorComponent from "@/components/exam-builder/CodingEditor";
 
+const mockCourses = [
+  { id: "KRN-CS101", name: "CS101 — Intro to Programming" },
+  { id: "KRN-CS201", name: "CS201 — Data Structures" },
+  { id: "KRN-CS301", name: "CS301 — Algorithms" },
+];
+
 function createQuestion(type: QuestionType): Question {
-  const base = { id: crypto.randomUUID(), points: 10, difficulty: "medium" as const, text: "" };
+  const base = { id: crypto.randomUUID(), points: 10, difficulty: "medium" as const, text: "", imageUrl: "" };
   switch (type) {
     case "mcq":
       return {
@@ -53,6 +64,9 @@ export default function ExamBuilder() {
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [typeDialogOpen, setTypeDialogOpen] = useState(false);
   const [deleteIdx, setDeleteIdx] = useState<number | null>(null);
+  const [startDate, setStartDate] = useState<Date>();
+  const [startTime, setStartTime] = useState("09:00");
+  const [assignedCourse, setAssignedCourse] = useState("");
 
   const addQuestion = (type: QuestionType) => {
     const q = createQuestion(type);
@@ -77,13 +91,17 @@ export default function ExamBuilder() {
       toast({ title: "Validation error", description: "Please enter an exam title.", variant: "destructive" });
       return;
     }
+    if (!assignedCourse) {
+      toast({ title: "Validation error", description: "Please assign the exam to a course.", variant: "destructive" });
+      return;
+    }
     if (questions.length === 0) {
       toast({ title: "Validation error", description: "Add at least one question.", variant: "destructive" });
       return;
     }
-    const examData = { title, description, duration, passingScore, shuffle, showResults, questions };
+    const examData = { title, description, duration, passingScore, shuffle, showResults, questions, startDate, startTime, assignedCourse };
     console.log("Exam saved:", examData);
-    toast({ title: "Exam saved!", description: `"${title}" with ${questions.length} question(s) has been saved.` });
+    toast({ title: "Exam saved!", description: `"${title}" with ${questions.length} question(s) assigned to ${assignedCourse}.` });
   };
 
   const selected = questions[selectedIdx];
@@ -105,6 +123,19 @@ export default function ExamBuilder() {
           <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Exam title" />
         </div>
         <div>
+          <label className="text-xs font-medium text-muted-foreground mb-1 block">Assign to Course</label>
+          <Select value={assignedCourse} onValueChange={setAssignedCourse}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select course" />
+            </SelectTrigger>
+            <SelectContent>
+              {mockCourses.map((c) => (
+                <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
           <label className="text-xs font-medium text-muted-foreground mb-1 block">Duration (min)</label>
           <Input type="number" value={duration} onChange={(e) => setDuration(Number(e.target.value))} min={1} />
         </div>
@@ -112,6 +143,37 @@ export default function ExamBuilder() {
           <label className="text-xs font-medium text-muted-foreground mb-1 block">Passing Score (%)</label>
           <Input type="number" value={passingScore} onChange={(e) => setPassingScore(Number(e.target.value))} min={0} max={100} />
         </div>
+
+        {/* Start date */}
+        <div>
+          <label className="text-xs font-medium text-muted-foreground mb-1 block">Start Date</label>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className={cn("w-full justify-start text-left font-normal", !startDate && "text-muted-foreground")}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {startDate ? format(startDate, "PPP") : "Pick a date"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="single"
+                selected={startDate}
+                onSelect={setStartDate}
+                initialFocus
+                className={cn("p-3 pointer-events-auto")}
+              />
+            </PopoverContent>
+          </Popover>
+        </div>
+        {/* Start time */}
+        <div>
+          <label className="text-xs font-medium text-muted-foreground mb-1 block">Start Time</label>
+          <Input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} />
+        </div>
+
         <div className="flex flex-col gap-2 justify-center">
           <div className="flex items-center gap-2">
             <Switch checked={shuffle} onCheckedChange={setShuffle} />
