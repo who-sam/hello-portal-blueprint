@@ -17,6 +17,7 @@ import { Badge } from "@/components/ui/badge";
 export default function SettingsPage() {
   const { toast } = useToast();
   const { firstName, middleName, lastName, studentId, email, setUser } = useUser();
+  const { role } = useRole();
   const { theme, setTheme } = useTheme();
   const [profile, setProfile] = useState({ firstName, middleName, lastName, email, bio: "Full-stack developer passionate about clean code." });
   const [notifications, setNotifications] = useState(() => {
