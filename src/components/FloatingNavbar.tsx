@@ -72,6 +72,15 @@ export function FloatingNavbar() {
 
   const searchItems = [
     { label: "Courses", url: "/dashboard/courses" },
+    { label: "CS101 — Intro to Programming", url: "/dashboard/courses/KRN-CS101" },
+    { label: "CS201 — Data Structures", url: "/dashboard/courses/KRN-CS201" },
+    { label: "CS301 — Algorithms", url: "/dashboard/courses/KRN-CS301" },
+    { label: "Exam Builder", url: "/dashboard/exam-builder" },
+    { label: "Results & Analytics", url: "/dashboard/results" },
+    ...(role === "student" ? [
+      { label: "Upcoming Exams", url: "/dashboard/exams" },
+      { label: "Playground", url: "/dashboard/playground" },
+    ] : []),
   ];
 
   return (
@@ -221,8 +230,8 @@ export function FloatingNavbar() {
         <DialogContent className="sm:max-w-md p-0 bg-card/95 backdrop-blur-xl border-border/50 overflow-hidden">
           <div className="p-4 border-b border-border">
             <input
-              autoFocus
-              placeholder="Search pages..."
+            autoFocus
+              placeholder="Search courses, exams..."
               className="w-full bg-transparent text-foreground placeholder:text-muted-foreground outline-none text-sm"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}

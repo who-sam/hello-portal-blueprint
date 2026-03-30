@@ -10,11 +10,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useUser } from "@/contexts/UserContext";
+import { useRole } from "@/contexts/RoleContext";
 import { useTheme } from "next-themes";
+import { Badge } from "@/components/ui/badge";
 
 export default function SettingsPage() {
   const { toast } = useToast();
   const { firstName, middleName, lastName, studentId, email, setUser } = useUser();
+  const { role } = useRole();
   const { theme, setTheme } = useTheme();
   const [profile, setProfile] = useState({ firstName, middleName, lastName, email, bio: "Full-stack developer passionate about clean code." });
   const [notifications, setNotifications] = useState(() => {
@@ -88,6 +91,12 @@ export default function SettingsPage() {
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
                   <Input id="email" type="email" value={profile.email} onChange={(e) => setProfile({ ...profile, email: e.target.value })} />
+                </div>
+                <div className="space-y-2">
+                  <Label>Role</Label>
+                  <div className="flex items-center h-10">
+                    <Badge variant="secondary" className="text-sm">{role === "teacher" ? "Teacher" : "Student"}</Badge>
+                  </div>
                 </div>
               </div>
               <div className="space-y-2">
