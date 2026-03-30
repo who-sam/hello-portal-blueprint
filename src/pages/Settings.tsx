@@ -10,7 +10,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useUser } from "@/contexts/UserContext";
+import { useRole } from "@/contexts/RoleContext";
 import { useTheme } from "next-themes";
+import { Badge } from "@/components/ui/badge";
 
 export default function SettingsPage() {
   const { toast } = useToast();

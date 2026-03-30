@@ -72,6 +72,15 @@ export function FloatingNavbar() {
 
   const searchItems = [
     { label: "Courses", url: "/dashboard/courses" },
+    { label: "CS101 — Intro to Programming", url: "/dashboard/courses/KRN-CS101" },
+    { label: "CS201 — Data Structures", url: "/dashboard/courses/KRN-CS201" },
+    { label: "CS301 — Algorithms", url: "/dashboard/courses/KRN-CS301" },
+    { label: "Exam Builder", url: "/dashboard/exam-builder" },
+    { label: "Results & Analytics", url: "/dashboard/results" },
+    ...(role === "student" ? [
+      { label: "Upcoming Exams", url: "/dashboard/exams" },
+      { label: "Playground", url: "/dashboard/playground" },
+    ] : []),
   ];
 
   return (
