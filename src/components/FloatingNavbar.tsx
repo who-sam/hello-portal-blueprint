@@ -230,8 +230,8 @@ export function FloatingNavbar() {
         <DialogContent className="sm:max-w-md p-0 bg-card/95 backdrop-blur-xl border-border/50 overflow-hidden">
           <div className="p-4 border-b border-border">
             <input
-              autoFocus
-              placeholder="Search pages..."
+            autoFocus
+              placeholder="Search courses, exams..."
               className="w-full bg-transparent text-foreground placeholder:text-muted-foreground outline-none text-sm"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}

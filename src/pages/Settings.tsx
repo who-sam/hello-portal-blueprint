@@ -92,6 +92,12 @@ export default function SettingsPage() {
                   <Label htmlFor="email">Email</Label>
                   <Input id="email" type="email" value={profile.email} onChange={(e) => setProfile({ ...profile, email: e.target.value })} />
                 </div>
+                <div className="space-y-2">
+                  <Label>Role</Label>
+                  <div className="flex items-center h-10">
+                    <Badge variant="secondary" className="text-sm">{role === "teacher" ? "Teacher" : "Student"}</Badge>
+                  </div>
+                </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="bio">Bio</Label>
