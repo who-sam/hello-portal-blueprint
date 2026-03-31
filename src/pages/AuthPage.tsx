@@ -186,7 +186,7 @@ const AuthPage = () => {
               <form onSubmit={signupForm.handleSubmit(onSignup)} className="space-y-4">
                 <div>
                   <h1 className="text-2xl font-bold text-foreground">Create Account</h1>
-                  <p className="text-sm text-muted-foreground mt-1">Get started with Kernel</p>
+                  <p className="text-sm text-muted-foreground mt-1">Get started with APEX</p>
                 </div>
 
                 {/* Social buttons */}
