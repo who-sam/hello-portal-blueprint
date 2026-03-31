@@ -1,5 +1,5 @@
-import { Bell, Clock, ChevronDown, User, Settings, LogOut, Menu, Command, Sun, Moon } from "lucide-react";
-import KernelLogo from "@/components/KernelLogo";
+import { Bell, Clock, ChevronDown, User, Settings, LogOut, Menu, Search, Sun, Moon } from "lucide-react";
+import ApexLogo from "@/components/ApexLogo";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { NavLink } from "@/components/NavLink";
 import {
@@ -17,7 +17,8 @@ import { useUser } from "@/contexts/UserContext";
 import { useNotifications } from "@/contexts/NotificationContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useTheme } from "next-themes";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { BookOpen, FileText, BarChart3, Code, GraduationCap } from "lucide-react";
 
 const teacherNavTabs = [
   { label: "Dashboard", url: "/dashboard" },
@@ -46,6 +47,8 @@ export function FloatingNavbar() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const listRef = useRef<HTMLDivElement>(null);
 
   const initials = name
     ? name.split(" ").filter(Boolean).map((n) => n[0]?.toUpperCase() || "").join("").slice(0, 2)
@@ -71,21 +74,55 @@ export function FloatingNavbar() {
   const toggleTheme = () => setTheme(isDark ? "light" : "dark");
 
   const searchItems = [
-    { label: "Courses", url: "/dashboard/courses" },
-    { label: "CS101 — Intro to Programming", url: "/dashboard/courses/KRN-CS101" },
-    { label: "CS201 — Data Structures", url: "/dashboard/courses/KRN-CS201" },
-    { label: "CS301 — Algorithms", url: "/dashboard/courses/KRN-CS301" },
-    { label: "Exam Builder", url: "/dashboard/exam-builder" },
-    { label: "Results & Analytics", url: "/dashboard/results" },
+    { label: "Dashboard", url: "/dashboard", icon: BarChart3, category: "Pages" },
+    { label: "Courses", url: "/dashboard/courses", icon: BookOpen, category: "Pages" },
+    { label: "CS101 — Intro to Programming", url: "/dashboard/courses/APX-CS101", icon: BookOpen, category: "Courses" },
+    { label: "CS201 — Data Structures", url: "/dashboard/courses/APX-CS201", icon: BookOpen, category: "Courses" },
+    { label: "CS301 — Algorithms", url: "/dashboard/courses/APX-CS301", icon: BookOpen, category: "Courses" },
+    { label: "Exam Builder", url: "/dashboard/exam-builder", icon: FileText, category: "Pages" },
+    { label: "Results & Analytics", url: "/dashboard/results", icon: BarChart3, category: "Pages" },
     ...(role === "student" ? [
-      { label: "Upcoming Exams", url: "/dashboard/exams" },
-      { label: "Playground", url: "/dashboard/playground" },
+      { label: "Upcoming Exams", url: "/dashboard/exams", icon: GraduationCap, category: "Pages" },
+      { label: "Playground", url: "/dashboard/playground", icon: Code, category: "Pages" },
     ] : []),
   ];
 
+  const filtered = searchItems.filter((item) =>
+    item.label.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  // Group by category
+  const grouped = filtered.reduce<Record<string, typeof filtered>>((acc, item) => {
+    const cat = item.category || "Other";
+    if (!acc[cat]) acc[cat] = [];
+    acc[cat].push(item);
+    return acc;
+  }, {});
+
+  // Reset selected index when query changes
+  useEffect(() => {
+    setSelectedIndex(0);
+  }, [searchQuery]);
+
+  const handleSearchKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setSelectedIndex((prev) => Math.min(prev + 1, filtered.length - 1));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setSelectedIndex((prev) => Math.max(prev - 1, 0));
+    } else if (e.key === "Enter" && filtered[selectedIndex]) {
+      navigate(filtered[selectedIndex].url);
+      setSearchOpen(false);
+      setSearchQuery("");
+    }
+  };
+
+  let flatIndex = -1;
+
   return (
     <>
-      <header className="fixed left-6 right-6 top-4 z-50 flex items-center gap-3 h-12">
+      <header className="fixed left-4 right-4 sm:left-6 sm:right-6 top-3 sm:top-4 z-50 flex items-center gap-2 sm:gap-3 h-12">
         {isMobile && (
           <button
             onClick={() => setMobileMenuOpen(true)}
@@ -98,10 +135,10 @@ export function FloatingNavbar() {
 
         <button
           onClick={() => navigate("/")}
-          className="flex items-center gap-2 border border-border bg-card/80 px-4 py-1.5 shadow-lg backdrop-blur-md rounded-full cursor-pointer"
+          className="flex items-center gap-2 border border-border bg-card/80 px-3 sm:px-4 py-1.5 shadow-lg backdrop-blur-md rounded-full cursor-pointer"
         >
-          <KernelLogo className="h-6 w-6" />
-          <span className="text-lg font-bold tracking-tight text-foreground">Kernel</span>
+          <ApexLogo className="h-6 w-6" />
+          {!isMobile && <span className="text-lg font-bold tracking-tight text-foreground">APEX</span>}
         </button>
 
         {!isMobile && (
@@ -132,7 +169,7 @@ export function FloatingNavbar() {
             aria-label="Search"
             className="flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
           >
-            <Command className="h-4 w-4" />
+            <Search className="h-4 w-4" />
           </button>
           {!isMobile && (
             <button
@@ -147,7 +184,7 @@ export function FloatingNavbar() {
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="flex items-center gap-2 rounded-full border border-border bg-card/80 px-3 py-1.5 shadow-lg backdrop-blur-md transition-colors hover:bg-secondary/50 focus:outline-none">
+            <button className="flex items-center gap-2 rounded-full border border-border bg-card/80 px-2 sm:px-3 py-1.5 shadow-lg backdrop-blur-md transition-colors hover:bg-secondary/50 focus:outline-none">
               <Avatar className="h-7 w-7">
                 <AvatarFallback className="bg-primary/20 text-xs font-semibold text-primary">
                   {initials}
@@ -183,7 +220,11 @@ export function FloatingNavbar() {
       {/* Mobile nav sheet */}
       <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
         <SheetContent side="left" className="w-72 p-4 bg-background border-border">
-          <div className="flex flex-col gap-2 pt-4">
+          <div className="flex items-center gap-2 mb-6 pt-2">
+            <ApexLogo className="h-6 w-6" />
+            <span className="text-lg font-bold tracking-tight text-foreground">APEX</span>
+          </div>
+          <div className="flex flex-col gap-1">
             <p className="text-xs font-medium text-muted-foreground px-2 mb-2">Navigation</p>
             {navTabs.map((tab) => (
               <NavLink
@@ -191,17 +232,17 @@ export function FloatingNavbar() {
                 to={tab.url}
                 end={tab.url === "/dashboard"}
                 onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+                className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
                 activeClassName="bg-primary/15 text-primary font-medium"
               >
                 {tab.label}
               </NavLink>
             ))}
-            <div className="border-t border-border my-2" />
+            <div className="border-t border-border my-3" />
             <NavLink
               to="/dashboard/profile"
               onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+              className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
               activeClassName="bg-primary/15 text-primary font-medium"
             >
               <User className="h-4 w-4" />
@@ -209,14 +250,14 @@ export function FloatingNavbar() {
             </NavLink>
             <button
               onClick={toggleTheme}
-              className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+              className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
             >
               {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
               {isDark ? "Light Mode" : "Dark Mode"}
             </button>
             <button
               onClick={() => { handleLogout(); setMobileMenuOpen(false); }}
-              className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-destructive transition-colors hover:bg-destructive/10"
+              className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-destructive transition-colors hover:bg-destructive/10"
             >
               <LogOut className="h-4 w-4" />
               Log out
@@ -225,35 +266,58 @@ export function FloatingNavbar() {
         </SheetContent>
       </Sheet>
 
-      {/* Search overlay */}
+      {/* Search overlay — polished command palette */}
       <Dialog open={searchOpen} onOpenChange={(open) => { setSearchOpen(open); if (!open) setSearchQuery(""); }}>
-        <DialogContent className="sm:max-w-md p-0 bg-card/95 backdrop-blur-xl border-border/50 overflow-hidden">
-          <div className="p-4 border-b border-border">
+        <DialogContent className="sm:max-w-lg p-0 bg-card border-border overflow-hidden gap-0 [&>button]:hidden">
+          <div className="flex items-center gap-3 px-4 py-3 border-b border-border">
+            <Search className="h-4 w-4 text-muted-foreground shrink-0" />
             <input
-            autoFocus
-              placeholder="Search courses, exams..."
-              className="w-full bg-transparent text-foreground placeholder:text-muted-foreground outline-none text-sm"
+              autoFocus
+              placeholder="Search courses, exams, pages..."
+              className="flex-1 bg-transparent text-foreground placeholder:text-muted-foreground outline-none text-sm"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              id="search-input"
+              onKeyDown={handleSearchKeyDown}
             />
+            <kbd className="hidden sm:inline-flex h-5 select-none items-center gap-1 rounded border border-border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
+              ESC
+            </kbd>
           </div>
-          <div className="max-h-64 overflow-y-auto p-2">
-            {(() => {
-              const filtered = searchItems.filter((item) => item.label.toLowerCase().includes(searchQuery.toLowerCase()));
-              if (filtered.length === 0) {
-                return <p className="text-sm text-muted-foreground text-center py-4">No results found</p>;
-              }
-              return filtered.map((item) => (
-                <button
-                  key={item.url}
-                  onClick={() => { navigate(item.url); setSearchOpen(false); setSearchQuery(""); }}
-                  className="w-full text-left rounded-lg px-3 py-2 text-sm text-foreground hover:bg-secondary/50 transition-colors"
-                >
-                  {item.label}
-                </button>
-              ));
-            })()}
+          <div ref={listRef} className="max-h-72 overflow-y-auto p-2">
+            {filtered.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
+                <Search className="h-8 w-8 mb-2 opacity-40" />
+                <p className="text-sm font-medium">No results found</p>
+                <p className="text-xs mt-1">Try a different search term</p>
+              </div>
+            ) : (
+              Object.entries(grouped).map(([category, items]) => (
+                <div key={category} className="mb-1">
+                  <p className="px-2 py-1.5 text-xs font-medium text-muted-foreground uppercase tracking-wider">{category}</p>
+                  {items.map((item) => {
+                    flatIndex++;
+                    const thisIndex = flatIndex;
+                    const Icon = item.icon;
+                    return (
+                      <button
+                        key={item.url}
+                        onClick={() => { navigate(item.url); setSearchOpen(false); setSearchQuery(""); }}
+                        data-selected={thisIndex === selectedIndex}
+                        className="w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-foreground transition-colors hover:bg-secondary/60 data-[selected=true]:bg-secondary/60"
+                      >
+                        {Icon && <Icon className="h-4 w-4 text-muted-foreground shrink-0" />}
+                        <span>{item.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              ))
+            )}
+          </div>
+          <div className="border-t border-border px-4 py-2 flex items-center gap-4 text-[11px] text-muted-foreground">
+            <span className="flex items-center gap-1"><kbd className="rounded border border-border bg-muted px-1 font-mono">↑↓</kbd> Navigate</span>
+            <span className="flex items-center gap-1"><kbd className="rounded border border-border bg-muted px-1 font-mono">↵</kbd> Open</span>
+            <span className="flex items-center gap-1"><kbd className="rounded border border-border bg-muted px-1 font-mono">esc</kbd> Close</span>
           </div>
         </DialogContent>
       </Dialog>

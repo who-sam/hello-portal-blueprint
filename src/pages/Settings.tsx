@@ -33,7 +33,7 @@ export default function SettingsPage() {
   };
 
   const handleSaveNotifications = () => {
-    localStorage.setItem("kernel-notification-prefs", JSON.stringify(notifications));
+    localStorage.setItem("apex-notification-prefs", JSON.stringify(notifications));
     toast({ title: "Preferences saved", description: "Your notification preferences have been updated." });
   };
 

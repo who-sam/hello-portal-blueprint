@@ -92,7 +92,7 @@ export default function HelpPage() {
                 <p className="font-semibold text-foreground">Still need help?</p>
                 <p className="text-sm text-muted-foreground">Our support team is here for you.</p>
               </div>
-              <Button className="w-full gap-2" onClick={() => window.location.href = "mailto:support@kernel.dev"}>
+              <Button className="w-full gap-2" onClick={() => window.location.href = "mailto:support@apex.dev"}>
                 <MessageCircle className="h-4 w-4" /> Contact Support
               </Button>
             </CardContent>
