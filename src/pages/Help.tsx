@@ -19,7 +19,7 @@ const faqs = [
 ];
 
 const resources = [
-  { title: "Getting Started Guide", desc: "Learn the basics of Kernel", icon: BookOpen, href: "#getting-started" },
+  { title: "Getting Started Guide", desc: "Learn the basics of APEX", icon: BookOpen, href: "#getting-started" },
   { title: "API Documentation", desc: "For developers building integrations", icon: FileText, href: "#api-docs" },
   { title: "Community Forum", desc: "Connect with other learners", icon: MessageCircle, href: "#community" },
 ];
