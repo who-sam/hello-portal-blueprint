@@ -127,8 +127,8 @@ const AuthPage = () => {
           {/* Left: Form */}
           <div className="bg-card/95 backdrop-blur-xl p-8 flex flex-col justify-center">
             <div className="flex items-center gap-2 mb-8">
-              <KernelLogo className="h-7 w-7" />
-              <span className="text-xl font-bold tracking-tight text-foreground">Kernel</span>
+              <ApexLogo className="h-7 w-7" />
+              <span className="text-xl font-bold tracking-tight text-foreground">APEX</span>
             </div>
 
             {/* Login Form */}
