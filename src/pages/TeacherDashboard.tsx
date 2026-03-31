@@ -41,9 +41,9 @@ const initialActiveExams = [
 ];
 
 const activeCourses = [
-  { id: "KRN-CS101", name: "CS101 — Intro to Programming", students: 45, exams: 3, image: "https://images.unsplash.com/photo-1515879218367-8466d910auj7?w=400&h=200&fit=crop" },
-  { id: "KRN-CS201", name: "CS201 — Data Structures", students: 38, exams: 5, image: "https://images.unsplash.com/photo-1516116216624-53e697fedbea?w=400&h=200&fit=crop" },
-  { id: "KRN-CS301", name: "CS301 — Algorithms", students: 32, exams: 2, image: "https://images.unsplash.com/photo-1509228468518-180dd4864904?w=400&h=200&fit=crop" },
+  { id: "APX-CS101", name: "CS101 — Intro to Programming", students: 45, exams: 3, image: "https://images.unsplash.com/photo-1515879218367-8466d910auj7?w=400&h=200&fit=crop" },
+  { id: "APX-CS201", name: "CS201 — Data Structures", students: 38, exams: 5, image: "https://images.unsplash.com/photo-1516116216624-53e697fedbea?w=400&h=200&fit=crop" },
+  { id: "APX-CS301", name: "CS301 — Algorithms", students: 32, exams: 2, image: "https://images.unsplash.com/photo-1509228468518-180dd4864904?w=400&h=200&fit=crop" },
 ];
 
 const pendingGrading = [

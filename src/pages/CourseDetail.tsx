@@ -24,15 +24,15 @@ import { Textarea } from "@/components/ui/textarea";
 
 /* ── Mock data ── */
 const courseImages: Record<string, string> = {
-  "KRN-CS101": "https://images.unsplash.com/photo-1515879218367-8466d910auj7?w=800&h=300&fit=crop",
-  "KRN-CS201": "https://images.unsplash.com/photo-1516116216624-53e697fedbea?w=800&h=300&fit=crop",
-  "KRN-CS301": "https://images.unsplash.com/photo-1509228468518-180dd4864904?w=800&h=300&fit=crop",
+  "APX-CS101": "https://images.unsplash.com/photo-1515879218367-8466d910auj7?w=800&h=300&fit=crop",
+  "APX-CS201": "https://images.unsplash.com/photo-1516116216624-53e697fedbea?w=800&h=300&fit=crop",
+  "APX-CS301": "https://images.unsplash.com/photo-1509228468518-180dd4864904?w=800&h=300&fit=crop",
 };
 
 const courseData: Record<string, { name: string; teacher: string; id: string }> = {
-  "KRN-CS101": { name: "CS101 — Intro to Programming", teacher: "Dr. Smith", id: "KRN-CS101" },
-  "KRN-CS201": { name: "CS201 — Data Structures", teacher: "Prof. Johnson", id: "KRN-CS201" },
-  "KRN-CS301": { name: "CS301 — Algorithms", teacher: "Dr. Williams", id: "KRN-CS301" },
+  "APX-CS101": { name: "CS101 — Intro to Programming", teacher: "Dr. Smith", id: "APX-CS101" },
+  "APX-CS201": { name: "CS201 — Data Structures", teacher: "Prof. Johnson", id: "APX-CS201" },
+  "APX-CS301": { name: "CS301 — Algorithms", teacher: "Dr. Williams", id: "APX-CS301" },
 };
 
 const courseExams = [

@@ -20,26 +20,26 @@ import {
 
 /* ── mock data ── */
 const courseImages: Record<string, string> = {
-  "KRN-CS101": "https://images.unsplash.com/photo-1515879218367-8466d910auj7?w=400&h=200&fit=crop",
-  "KRN-CS201": "https://images.unsplash.com/photo-1516116216624-53e697fedbea?w=400&h=200&fit=crop",
-  "KRN-CS301": "https://images.unsplash.com/photo-1509228468518-180dd4864904?w=400&h=200&fit=crop",
+  "APX-CS101": "https://images.unsplash.com/photo-1515879218367-8466d910auj7?w=400&h=200&fit=crop",
+  "APX-CS201": "https://images.unsplash.com/photo-1516116216624-53e697fedbea?w=400&h=200&fit=crop",
+  "APX-CS301": "https://images.unsplash.com/photo-1509228468518-180dd4864904?w=400&h=200&fit=crop",
 };
 
 const initialTeacherCourses = [
-  { id: "KRN-CS101", name: "CS101 — Intro to Programming", students: 45, exams: 3 },
-  { id: "KRN-CS201", name: "CS201 — Data Structures", students: 38, exams: 5 },
-  { id: "KRN-CS301", name: "CS301 — Algorithms", students: 32, exams: 2 },
+  { id: "APX-CS101", name: "CS101 — Intro to Programming", students: 45, exams: 3 },
+  { id: "APX-CS201", name: "CS201 — Data Structures", students: 38, exams: 5 },
+  { id: "APX-CS301", name: "CS301 — Algorithms", students: 32, exams: 2 },
 ];
 
 const initialStudentCourses = [
-  { id: "KRN-CS101", name: "CS101 — Intro to Programming", teacher: "Dr. Smith", exams: 3 },
-  { id: "KRN-CS201", name: "CS201 — Data Structures", teacher: "Prof. Johnson", exams: 5 },
+  { id: "APX-CS101", name: "CS101 — Intro to Programming", teacher: "Dr. Smith", exams: 3 },
+  { id: "APX-CS201", name: "CS201 — Data Structures", teacher: "Prof. Johnson", exams: 5 },
 ];
 
 /* ── helpers ── */
 function generateCourseId() {
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-  let code = "KRN-";
+  let code = "APX-";
   for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
   return code;
 }
@@ -344,7 +344,7 @@ function StudentCourses() {
               <Label htmlFor="enroll-id">Course ID</Label>
               <Input
                 id="enroll-id"
-                placeholder="e.g. KRN-CS101"
+                placeholder="e.g. APX-CS101"
                 className="font-mono"
                 value={courseIdInput}
                 onChange={(e) => setCourseIdInput(e.target.value)}

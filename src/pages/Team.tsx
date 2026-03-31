@@ -7,12 +7,12 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 
 const teamMembers = [
-  { id: 1, name: "John Doe", email: "john@kernel.dev", role: "Team Lead", initials: "JD", score: 88, exams: 12, streak: 5, status: "online" },
-  { id: 2, name: "Sarah Chen", email: "sarah@kernel.dev", role: "Developer", initials: "SC", score: 92, exams: 15, streak: 8, status: "online" },
-  { id: 3, name: "Alex Rivera", email: "alex@kernel.dev", role: "Developer", initials: "AR", score: 76, exams: 9, streak: 3, status: "away" },
-  { id: 4, name: "Maya Patel", email: "maya@kernel.dev", role: "Designer", initials: "MP", score: 84, exams: 7, streak: 4, status: "offline" },
-  { id: 5, name: "James Wilson", email: "james@kernel.dev", role: "Developer", initials: "JW", score: 71, exams: 6, streak: 2, status: "online" },
-  { id: 6, name: "Emily Zhao", email: "emily@kernel.dev", role: "QA Engineer", initials: "EZ", score: 95, exams: 18, streak: 12, status: "online" },
+  { id: 1, name: "John Doe", email: "john@apex.dev", role: "Team Lead", initials: "JD", score: 88, exams: 12, streak: 5, status: "online" },
+  { id: 2, name: "Sarah Chen", email: "sarah@apex.dev", role: "Developer", initials: "SC", score: 92, exams: 15, streak: 8, status: "online" },
+  { id: 3, name: "Alex Rivera", email: "alex@apex.dev", role: "Developer", initials: "AR", score: 76, exams: 9, streak: 3, status: "away" },
+  { id: 4, name: "Maya Patel", email: "maya@apex.dev", role: "Designer", initials: "MP", score: 84, exams: 7, streak: 4, status: "offline" },
+  { id: 5, name: "James Wilson", email: "james@apex.dev", role: "Developer", initials: "JW", score: 71, exams: 6, streak: 2, status: "online" },
+  { id: 6, name: "Emily Zhao", email: "emily@apex.dev", role: "QA Engineer", initials: "EZ", score: 95, exams: 18, streak: 12, status: "online" },
 ];
 
 const statusColor = (s: string) => {

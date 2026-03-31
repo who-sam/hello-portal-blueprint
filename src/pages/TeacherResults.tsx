@@ -20,21 +20,21 @@ import { useToast } from "@/hooks/use-toast";
 
 /* ── Mock data ── */
 const mockCourses = [
-  { id: "KRN-CS101", name: "CS101 — Intro to Programming" },
-  { id: "KRN-CS201", name: "CS201 — Data Structures" },
-  { id: "KRN-CS301", name: "CS301 — Algorithms" },
+  { id: "APX-CS101", name: "CS101 — Intro to Programming" },
+  { id: "APX-CS201", name: "CS201 — Data Structures" },
+  { id: "APX-CS301", name: "CS301 — Algorithms" },
 ];
 
 const mockExamsByCourse: Record<string, { id: string; name: string; date: string; submissions: number; avgScore: number; passRate: number }[]> = {
-  "KRN-CS101": [
+  "APX-CS101": [
     { id: "1", name: "Midterm", date: "Feb 15, 2026", submissions: 45, avgScore: 74, passRate: 82 },
     { id: "2", name: "Quiz 2", date: "Feb 05, 2026", submissions: 45, avgScore: 81, passRate: 89 },
   ],
-  "KRN-CS201": [
+  "APX-CS201": [
     { id: "3", name: "Quiz 3 — Arrays", date: "Feb 10, 2026", submissions: 38, avgScore: 68, passRate: 71 },
     { id: "4", name: "Midterm", date: "Jan 20, 2026", submissions: 38, avgScore: 72, passRate: 77 },
   ],
-  "KRN-CS301": [
+  "APX-CS301": [
     { id: "5", name: "Assignment 1", date: "Jan 28, 2026", submissions: 30, avgScore: 72, passRate: 77 },
   ],
 };

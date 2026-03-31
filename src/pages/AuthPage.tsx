@@ -77,7 +77,7 @@ const AuthPage = () => {
       middleName: "",
       lastName: isTeacher ? "Miller" : "Doe",
       email: data.email,
-      studentId: isTeacher ? "" : "STU-2026-0042",
+      studentId: isTeacher ? "" : "APX--0042",
     });
     navigate("/dashboard");
   };
@@ -90,7 +90,7 @@ const AuthPage = () => {
       middleName: data.middleName || "",
       lastName: data.lastName,
       email: data.email,
-      studentId: data.role === "student" ? `STU-2026-${String(Math.floor(Math.random() * 9999)).padStart(4, "0")}` : "",
+      studentId: data.role === "student" ? `APX--${String(Math.floor(Math.random() * 9999)).padStart(4, "0")}` : "",
     });
     toast({ title: "Account created!", description: "Welcome to APEX." });
     navigate("/dashboard");
@@ -103,7 +103,7 @@ const AuthPage = () => {
       middleName: "",
       lastName: "User",
       email: `user@${provider}.com`,
-      studentId: `STU-2026-${String(Math.floor(Math.random() * 9999)).padStart(4, "0")}`,
+      studentId: `APX--${String(Math.floor(Math.random() * 9999)).padStart(4, "0")}`,
     });
     toast({ title: `Signed in with ${provider}` });
     navigate("/dashboard");
