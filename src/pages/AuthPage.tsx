@@ -92,7 +92,7 @@ const AuthPage = () => {
       email: data.email,
       studentId: data.role === "student" ? `STU-2026-${String(Math.floor(Math.random() * 9999)).padStart(4, "0")}` : "",
     });
-    toast({ title: "Account created!", description: "Welcome to Kernel." });
+    toast({ title: "Account created!", description: "Welcome to APEX." });
     navigate("/dashboard");
   };
 
