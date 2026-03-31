@@ -19,7 +19,7 @@ const faqs = [
 ];
 
 const resources = [
-  { title: "Getting Started Guide", desc: "Learn the basics of Kernel", icon: BookOpen, href: "#getting-started" },
+  { title: "Getting Started Guide", desc: "Learn the basics of APEX", icon: BookOpen, href: "#getting-started" },
   { title: "API Documentation", desc: "For developers building integrations", icon: FileText, href: "#api-docs" },
   { title: "Community Forum", desc: "Connect with other learners", icon: MessageCircle, href: "#community" },
 ];
@@ -92,7 +92,7 @@ export default function HelpPage() {
                 <p className="font-semibold text-foreground">Still need help?</p>
                 <p className="text-sm text-muted-foreground">Our support team is here for you.</p>
               </div>
-              <Button className="w-full gap-2" onClick={() => window.location.href = "mailto:support@kernel.dev"}>
+              <Button className="w-full gap-2" onClick={() => window.location.href = "mailto:support@apex.dev"}>
                 <MessageCircle className="h-4 w-4" /> Contact Support
               </Button>
             </CardContent>

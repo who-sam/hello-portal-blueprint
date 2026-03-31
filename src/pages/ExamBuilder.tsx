@@ -20,9 +20,9 @@ import WrittenEditor from "@/components/exam-builder/WrittenEditor";
 import CodingEditorComponent from "@/components/exam-builder/CodingEditor";
 
 const mockCourses = [
-  { id: "KRN-CS101", name: "CS101 — Intro to Programming" },
-  { id: "KRN-CS201", name: "CS201 — Data Structures" },
-  { id: "KRN-CS301", name: "CS301 — Algorithms" },
+  { id: "APX-CS101", name: "CS101 — Intro to Programming" },
+  { id: "APX-CS201", name: "CS201 — Data Structures" },
+  { id: "APX-CS301", name: "CS301 — Algorithms" },
 ];
 
 function createQuestion(type: QuestionType): Question {

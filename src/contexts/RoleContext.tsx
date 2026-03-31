@@ -12,18 +12,18 @@ const RoleContext = createContext<RoleContextType | undefined>(undefined);
 
 export function RoleProvider({ children }: { children: ReactNode }) {
   const [role, setRoleState] = useState<UserRole | null>(() => {
-    const stored = localStorage.getItem("kernel-role");
+    const stored = localStorage.getItem("apex-role");
     return (stored === "teacher" || stored === "student") ? stored : null;
   });
 
   const setRole = (newRole: UserRole) => {
     setRoleState(newRole);
-    localStorage.setItem("kernel-role", newRole);
+    localStorage.setItem("apex-role", newRole);
   };
 
   const clearRole = () => {
     setRoleState(null);
-    localStorage.removeItem("kernel-role");
+    localStorage.removeItem("apex-role");
   };
 
   return (

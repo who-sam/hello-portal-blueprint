@@ -21,7 +21,7 @@ export default function SettingsPage() {
   const { theme, setTheme } = useTheme();
   const [profile, setProfile] = useState({ firstName, middleName, lastName, email, bio: "Full-stack developer passionate about clean code." });
   const [notifications, setNotifications] = useState(() => {
-    const stored = localStorage.getItem("kernel-notification-prefs");
+    const stored = localStorage.getItem("apex-notification-prefs");
     return stored ? JSON.parse(stored) : { email: true, push: true, examReminders: true, results: false, marketing: false };
   });
   const [currentPassword, setCurrentPassword] = useState("");
@@ -33,7 +33,7 @@ export default function SettingsPage() {
   };
 
   const handleSaveNotifications = () => {
-    localStorage.setItem("kernel-notification-prefs", JSON.stringify(notifications));
+    localStorage.setItem("apex-notification-prefs", JSON.stringify(notifications));
     toast({ title: "Preferences saved", description: "Your notification preferences have been updated." });
   };
 

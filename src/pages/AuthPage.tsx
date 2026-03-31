@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { ArrowLeft, Eye, EyeOff, Loader2 } from "lucide-react";
 import authBg from "@/assets/auth-bg.jpg";
 import authHero from "@/assets/auth-hero.jpg";
-import KernelLogo from "@/components/KernelLogo";
+import ApexLogo from "@/components/ApexLogo";
 import { useRole, UserRole } from "@/contexts/RoleContext";
 import { useUser } from "@/contexts/UserContext";
 import { useNavigate } from "react-router-dom";
@@ -77,7 +77,7 @@ const AuthPage = () => {
       middleName: "",
       lastName: isTeacher ? "Miller" : "Doe",
       email: data.email,
-      studentId: isTeacher ? "" : "STU-2026-0042",
+      studentId: isTeacher ? "" : "APX--0042",
     });
     navigate("/dashboard");
   };
@@ -90,9 +90,9 @@ const AuthPage = () => {
       middleName: data.middleName || "",
       lastName: data.lastName,
       email: data.email,
-      studentId: data.role === "student" ? `STU-2026-${String(Math.floor(Math.random() * 9999)).padStart(4, "0")}` : "",
+      studentId: data.role === "student" ? `APX--${String(Math.floor(Math.random() * 9999)).padStart(4, "0")}` : "",
     });
-    toast({ title: "Account created!", description: "Welcome to Kernel." });
+    toast({ title: "Account created!", description: "Welcome to APEX." });
     navigate("/dashboard");
   };
 
@@ -103,7 +103,7 @@ const AuthPage = () => {
       middleName: "",
       lastName: "User",
       email: `user@${provider}.com`,
-      studentId: `STU-2026-${String(Math.floor(Math.random() * 9999)).padStart(4, "0")}`,
+      studentId: `APX--${String(Math.floor(Math.random() * 9999)).padStart(4, "0")}`,
     });
     toast({ title: `Signed in with ${provider}` });
     navigate("/dashboard");
@@ -127,8 +127,8 @@ const AuthPage = () => {
           {/* Left: Form */}
           <div className="bg-card/95 backdrop-blur-xl p-8 flex flex-col justify-center">
             <div className="flex items-center gap-2 mb-8">
-              <KernelLogo className="h-7 w-7" />
-              <span className="text-xl font-bold tracking-tight text-foreground">Kernel</span>
+              <ApexLogo className="h-7 w-7" />
+              <span className="text-xl font-bold tracking-tight text-foreground">APEX</span>
             </div>
 
             {/* Login Form */}
@@ -186,7 +186,7 @@ const AuthPage = () => {
               <form onSubmit={signupForm.handleSubmit(onSignup)} className="space-y-4">
                 <div>
                   <h1 className="text-2xl font-bold text-foreground">Create Account</h1>
-                  <p className="text-sm text-muted-foreground mt-1">Get started with Kernel</p>
+                  <p className="text-sm text-muted-foreground mt-1">Get started with APEX</p>
                 </div>
 
                 {/* Social buttons */}
