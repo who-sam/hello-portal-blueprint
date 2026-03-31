@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { ArrowLeft, Eye, EyeOff, Loader2 } from "lucide-react";
 import authBg from "@/assets/auth-bg.jpg";
 import authHero from "@/assets/auth-hero.jpg";
-import KernelLogo from "@/components/KernelLogo";
+import ApexLogo from "@/components/ApexLogo";
 import { useRole, UserRole } from "@/contexts/RoleContext";
 import { useUser } from "@/contexts/UserContext";
 import { useNavigate } from "react-router-dom";
