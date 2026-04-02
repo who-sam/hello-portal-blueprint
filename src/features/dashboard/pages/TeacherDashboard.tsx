@@ -16,7 +16,7 @@ import {
   ClipboardCheck,
 } from "lucide-react";
 import { format } from "date-fns";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, ReferenceLine } from "recharts";
 import { useUser } from "@/contexts/UserContext";
 import { useToast } from "@/hooks/use-toast";
 
@@ -60,13 +60,21 @@ const recentActivity = [
 ];
 
 const classPerformance = [
-  { name: "CS101-A", avg: 72 },
-  { name: "CS201-A", avg: 78 },
-  { name: "CS201-B", avg: 65 },
-  { name: "CS301-A", avg: 81 },
-  { name: "CS301-B", avg: 74 },
-  { name: "CS401-A", avg: 88 },
+  { name: "CS101-A", avg: 72, students: 45, trend: -3 },
+  { name: "CS201-A", avg: 78, students: 38, trend: 5 },
+  { name: "CS201-B", avg: 65, students: 30, trend: -8 },
+  { name: "CS301-A", avg: 81, students: 32, trend: 2 },
+  { name: "CS301-B", avg: 74, students: 28, trend: 1 },
+  { name: "CS401-A", avg: 88, students: 22, trend: 4 },
 ];
+
+const getBarColor = (avg: number) => {
+  if (avg >= 80) return "hsl(142, 71%, 45%)";
+  if (avg >= 70) return "hsl(var(--primary))";
+  return "hsl(0, 84%, 60%)";
+};
+
+const classAvg = Math.round(classPerformance.reduce((s, c) => s + c.avg, 0) / classPerformance.length);
 
 export default function TeacherDashboard() {
   const navigate = useNavigate();
@@ -277,25 +285,79 @@ export default function TeacherDashboard() {
 
       {/* Class Performance Chart */}
       <Card className="bg-card/80 backdrop-blur-md border-border/50">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base font-semibold">Class Performance</CardTitle>
+        <CardHeader className="pb-2 flex flex-row items-start justify-between space-y-0">
+          <div>
+            <CardTitle className="text-base font-semibold">Class Performance</CardTitle>
+            <p className="text-xs text-muted-foreground mt-1">Average scores across all sections</p>
+          </div>
+          <div className="flex items-center gap-4 text-xs text-muted-foreground">
+            <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full" style={{ background: "hsl(142, 71%, 45%)" }} />≥ 80%</span>
+            <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full bg-primary" />70–79%</span>
+            <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full" style={{ background: "hsl(0, 84%, 60%)" }} />&lt; 70%</span>
+          </div>
         </CardHeader>
         <CardContent>
-          <div className="h-64">
+          <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={classPerformance}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                <XAxis dataKey="name" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }} />
-                <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }} domain={[0, 100]} />
+              <BarChart data={classPerformance} barCategoryGap="20%">
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+                <XAxis
+                  dataKey="name"
+                  tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }}
+                  axisLine={{ stroke: "hsl(var(--border))" }}
+                  tickLine={false}
+                />
+                <YAxis
+                  tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }}
+                  domain={[0, 100]}
+                  axisLine={false}
+                  tickLine={false}
+                  tickFormatter={(v) => `${v}%`}
+                />
+                <ReferenceLine
+                  y={classAvg}
+                  stroke="hsl(var(--muted-foreground))"
+                  strokeDasharray="6 4"
+                  strokeOpacity={0.5}
+                  label={{
+                    value: `Avg ${classAvg}%`,
+                    position: "right",
+                    fill: "hsl(var(--muted-foreground))",
+                    fontSize: 11,
+                  }}
+                />
                 <Tooltip
+                  cursor={{ fill: "hsl(var(--muted-foreground) / 0.06)" }}
                   contentStyle={{
                     backgroundColor: "hsl(var(--card))",
                     border: "1px solid hsl(var(--border))",
-                    borderRadius: "8px",
+                    borderRadius: "10px",
                     color: "hsl(var(--foreground))",
+                    padding: "10px 14px",
+                    boxShadow: "0 4px 20px hsl(var(--foreground) / 0.08)",
+                  }}
+                  formatter={(value: number, _name: string, props: any) => {
+                    const entry = props.payload;
+                    const trendIcon = entry.trend > 0 ? "↑" : entry.trend < 0 ? "↓" : "→";
+                    const trendColor = entry.trend > 0 ? "#22c55e" : entry.trend < 0 ? "#ef4444" : "inherit";
+                    return [
+                      <span key="v">
+                        <strong>{value}%</strong>
+                        <span style={{ color: trendColor, marginLeft: 6, fontSize: 12 }}>
+                          {trendIcon} {Math.abs(entry.trend)}%
+                        </span>
+                        <br />
+                        <span style={{ fontSize: 11, opacity: 0.6 }}>{entry.students} students</span>
+                      </span>,
+                      "Score",
+                    ];
                   }}
                 />
-                <Bar dataKey="avg" fill="hsl(var(--primary))" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="avg" radius={[8, 8, 0, 0]} maxBarSize={52}>
+                  {classPerformance.map((entry, index) => (
+                    <Cell key={index} fill={getBarColor(entry.avg)} />
+                  ))}
+                </Bar>
               </BarChart>
             </ResponsiveContainer>
           </div>
