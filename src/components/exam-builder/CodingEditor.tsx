@@ -20,7 +20,7 @@ interface Props {
   onSaveToBank?: (q: CodingQuestion) => void;
 }
 
-export default function CodingEditor({ question, onChange }: Props) {
+export default function CodingEditor({ question, onChange, onSaveToBank }: Props) {
   const update = (partial: Partial<CodingQuestion>) => onChange({ ...question, ...partial });
   const [lang, setLang] = useState("python");
   const [expandedTC, setExpandedTC] = useState<string | null>(null);
