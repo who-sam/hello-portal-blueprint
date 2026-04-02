@@ -96,7 +96,7 @@ export default function SettingsPage() {
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
-                  <Input id="email" type="email" value={profile.email} onChange={(e) => setProfile({ ...profile, email: e.target.value })} />
+                  <Input id="email" type="email" value={profile.email} readOnly disabled className="opacity-70 cursor-not-allowed" />
                 </div>
                 <div className="space-y-2">
                   <Label>Role</Label>
