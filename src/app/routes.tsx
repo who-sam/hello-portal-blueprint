@@ -24,6 +24,7 @@ import Team from "@/features/social/pages/Team";
 import Messages from "@/features/social/pages/Messages";
 import HelpPage from "@/features/social/pages/Help";
 import Notifications from "@/features/social/pages/Notifications";
+import ExamPreview from "@/features/exams/pages/ExamPreview";
 import { useRole } from "@/contexts/RoleContext";
 
 function ExamsPage() {
