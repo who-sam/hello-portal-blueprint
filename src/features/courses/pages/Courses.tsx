@@ -212,15 +212,16 @@ function TeacherCourses() {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem className="gap-2">
+                  <DropdownMenuItem className="gap-2" onSelect={(e) => e.preventDefault()}>
                     <Eye className="h-4 w-4" /> View Details
                   </DropdownMenuItem>
-                  <DropdownMenuItem className="gap-2" onClick={(e) => { e.stopPropagation(); openEditDialog(course); }}>
+                  <DropdownMenuItem className="gap-2" onSelect={(e) => { e.preventDefault(); openEditDialog(course); }} onClick={(e) => e.stopPropagation()}>
                     <Pencil className="h-4 w-4" /> Edit
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     className="gap-2 text-destructive focus:text-destructive"
-                    onClick={(e) => { e.stopPropagation(); deleteCourse(course.id); }}
+                    onSelect={(e) => { e.preventDefault(); deleteCourse(course.id); }}
+                    onClick={(e) => e.stopPropagation()}
                   >
                     <Trash2 className="h-4 w-4" /> Delete
                   </DropdownMenuItem>
