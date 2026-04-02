@@ -63,6 +63,11 @@ function TeacherCourses() {
   const [newPhoto, setNewPhoto] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const editFileInputRef = useRef<HTMLInputElement>(null);
+  const [editOpen, setEditOpen] = useState(false);
+  const [editId, setEditId] = useState<string | null>(null);
+  const [editName, setEditName] = useState("");
+  const [editPhoto, setEditPhoto] = useState<string | null>(null);
 
   // Open create dialog if navigated with state
   useEffect(() => {
