@@ -39,17 +39,22 @@ export default function SettingsPage() {
   };
 
   const handlePasswordUpdate = () => {
-    if (!currentPassword || !newPassword) {
-      toast({ title: "Error", description: "Please fill in both password fields.", variant: "destructive" });
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      toast({ title: "Error", description: "Please fill in all password fields.", variant: "destructive" });
       return;
     }
     if (newPassword.length < 8) {
       toast({ title: "Error", description: "New password must be at least 8 characters.", variant: "destructive" });
       return;
     }
+    if (newPassword !== confirmPassword) {
+      toast({ title: "Error", description: "New password and confirmation do not match.", variant: "destructive" });
+      return;
+    }
     toast({ title: "Password updated", description: "Your password has been changed successfully." });
     setCurrentPassword("");
     setNewPassword("");
+    setConfirmPassword("");
   };
 
   return (
