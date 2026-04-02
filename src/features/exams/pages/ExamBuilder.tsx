@@ -15,13 +15,13 @@ import { Save, CalendarIcon, Search, CheckSquare, FileText, Code2 } from "lucide
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
-import { getQuestions as getBankQuestions, addQuestion as addBankQuestion, type BankQuestion } from "@/lib/questionBankStore";
+import { getQuestions as getBankQuestions, addQuestion as addBankQuestion, type BankQuestion } from "@/features/exams/lib/questionBankStore";
 import type { Question, QuestionType, MCQQuestion, WrittenQuestion, CodingQuestion } from "@/types/exam";
-import QuestionTypeDialog from "@/components/exam-builder/QuestionTypeDialog";
-import QuestionList from "@/components/exam-builder/QuestionList";
-import MCQEditor from "@/components/exam-builder/MCQEditor";
-import WrittenEditor from "@/components/exam-builder/WrittenEditor";
-import CodingEditorComponent from "@/components/exam-builder/CodingEditor";
+import QuestionTypeDialog from "@/features/exams/components/QuestionTypeDialog";
+import QuestionList from "@/features/exams/components/QuestionList";
+import MCQEditor from "@/features/exams/components/MCQEditor";
+import WrittenEditor from "@/features/exams/components/WrittenEditor";
+import CodingEditorComponent from "@/features/exams/components/CodingEditor";
 
 const mockCourses = [
   { id: "APX-CS101", name: "CS101 — Intro to Programming" },

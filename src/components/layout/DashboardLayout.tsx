@@ -1,4 +1,4 @@
-import { FloatingNavbar } from "@/components/FloatingNavbar";
+import { FloatingNavbar } from "@/components/layout/FloatingNavbar";
 import { Outlet, Navigate } from "react-router-dom";
 
 export default function DashboardLayout() {
