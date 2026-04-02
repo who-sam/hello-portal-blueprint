@@ -148,7 +148,7 @@ export default function ExamBuilder() {
   };
 
   const importFromBank = () => {
-    const toImport = bankQuestions.filter((bq) => selectedBankIds.has(bq.id));
+    const toImport = allBankQuestions.filter((bq) => selectedBankIds.has(bq.id));
     const newQuestions = toImport.map(bankToExamQuestion);
     setQuestions((prev) => [...prev, ...newQuestions]);
     setSelectedIdx(questions.length);
@@ -157,6 +157,42 @@ export default function ExamBuilder() {
     setBankSearch("");
     setBankTypeFilter("all");
     toast({ title: "Imported", description: `${newQuestions.length} question(s) imported from the bank.` });
+  };
+
+  const handleSaveToBank = (q: Question) => {
+    if (!q.text.trim()) {
+      toast({ title: "Cannot save", description: "Please fill in the question text first.", variant: "destructive" });
+      return;
+    }
+    if (!assignedCourse) {
+      toast({ title: "Cannot save", description: "Please assign the exam to a course first.", variant: "destructive" });
+      return;
+    }
+    const bankQ: BankQuestion = {
+      id: `qb-${crypto.randomUUID().slice(0, 8)}`,
+      type: q.type,
+      text: q.text,
+      points: q.points,
+      courseId: assignedCourse,
+      tags: [],
+      createdAt: new Date().toISOString().slice(0, 10),
+    };
+    if (q.type === "mcq") {
+      const mcq = q as MCQQuestion;
+      bankQ.mcqData = {
+        options: mcq.options.map((o) => o.text).filter(Boolean),
+        correctIndices: mcq.options.map((o, i) => mcq.correctOptionIds.includes(o.id) ? i : -1).filter((i) => i >= 0),
+        explanation: mcq.explanation,
+      };
+    } else if (q.type === "written") {
+      const w = q as WrittenQuestion;
+      bankQ.writtenData = { rubric: w.rubric, maxWordCount: w.maxWordCount };
+    } else {
+      const c = q as CodingQuestion;
+      bankQ.codingData = { description: c.description, starterCode: c.starterCode.python || "", hints: c.hints };
+    }
+    addBankQuestion(bankQ);
+    toast({ title: "Saved to Question Bank", description: `"${q.text.slice(0, 50)}..." added to the bank.` });
   };
 
   const selected = questions[selectedIdx];
