@@ -2,7 +2,7 @@ import { FloatingNavbar } from "@/components/layout/FloatingNavbar";
 import { Outlet, Navigate } from "react-router-dom";
 
 export default function DashboardLayout() {
-  const hasRole = localStorage.getItem("kernel-role");
+  const hasRole = localStorage.getItem("apex-role");
   if (!hasRole || hasRole === "") {
     return <Navigate to="/auth" replace />;
   }
