@@ -168,7 +168,7 @@ export function FloatingNavbar() {
           </>
         )}
 
-        {isMobile && <div className="flex-1" />}
+        {showHamburger && <div className="flex-1" />}
 
         <div className="flex items-center gap-1 rounded-full border border-border bg-card/80 px-2 py-1.5 shadow-lg backdrop-blur-md">
           <button
