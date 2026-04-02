@@ -99,7 +99,7 @@ function ConfettiBurst({ fire, firedRef }: { fire: boolean; firedRef: React.Muta
   return null;
 }
 
-
+/* ================================================================
    STUDENT COURSE DETAIL
    ================================================================ */
 function StudentCourseDetail({ course }: { course: { name: string; teacher: string; id: string } }) {
