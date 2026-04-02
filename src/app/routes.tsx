@@ -24,6 +24,7 @@ import Team from "@/features/social/pages/Team";
 import Messages from "@/features/social/pages/Messages";
 import HelpPage from "@/features/social/pages/Help";
 import Notifications from "@/features/social/pages/Notifications";
+import ExamPreview from "@/features/exams/pages/ExamPreview";
 import { useRole } from "@/contexts/RoleContext";
 
 function ExamsPage() {
@@ -51,6 +52,7 @@ export default function AppRoutes() {
         <Route path="grade-written" element={<GradeWritten />} />
         <Route path="exam/:id" element={<ExamTaking />} />
         <Route path="exam/:id/review" element={<ExamReview />} />
+        <Route path="exam-preview/:id" element={<ExamPreview />} />
         <Route path="leaderboard" element={<Leaderboard />} />
         <Route path="practice" element={<Practice />} />
         <Route path="team" element={<Team />} />

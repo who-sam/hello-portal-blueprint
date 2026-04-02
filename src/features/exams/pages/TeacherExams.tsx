@@ -209,11 +209,11 @@ export default function TeacherExams() {
                           <DropdownMenuItem className="gap-2" onClick={() => navigate("/dashboard/exam-builder", { state: { editExam: { id: exam.id, title: exam.name, duration: parseInt(exam.duration), courseId: exam.courseId } } })}>
                             <Pencil className="h-4 w-4" /> Edit
                           </DropdownMenuItem>
-                          <DropdownMenuItem className="gap-2">
+                          <DropdownMenuItem className="gap-2" onClick={() => navigate(`/dashboard/exam-preview/${exam.id}`)}>
                             <Eye className="h-4 w-4" /> Preview
                           </DropdownMenuItem>
                           {exam.status === "completed" && (
-                            <DropdownMenuItem className="gap-2" onClick={() => navigate("/dashboard/results")}>
+                            <DropdownMenuItem className="gap-2" onClick={() => navigate("/dashboard/results", { state: { courseId: exam.courseId, examId: exam.id } })}>
                               <FileText className="h-4 w-4" /> View Results
                             </DropdownMenuItem>
                           )}
