@@ -73,6 +73,11 @@ const passingThresholdMap: Record<string, number> = {
 };
 const getPassingThreshold = (courseId: string) => passingThresholdMap[courseId] ?? 60;
 
+// Whether grades are announced per course
+const gradesAnnouncedMap: Record<string, boolean> = {
+  "APX-CS401": false, // not announced
+};
+
 const getCourseGrades = (courseId: string) => courseGradesMap[courseId] ?? courseGradesMap.default;
 const isGradesAnnounced = (courseId: string) => gradesAnnouncedMap[courseId] ?? true;
 
