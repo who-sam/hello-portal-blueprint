@@ -1,6 +1,6 @@
-import { Bell, Clock, ChevronDown, User, Settings, LogOut, Menu, Search, Sun, Moon } from "lucide-react";
+import { Bell, ChevronDown, User, Settings, LogOut, Menu, Search, Sun, Moon } from "lucide-react";
 import ApexLogo from "@/components/ApexLogo";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { NavLink } from "@/components/NavLink";
 import {
   DropdownMenu,
