@@ -121,10 +121,12 @@ const AuthPage = () => {
 
   const selectedRole = signupForm.watch("role");
 
+  const isDark = theme === "dark";
+
   return (
     <div className="relative flex min-h-screen items-center justify-center p-4 sm:p-6 overflow-hidden">
-      <img src={authBg} alt="" className="absolute inset-0 h-full w-full object-cover" />
-      <div className="absolute inset-0 bg-black/65" />
+      <img src={isDark ? authBg : authBgLight} alt="" className="absolute inset-0 h-full w-full object-cover" />
+      <div className={`absolute inset-0 ${isDark ? "bg-black/65" : "bg-white/40"}`} />
 
       {/* Theme toggle */}
       <button
