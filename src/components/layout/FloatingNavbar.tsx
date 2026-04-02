@@ -205,6 +205,7 @@ export function FloatingNavbar() {
           <DropdownMenuTrigger asChild>
             <button className="flex items-center gap-2 rounded-full border border-border bg-card/80 px-2 sm:px-3 py-1.5 shadow-lg backdrop-blur-md transition-colors hover:bg-secondary/50 focus:outline-none">
               <Avatar className="h-7 w-7">
+                {profilePhoto && <AvatarImage src={profilePhoto} alt={name} />}
                 <AvatarFallback className="bg-primary/20 text-xs font-semibold text-primary">
                   {initials}
                 </AvatarFallback>
