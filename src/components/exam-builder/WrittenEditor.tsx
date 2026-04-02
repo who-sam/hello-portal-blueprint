@@ -13,7 +13,7 @@ interface Props {
   onSaveToBank?: (q: WrittenQuestion) => void;
 }
 
-export default function WrittenEditor({ question, onChange }: Props) {
+export default function WrittenEditor({ question, onChange, onSaveToBank }: Props) {
   const fileRef = useRef<HTMLInputElement>(null);
   const update = (partial: Partial<WrittenQuestion>) => onChange({ ...question, ...partial });
 
