@@ -67,6 +67,12 @@ const courseGradesMap: Record<string, { exam: string; score: number; total: numb
   ],
 };
 
+// Per-course passing threshold (set by teacher)
+const passingThresholdMap: Record<string, number> = {
+  "APX-CS501": 50,  // OS course fails at 50%
+};
+const getPassingThreshold = (courseId: string) => passingThresholdMap[courseId] ?? 60;
+
 // Whether grades are announced per course
 const gradesAnnouncedMap: Record<string, boolean> = {
   "APX-CS401": false, // not announced
@@ -245,12 +251,12 @@ function StudentCourseDetail({ course }: { course: { name: string; teacher: stri
               {/* Confetti trigger for full marks */}
               <ConfettiBurst fire={hasFullMark} firedRef={confettiFired} />
 
-              {overallAvg < 60 && (
+              {overallAvg < getPassingThreshold(course.id) && (
                 <Alert variant="destructive" className="border-destructive/50">
                   <AlertCircle className="h-4 w-4" />
                   <AlertTitle>Course At Risk</AlertTitle>
                   <AlertDescription>
-                    Your current average is below the passing threshold. Consider reviewing past material or reaching out to your instructor.
+                    Your current average ({overallAvg}%) is below the passing threshold of {getPassingThreshold(course.id)}%. Consider reviewing past material or reaching out to your instructor.
                   </AlertDescription>
                 </Alert>
               )}
@@ -342,6 +348,7 @@ function TeacherCourseDetail({ course }: { course: { name: string; teacher: stri
   const [announceBody, setAnnounceBody] = useState("");
   const [announcements, setAnnouncements] = useState(courseAnnouncements);
   const [gradesAnnounced, setGradesAnnounced] = useState(false);
+  const [passingThreshold, setPassingThreshold] = useState(60);
 
   const copyId = () => {
     navigator.clipboard.writeText(course.id);
@@ -562,12 +569,25 @@ function TeacherCourseDetail({ course }: { course: { name: string; teacher: stri
           ))}
         </TabsContent>
 
-        {/* GRADES TAB (Teacher spreadsheet view) */}
         <TabsContent value="grades" className="space-y-4">
-          <div className="flex items-center justify-between">
-            <p className="text-sm text-muted-foreground">
-              Full grade spreadsheet for all students and exams in this course.
-            </p>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-3">
+              <p className="text-sm text-muted-foreground">
+                Passing threshold:
+              </p>
+              <select
+                value={passingThreshold}
+                onChange={(e) => {
+                  setPassingThreshold(Number(e.target.value));
+                  toast({ title: "Threshold updated", description: `Passing grade set to ${e.target.value}%` });
+                }}
+                className="h-9 rounded-md border border-border bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+              >
+                {[40, 45, 50, 55, 60, 65, 70, 75].map((v) => (
+                  <option key={v} value={v}>{v}%</option>
+                ))}
+              </select>
+            </div>
             <div className="flex items-center gap-2">
               <Button variant="outline" size="sm" className="gap-1.5" onClick={exportGradesCSV}>
                 <Download className="h-4 w-4" /> Export CSV
@@ -602,10 +622,14 @@ function TeacherCourseDetail({ course }: { course: { name: string; teacher: stri
                     {gradesSpreadsheet.map((row) => {
                       const scores = examNames.map((e) => (row as Record<string, any>)[e] as number);
                       const avg = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
+                      const isFailing = avg < passingThreshold;
                       return (
-                        <tr key={row.studentId} className="border-b border-border/30 hover:bg-muted/30 transition-colors">
+                        <tr key={row.studentId} className={`border-b border-border/30 hover:bg-muted/30 transition-colors ${isFailing ? "bg-destructive/5" : ""}`}>
                           <td className="px-4 py-3 font-medium text-foreground sticky left-0 bg-card/90 backdrop-blur-sm z-10">
-                            {row.studentName}
+                            <span className="flex items-center gap-2">
+                              {row.studentName}
+                              {isFailing && <AlertCircle className="h-3.5 w-3.5 text-destructive" />}
+                            </span>
                           </td>
                           <td className="px-3 py-3 text-muted-foreground font-mono text-xs">{row.studentId}</td>
                           {scores.map((score, i) => (
@@ -613,7 +637,7 @@ function TeacherCourseDetail({ course }: { course: { name: string; teacher: stri
                               {score}
                             </td>
                           ))}
-                          <td className={`px-3 py-3 text-center font-bold ${gradeColor(avg)}`}>{avg}%</td>
+                          <td className={`px-3 py-3 text-center font-bold ${isFailing ? "text-destructive" : gradeColor(avg)}`}>{avg}%</td>
                         </tr>
                       );
                     })}
@@ -622,6 +646,23 @@ function TeacherCourseDetail({ course }: { course: { name: string; teacher: stri
               </div>
             </CardContent>
           </Card>
+
+          {/* Failing students summary */}
+          {(() => {
+            const failCount = gradesSpreadsheet.filter((row) => {
+              const scores = examNames.map((e) => (row as Record<string, any>)[e] as number);
+              return Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) < passingThreshold;
+            }).length;
+            return failCount > 0 ? (
+              <Alert variant="destructive" className="border-destructive/50">
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>{failCount} student{failCount > 1 ? "s" : ""} below passing threshold</AlertTitle>
+                <AlertDescription>
+                  {failCount} out of {gradesSpreadsheet.length} students have an average below {passingThreshold}%.
+                </AlertDescription>
+              </Alert>
+            ) : null;
+          })()}
         </TabsContent>
 
         {/* ANNOUNCEMENTS TAB */}
