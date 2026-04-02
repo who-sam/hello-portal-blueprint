@@ -285,25 +285,79 @@ export default function TeacherDashboard() {
 
       {/* Class Performance Chart */}
       <Card className="bg-card/80 backdrop-blur-md border-border/50">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base font-semibold">Class Performance</CardTitle>
+        <CardHeader className="pb-2 flex flex-row items-start justify-between space-y-0">
+          <div>
+            <CardTitle className="text-base font-semibold">Class Performance</CardTitle>
+            <p className="text-xs text-muted-foreground mt-1">Average scores across all sections</p>
+          </div>
+          <div className="flex items-center gap-4 text-xs text-muted-foreground">
+            <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full" style={{ background: "hsl(142, 71%, 45%)" }} />≥ 80%</span>
+            <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full bg-primary" />70–79%</span>
+            <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full" style={{ background: "hsl(0, 84%, 60%)" }} />&lt; 70%</span>
+          </div>
         </CardHeader>
         <CardContent>
-          <div className="h-64">
+          <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={classPerformance}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                <XAxis dataKey="name" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }} />
-                <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }} domain={[0, 100]} />
+              <BarChart data={classPerformance} barCategoryGap="20%">
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+                <XAxis
+                  dataKey="name"
+                  tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }}
+                  axisLine={{ stroke: "hsl(var(--border))" }}
+                  tickLine={false}
+                />
+                <YAxis
+                  tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }}
+                  domain={[0, 100]}
+                  axisLine={false}
+                  tickLine={false}
+                  tickFormatter={(v) => `${v}%`}
+                />
+                <ReferenceLine
+                  y={classAvg}
+                  stroke="hsl(var(--muted-foreground))"
+                  strokeDasharray="6 4"
+                  strokeOpacity={0.5}
+                  label={{
+                    value: `Avg ${classAvg}%`,
+                    position: "right",
+                    fill: "hsl(var(--muted-foreground))",
+                    fontSize: 11,
+                  }}
+                />
                 <Tooltip
+                  cursor={{ fill: "hsl(var(--muted-foreground) / 0.06)" }}
                   contentStyle={{
                     backgroundColor: "hsl(var(--card))",
                     border: "1px solid hsl(var(--border))",
-                    borderRadius: "8px",
+                    borderRadius: "10px",
                     color: "hsl(var(--foreground))",
+                    padding: "10px 14px",
+                    boxShadow: "0 4px 20px hsl(var(--foreground) / 0.08)",
+                  }}
+                  formatter={(value: number, _name: string, props: any) => {
+                    const entry = props.payload;
+                    const trendIcon = entry.trend > 0 ? "↑" : entry.trend < 0 ? "↓" : "→";
+                    const trendColor = entry.trend > 0 ? "#22c55e" : entry.trend < 0 ? "#ef4444" : "inherit";
+                    return [
+                      <span key="v">
+                        <strong>{value}%</strong>
+                        <span style={{ color: trendColor, marginLeft: 6, fontSize: 12 }}>
+                          {trendIcon} {Math.abs(entry.trend)}%
+                        </span>
+                        <br />
+                        <span style={{ fontSize: 11, opacity: 0.6 }}>{entry.students} students</span>
+                      </span>,
+                      "Score",
+                    ];
                   }}
                 />
-                <Bar dataKey="avg" fill="hsl(var(--primary))" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="avg" radius={[8, 8, 0, 0]} maxBarSize={52}>
+                  {classPerformance.map((entry, index) => (
+                    <Cell key={index} fill={getBarColor(entry.avg)} />
+                  ))}
+                </Bar>
               </BarChart>
             </ResponsiveContainer>
           </div>
