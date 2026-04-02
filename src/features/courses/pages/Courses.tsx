@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,7 +8,7 @@ import { useRole } from "@/contexts/RoleContext";
 import { useToast } from "@/hooks/use-toast";
 import {
   BookOpen, Plus, Users, Upload, Copy, Check, Search, LogIn,
-  MoreHorizontal, Eye, Pencil, Trash2,
+  MoreHorizontal, Eye, Pencil, Trash2, ImagePlus, X,
 } from "lucide-react";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription,
@@ -17,9 +17,10 @@ import { Label } from "@/components/ui/label";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import defaultCourseCover from "@/assets/default-course-cover.jpg";
 
 /* ── mock data ── */
-const courseImages: Record<string, string> = {
+const initialCourseImages: Record<string, string> = {
   "APX-CS101": "https://images.unsplash.com/photo-1515879218367-8466d910auj7?w=400&h=200&fit=crop",
   "APX-CS201": "https://images.unsplash.com/photo-1516116216624-53e697fedbea?w=400&h=200&fit=crop",
   "APX-CS301": "https://images.unsplash.com/photo-1509228468518-180dd4864904?w=400&h=200&fit=crop",
@@ -44,6 +45,10 @@ function generateCourseId() {
   return code;
 }
 
+function getCourseImage(courseImages: Record<string, string>, id: string): string {
+  return courseImages[id] || defaultCourseCover;
+}
+
 /* ================================================================
    TEACHER VIEW
    ================================================================ */
@@ -52,24 +57,38 @@ function TeacherCourses() {
   const location = useLocation();
   const { toast } = useToast();
   const [courses, setCourses] = useState(initialTeacherCourses);
+  const [courseImages, setCourseImages] = useState<Record<string, string>>(initialCourseImages);
   const [createOpen, setCreateOpen] = useState(false);
   const [newName, setNewName] = useState("");
+  const [newPhoto, setNewPhoto] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Open create dialog if navigated with state
   useEffect(() => {
     if ((location.state as any)?.openCreate) {
       setCreateOpen(true);
-      // Clear the state so it doesn't re-open on back navigation
       window.history.replaceState({}, document.title);
     }
   }, [location.state]);
+
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => setNewPhoto(reader.result as string);
+    reader.readAsDataURL(file);
+  };
 
   const handleCreate = () => {
     if (!newName.trim()) return;
     const id = generateCourseId();
     setCourses((prev) => [{ id, name: newName.trim(), students: 0, exams: 0 }, ...prev]);
+    if (newPhoto) {
+      setCourseImages((prev) => ({ ...prev, [id]: newPhoto }));
+    }
     setNewName("");
+    setNewPhoto(null);
     setCreateOpen(false);
     toast({
       title: "Course created",
@@ -79,6 +98,23 @@ function TeacherCourses() {
         </span>
       ),
     });
+  };
+
+  const handleChangePhoto = (courseId: string) => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        setCourseImages((prev) => ({ ...prev, [courseId]: reader.result as string }));
+        toast({ title: "Cover photo updated" });
+      };
+      reader.readAsDataURL(file);
+    };
+    input.click();
   };
 
   const copyId = (id: string) => {
@@ -115,17 +151,22 @@ function TeacherCourses() {
             className="border-border/50 bg-card/80 backdrop-blur-sm hover:shadow-md transition-shadow cursor-pointer overflow-hidden"
             onClick={() => navigate(`/dashboard/courses/${course.id}`)}
           >
-            {/* Cover image */}
-            {courseImages[course.id] && (
-              <div className="h-40 overflow-hidden">
-                <img src={courseImages[course.id]} alt={course.name} className="w-full h-full object-cover" />
-              </div>
-            )}
-            {!courseImages[course.id] && (
-              <div className="h-40 bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
-                <BookOpen className="h-10 w-10 text-primary/40" />
-              </div>
-            )}
+            {/* Cover image — always shown, uses default if none set */}
+            <div className="relative h-40 overflow-hidden group">
+              <img
+                src={getCourseImage(courseImages, course.id)}
+                alt={course.name}
+                className="w-full h-full object-cover"
+                loading="lazy"
+              />
+              <button
+                onClick={(e) => { e.stopPropagation(); handleChangePhoto(course.id); }}
+                className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity"
+                aria-label="Change cover photo"
+              >
+                <ImagePlus className="h-6 w-6 text-white" />
+              </button>
+            </div>
             <CardHeader className="pb-3 flex flex-row items-start justify-between space-y-0">
               <CardTitle className="text-lg flex items-center gap-2">
                 <BookOpen className="h-5 w-5 text-primary" />
@@ -197,7 +238,7 @@ function TeacherCourses() {
               A unique course ID will be generated automatically. Share it with your students so they can enroll.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-3 py-2">
+          <div className="space-y-4 py-2">
             <div className="space-y-1.5">
               <Label htmlFor="course-name">Course Name</Label>
               <Input
@@ -207,6 +248,36 @@ function TeacherCourses() {
                 onChange={(e) => setNewName(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleCreate()}
               />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Cover Photo (optional)</Label>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handlePhotoChange}
+              />
+              {newPhoto ? (
+                <div className="relative h-32 rounded-lg overflow-hidden border border-border">
+                  <img src={newPhoto} alt="Preview" className="w-full h-full object-cover" />
+                  <button
+                    onClick={() => { setNewPhoto(null); if (fileInputRef.current) fileInputRef.current.value = ""; }}
+                    className="absolute top-2 right-2 h-6 w-6 rounded-full bg-black/60 flex items-center justify-center hover:bg-black/80 transition-colors"
+                  >
+                    <X className="h-3.5 w-3.5 text-white" />
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="w-full h-32 rounded-lg border-2 border-dashed border-border hover:border-primary/50 flex flex-col items-center justify-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <ImagePlus className="h-6 w-6" />
+                  <span className="text-xs">Click to upload a cover photo</span>
+                </button>
+              )}
             </div>
           </div>
           <DialogFooter>
@@ -300,16 +371,14 @@ function StudentCourses() {
               onClick={() => navigate(`/dashboard/courses/${course.id}`)}
             >
               {/* Cover image */}
-              {courseImages[course.id] && (
-                <div className="h-40 overflow-hidden">
-                  <img src={courseImages[course.id]} alt={course.name} className="w-full h-full object-cover" />
-                </div>
-              )}
-              {!courseImages[course.id] && (
-                <div className="h-40 bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
-                  <BookOpen className="h-10 w-10 text-primary/40" />
-                </div>
-              )}
+              <div className="h-40 overflow-hidden">
+                <img
+                  src={getCourseImage(initialCourseImages, course.id)}
+                  alt={course.name}
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                />
+              </div>
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg flex items-center gap-2">
                   <BookOpen className="h-5 w-5 text-primary" />
