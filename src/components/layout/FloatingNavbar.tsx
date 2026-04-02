@@ -78,14 +78,10 @@ export function FloatingNavbar() {
   const toggleTheme = () => setTheme(isDark ? "light" : "dark");
 
   const searchItems = [
+    // Pages
     { label: "Dashboard", url: "/dashboard", icon: BarChart3, category: "Pages" },
     { label: "Courses", url: "/dashboard/courses", icon: BookOpen, category: "Pages" },
-    { label: "CS101 — Intro to Programming", url: "/dashboard/courses/APX-CS101", icon: BookOpen, category: "Courses" },
-    { label: "CS201 — Data Structures", url: "/dashboard/courses/APX-CS201", icon: BookOpen, category: "Courses" },
-    { label: "CS301 — Algorithms", url: "/dashboard/courses/APX-CS301", icon: BookOpen, category: "Courses" },
-    { label: "Exam Builder", url: "/dashboard/exam-builder", icon: FileText, category: "Pages" },
-    { label: "Question Bank", url: "/dashboard/question-bank", icon: BookOpen, category: "Pages" },
-    { label: "Grade Written", url: "/dashboard/grade-written", icon: FileText, category: "Pages" },
+    { label: "Exams", url: "/dashboard/exams", icon: GraduationCap, category: "Pages" },
     { label: "Results & Analytics", url: "/dashboard/results", icon: BarChart3, category: "Pages" },
     { label: "Leaderboard", url: "/dashboard/leaderboard", icon: Trophy, category: "Pages" },
     { label: "Practice", url: "/dashboard/practice", icon: GraduationCap, category: "Pages" },
@@ -95,10 +91,35 @@ export function FloatingNavbar() {
     { label: "Notifications", url: "/dashboard/notifications", icon: BellRing, category: "Pages" },
     { label: "Settings", url: "/dashboard/settings", icon: Settings, category: "Pages" },
     { label: "Profile", url: "/dashboard/profile", icon: User, category: "Pages" },
+    ...(role === "teacher" ? [
+      { label: "Exam Builder", url: "/dashboard/exam-builder", icon: FileText, category: "Pages" },
+      { label: "Question Bank", url: "/dashboard/question-bank", icon: BookOpen, category: "Pages" },
+      { label: "Grade Written", url: "/dashboard/grade-written", icon: FileText, category: "Pages" },
+    ] : []),
     ...(role === "student" ? [
-      { label: "Upcoming Exams", url: "/dashboard/exams", icon: GraduationCap, category: "Pages" },
       { label: "Playground", url: "/dashboard/playground", icon: Code, category: "Pages" },
     ] : []),
+    // Courses
+    { label: "CS101 — Intro to Programming", url: "/dashboard/courses/APX-CS101", icon: BookOpen, category: "Courses" },
+    { label: "CS201 — Data Structures", url: "/dashboard/courses/APX-CS201", icon: BookOpen, category: "Courses" },
+    { label: "CS301 — Algorithms", url: "/dashboard/courses/APX-CS301", icon: BookOpen, category: "Courses" },
+    // Exams
+    ...(role === "teacher" ? [
+      { label: "Midterm Exam — CS101", url: "/dashboard/exams", icon: FileText, category: "Exams" },
+      { label: "Quiz 3 — Linked Lists (CS201)", url: "/dashboard/exams", icon: FileText, category: "Exams" },
+      { label: "Quiz 2 — Stacks & Queues (CS201)", url: "/dashboard/exams", icon: FileText, category: "Exams" },
+      { label: "Quiz 1 — Arrays (CS201)", url: "/dashboard/exams", icon: FileText, category: "Exams" },
+      { label: "Final Project Review — CS301", url: "/dashboard/exams", icon: FileText, category: "Exams" },
+      { label: "Pop Quiz — Sorting (CS301)", url: "/dashboard/exams", icon: FileText, category: "Exams" },
+    ] : [
+      { label: "JavaScript Fundamentals", url: "/dashboard/exams", icon: FileText, category: "Exams" },
+      { label: "HTML & Accessibility", url: "/dashboard/exams", icon: FileText, category: "Exams" },
+      { label: "React & TypeScript", url: "/dashboard/exams", icon: FileText, category: "Exams" },
+      { label: "Data Structures & Algorithms", url: "/dashboard/exams", icon: FileText, category: "Exams" },
+      { label: "CSS & Responsive Design", url: "/dashboard/exams", icon: FileText, category: "Exams" },
+      { label: "Node.js Backend", url: "/dashboard/exams", icon: FileText, category: "Exams" },
+      { label: "SQL & Database Design", url: "/dashboard/exams", icon: FileText, category: "Exams" },
+    ]),
   ];
 
   const filtered = searchItems.filter((item) =>
