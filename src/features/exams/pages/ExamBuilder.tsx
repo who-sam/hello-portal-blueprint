@@ -77,9 +77,14 @@ function bankToExamQuestion(bq: BankQuestion): Question {
 
 export default function ExamBuilder() {
   const { toast } = useToast();
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [duration, setDuration] = useState(60);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const editExam = (location.state as any)?.editExam;
+  const isEditing = !!editExam;
+
+  const [title, setTitle] = useState(editExam?.title || "");
+  const [description, setDescription] = useState(editExam?.description || "");
+  const [duration, setDuration] = useState(editExam?.duration || 60);
   const [passingScore, setPassingScore] = useState(50);
   const [shuffle, setShuffle] = useState(false);
   const [showResults, setShowResults] = useState(true);
