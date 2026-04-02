@@ -140,8 +140,9 @@ function StudentCourseDetail({ course }: { course: { name: string; teacher: stri
   const navigate = useNavigate();
   const confettiFired = useRef(false);
 
-  // Mock flag — when false, grades are not yet published by the teacher
-  const studentGradesAnnounced = true;
+  const courseGrades = getCourseGrades(course.id);
+  const studentGradesAnnounced = isGradesAnnounced(course.id);
+  const courseExams = getCourseExams(course.id);
 
   const overallAvg = courseGrades.length
     ? Math.round(courseGrades.reduce((s, g) => s + (g.score / g.total) * 100, 0) / courseGrades.length)
