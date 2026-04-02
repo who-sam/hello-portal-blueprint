@@ -18,7 +18,7 @@ import { useNotifications } from "@/contexts/NotificationContext";
 import { useIsMobile, useIsTablet } from "@/hooks/use-mobile";
 import { useTheme } from "next-themes";
 import { useState, useEffect, useRef } from "react";
-import { BookOpen, FileText, BarChart3, Code, GraduationCap } from "lucide-react";
+import { BookOpen, FileText, BarChart3, Code, GraduationCap, Trophy, Users, HelpCircle, BellRing } from "lucide-react";
 
 const teacherNavTabs = [
   { label: "Dashboard", url: "/dashboard" },
