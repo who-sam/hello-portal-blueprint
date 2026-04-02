@@ -26,6 +26,7 @@ export default function SettingsPage() {
   });
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleSave = () => {
     setUser({ firstName: profile.firstName, middleName: profile.middleName, lastName: profile.lastName, email: profile.email, studentId });
