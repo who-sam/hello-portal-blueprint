@@ -646,6 +646,23 @@ function TeacherCourseDetail({ course }: { course: { name: string; teacher: stri
               </div>
             </CardContent>
           </Card>
+
+          {/* Failing students summary */}
+          {(() => {
+            const failCount = gradesSpreadsheet.filter((row) => {
+              const scores = examNames.map((e) => (row as Record<string, any>)[e] as number);
+              return Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) < passingThreshold;
+            }).length;
+            return failCount > 0 ? (
+              <Alert variant="destructive" className="border-destructive/50">
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>{failCount} student{failCount > 1 ? "s" : ""} below passing threshold</AlertTitle>
+                <AlertDescription>
+                  {failCount} out of {gradesSpreadsheet.length} students have an average below {passingThreshold}%.
+                </AlertDescription>
+              </Alert>
+            ) : null;
+          })()}
         </TabsContent>
 
         {/* ANNOUNCEMENTS TAB */}
