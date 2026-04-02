@@ -616,10 +616,14 @@ function TeacherCourseDetail({ course }: { course: { name: string; teacher: stri
                     {gradesSpreadsheet.map((row) => {
                       const scores = examNames.map((e) => (row as Record<string, any>)[e] as number);
                       const avg = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
+                      const isFailing = avg < passingThreshold;
                       return (
-                        <tr key={row.studentId} className="border-b border-border/30 hover:bg-muted/30 transition-colors">
+                        <tr key={row.studentId} className={`border-b border-border/30 hover:bg-muted/30 transition-colors ${isFailing ? "bg-destructive/5" : ""}`}>
                           <td className="px-4 py-3 font-medium text-foreground sticky left-0 bg-card/90 backdrop-blur-sm z-10">
-                            {row.studentName}
+                            <span className="flex items-center gap-2">
+                              {row.studentName}
+                              {isFailing && <AlertCircle className="h-3.5 w-3.5 text-destructive" />}
+                            </span>
                           </td>
                           <td className="px-3 py-3 text-muted-foreground font-mono text-xs">{row.studentId}</td>
                           {scores.map((score, i) => (
@@ -627,7 +631,7 @@ function TeacherCourseDetail({ course }: { course: { name: string; teacher: stri
                               {score}
                             </td>
                           ))}
-                          <td className={`px-3 py-3 text-center font-bold ${gradeColor(avg)}`}>{avg}%</td>
+                          <td className={`px-3 py-3 text-center font-bold ${isFailing ? "text-destructive" : gradeColor(avg)}`}>{avg}%</td>
                         </tr>
                       );
                     })}
