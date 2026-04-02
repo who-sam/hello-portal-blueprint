@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Trash2, GripVertical, Copy, ChevronDown, ChevronUp, ImagePlus, X } from "lucide-react";
+import { Plus, Trash2, GripVertical, Copy, ChevronDown, ChevronUp, ImagePlus, X, BookmarkPlus } from "lucide-react";
 import { useTheme } from "next-themes";
 import type { CodingQuestion, Difficulty } from "@/types/exam";
 
