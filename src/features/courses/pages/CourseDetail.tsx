@@ -342,6 +342,7 @@ function TeacherCourseDetail({ course }: { course: { name: string; teacher: stri
   const [announceBody, setAnnounceBody] = useState("");
   const [announcements, setAnnouncements] = useState(courseAnnouncements);
   const [gradesAnnounced, setGradesAnnounced] = useState(false);
+  const [passingThreshold, setPassingThreshold] = useState(60);
 
   const copyId = () => {
     navigator.clipboard.writeText(course.id);
