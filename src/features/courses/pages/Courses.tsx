@@ -238,7 +238,7 @@ function TeacherCourses() {
               A unique course ID will be generated automatically. Share it with your students so they can enroll.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-3 py-2">
+          <div className="space-y-4 py-2">
             <div className="space-y-1.5">
               <Label htmlFor="course-name">Course Name</Label>
               <Input
@@ -248,6 +248,36 @@ function TeacherCourses() {
                 onChange={(e) => setNewName(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleCreate()}
               />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Cover Photo (optional)</Label>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handlePhotoChange}
+              />
+              {newPhoto ? (
+                <div className="relative h-32 rounded-lg overflow-hidden border border-border">
+                  <img src={newPhoto} alt="Preview" className="w-full h-full object-cover" />
+                  <button
+                    onClick={() => { setNewPhoto(null); if (fileInputRef.current) fileInputRef.current.value = ""; }}
+                    className="absolute top-2 right-2 h-6 w-6 rounded-full bg-black/60 flex items-center justify-center hover:bg-black/80 transition-colors"
+                  >
+                    <X className="h-3.5 w-3.5 text-white" />
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="w-full h-32 rounded-lg border-2 border-dashed border-border hover:border-primary/50 flex flex-col items-center justify-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <ImagePlus className="h-6 w-6" />
+                  <span className="text-xs">Click to upload a cover photo</span>
+                </button>
+              )}
             </div>
           </div>
           <DialogFooter>
