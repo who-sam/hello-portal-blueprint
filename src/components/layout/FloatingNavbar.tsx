@@ -178,6 +178,18 @@ export function FloatingNavbar() {
           >
             <Search className="h-4 w-4" />
           </button>
+          <button
+            onClick={() => navigate("/dashboard/notifications")}
+            aria-label="Notifications"
+            className="relative flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+          >
+            <Bell className="h-4 w-4" />
+            {unreadCount > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-destructive-foreground">
+                {unreadCount > 9 ? "9+" : unreadCount}
+              </span>
+            )}
+          </button>
           {!isMobile && (
             <button
               onClick={toggleTheme}
