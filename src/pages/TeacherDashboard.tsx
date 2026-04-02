@@ -30,7 +30,7 @@ const quickActions = [
   { label: "Create Exam", desc: "Build a new exam", icon: Plus, route: "/dashboard/exam-builder" },
   { label: "Create Course", desc: "Start a new course", icon: BookOpen, route: "/dashboard/courses", state: { openCreate: true } },
   { label: "View Results", desc: "Check submissions", icon: BarChart3, route: "/dashboard/results" },
-  { label: "Question Bank", desc: "Manage questions", icon: BookOpen, route: "/dashboard/exam-builder" },
+  { label: "Question Bank", desc: "Manage questions", icon: BookOpen, route: "/dashboard/question-bank" },
 ];
 
 const initialActiveExams = [
