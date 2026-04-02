@@ -57,24 +57,38 @@ function TeacherCourses() {
   const location = useLocation();
   const { toast } = useToast();
   const [courses, setCourses] = useState(initialTeacherCourses);
+  const [courseImages, setCourseImages] = useState<Record<string, string>>(initialCourseImages);
   const [createOpen, setCreateOpen] = useState(false);
   const [newName, setNewName] = useState("");
+  const [newPhoto, setNewPhoto] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Open create dialog if navigated with state
   useEffect(() => {
     if ((location.state as any)?.openCreate) {
       setCreateOpen(true);
-      // Clear the state so it doesn't re-open on back navigation
       window.history.replaceState({}, document.title);
     }
   }, [location.state]);
+
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => setNewPhoto(reader.result as string);
+    reader.readAsDataURL(file);
+  };
 
   const handleCreate = () => {
     if (!newName.trim()) return;
     const id = generateCourseId();
     setCourses((prev) => [{ id, name: newName.trim(), students: 0, exams: 0 }, ...prev]);
+    if (newPhoto) {
+      setCourseImages((prev) => ({ ...prev, [id]: newPhoto }));
+    }
     setNewName("");
+    setNewPhoto(null);
     setCreateOpen(false);
     toast({
       title: "Course created",
@@ -84,6 +98,23 @@ function TeacherCourses() {
         </span>
       ),
     });
+  };
+
+  const handleChangePhoto = (courseId: string) => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        setCourseImages((prev) => ({ ...prev, [courseId]: reader.result as string }));
+        toast({ title: "Cover photo updated" });
+      };
+      reader.readAsDataURL(file);
+    };
+    input.click();
   };
 
   const copyId = (id: string) => {
@@ -120,17 +151,22 @@ function TeacherCourses() {
             className="border-border/50 bg-card/80 backdrop-blur-sm hover:shadow-md transition-shadow cursor-pointer overflow-hidden"
             onClick={() => navigate(`/dashboard/courses/${course.id}`)}
           >
-            {/* Cover image */}
-            {courseImages[course.id] && (
-              <div className="h-40 overflow-hidden">
-                <img src={courseImages[course.id]} alt={course.name} className="w-full h-full object-cover" />
-              </div>
-            )}
-            {!courseImages[course.id] && (
-              <div className="h-40 bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
-                <BookOpen className="h-10 w-10 text-primary/40" />
-              </div>
-            )}
+            {/* Cover image — always shown, uses default if none set */}
+            <div className="relative h-40 overflow-hidden group">
+              <img
+                src={getCourseImage(courseImages, course.id)}
+                alt={course.name}
+                className="w-full h-full object-cover"
+                loading="lazy"
+              />
+              <button
+                onClick={(e) => { e.stopPropagation(); handleChangePhoto(course.id); }}
+                className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity"
+                aria-label="Change cover photo"
+              >
+                <ImagePlus className="h-6 w-6 text-white" />
+              </button>
+            </div>
             <CardHeader className="pb-3 flex flex-row items-start justify-between space-y-0">
               <CardTitle className="text-lg flex items-center gap-2">
                 <BookOpen className="h-5 w-5 text-primary" />
