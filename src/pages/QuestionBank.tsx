@@ -128,7 +128,8 @@ export default function QuestionBank() {
     }
 
     if (editingId) {
-      setQuestions((prev) => prev.map((q) => q.id === editingId ? { ...q, ...base, ...extras } : q));
+      const updated = updateBankQ(editingId, { ...base, ...extras });
+      setQuestions(updated);
       toast({ title: "Question updated" });
     } else {
       const newQ: BankQuestion = {
@@ -136,7 +137,8 @@ export default function QuestionBank() {
         ...base, ...extras,
         createdAt: new Date().toISOString().slice(0, 10),
       } as BankQuestion;
-      setQuestions((prev) => [newQ, ...prev]);
+      const updated = addBankQ(newQ);
+      setQuestions(updated);
       toast({ title: "Question added" });
     }
     setDialogOpen(false);
@@ -146,7 +148,8 @@ export default function QuestionBank() {
 
   const handleDelete = () => {
     if (deleteId) {
-      setQuestions((prev) => prev.filter((q) => q.id !== deleteId));
+      const updated = deleteBankQ(deleteId);
+      setQuestions(updated);
       setDeleteId(null);
       setBulkSelected((prev) => { const n = new Set(prev); n.delete(deleteId); return n; });
       toast({ title: "Question deleted" });
@@ -154,7 +157,8 @@ export default function QuestionBank() {
   };
 
   const handleBulkDelete = () => {
-    setQuestions((prev) => prev.filter((q) => !bulkSelected.has(q.id)));
+    const updated = deleteBankQs(bulkSelected);
+    setQuestions(updated);
     setBulkSelected(new Set());
     setBulkDeleteOpen(false);
     toast({ title: "Questions deleted", description: `${bulkSelected.size} question(s) removed.` });
@@ -162,7 +166,8 @@ export default function QuestionBank() {
 
   const handleDuplicate = (q: BankQuestion) => {
     const dup: BankQuestion = { ...q, id: `qb-${crypto.randomUUID().slice(0, 8)}`, text: `${q.text} (Copy)`, createdAt: new Date().toISOString().slice(0, 10) };
-    setQuestions((prev) => [dup, ...prev]);
+    const updated = addBankQ(dup);
+    setQuestions(updated);
     toast({ title: "Duplicated" });
   };
 
