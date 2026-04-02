@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Slider } from "@/components/ui/slider";
 
 /* ── Mock data ── */
 const courseImages: Record<string, string> = {
@@ -571,22 +572,20 @@ function TeacherCourseDetail({ course }: { course: { name: string; teacher: stri
 
         <TabsContent value="grades" className="space-y-4">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-3">
-              <p className="text-sm text-muted-foreground">
+            <div className="flex items-center gap-4 min-w-[280px]">
+              <p className="text-sm text-muted-foreground whitespace-nowrap">
                 Passing threshold:
               </p>
-              <select
-                value={passingThreshold}
-                onChange={(e) => {
-                  setPassingThreshold(Number(e.target.value));
-                  toast({ title: "Threshold updated", description: `Passing grade set to ${e.target.value}%` });
-                }}
-                className="h-9 rounded-md border border-border bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-              >
-                {[40, 45, 50, 55, 60, 65, 70, 75].map((v) => (
-                  <option key={v} value={v}>{v}%</option>
-                ))}
-              </select>
+              <Slider
+                value={[passingThreshold]}
+                onValueChange={(val) => setPassingThreshold(val[0])}
+                onValueCommit={(val) => toast({ title: "Threshold updated", description: `Passing grade set to ${val[0]}%` })}
+                min={40}
+                max={80}
+                step={5}
+                className="w-32"
+              />
+              <span className="text-sm font-medium min-w-[3ch] text-right">{passingThreshold}%</span>
             </div>
             <div className="flex items-center gap-2">
               <Button variant="outline" size="sm" className="gap-1.5" onClick={exportGradesCSV}>
