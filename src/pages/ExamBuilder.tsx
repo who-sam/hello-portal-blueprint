@@ -284,11 +284,11 @@ export default function ExamBuilder() {
         <ResizablePanel defaultSize={70} minSize={40}>
           {selected ? (
             selected.type === "mcq" ? (
-              <MCQEditor question={selected as MCQQuestion} onChange={updateQuestion} />
+              <MCQEditor question={selected as MCQQuestion} onChange={updateQuestion} onSaveToBank={handleSaveToBank} />
             ) : selected.type === "written" ? (
-              <WrittenEditor question={selected as WrittenQuestion} onChange={updateQuestion} />
+              <WrittenEditor question={selected as WrittenQuestion} onChange={updateQuestion} onSaveToBank={handleSaveToBank} />
             ) : (
-              <CodingEditorComponent question={selected as CodingQuestion} onChange={updateQuestion} />
+              <CodingEditorComponent question={selected as CodingQuestion} onChange={updateQuestion} onSaveToBank={handleSaveToBank} />
             )
           ) : (
             <div className="flex h-full items-center justify-center text-muted-foreground text-sm">
