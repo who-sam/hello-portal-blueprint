@@ -7,6 +7,7 @@ import DashboardLayout from "@/components/layout/DashboardLayout";
 import DashboardIndex from "@/features/dashboard/pages/DashboardIndex";
 import CodeEditor from "@/features/playground/pages/CodeEditor";
 import UpcomingExams from "@/features/exams/pages/UpcomingExams";
+import TeacherExams from "@/features/exams/pages/TeacherExams";
 import Results from "@/features/results/pages/Results";
 import Settings from "@/features/settings/pages/Settings";
 import ExamBuilder from "@/features/exams/pages/ExamBuilder";
