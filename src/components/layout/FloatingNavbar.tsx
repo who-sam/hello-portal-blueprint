@@ -130,7 +130,7 @@ export function FloatingNavbar() {
   return (
     <>
       <header className="fixed left-4 right-4 sm:left-6 sm:right-6 top-3 sm:top-4 z-50 flex items-center gap-2 sm:gap-3 h-12">
-        {isMobile && (
+        {showHamburger && (
           <button
             onClick={() => setMobileMenuOpen(true)}
             aria-label="Open menu"
@@ -148,7 +148,7 @@ export function FloatingNavbar() {
           {!isMobile && <span className="text-lg font-bold tracking-tight text-foreground">APEX</span>}
         </button>
 
-        {!isMobile && (
+        {showInlineNav && (
           <>
             <div className="flex-1" />
             <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-1 rounded-full border border-border bg-card/80 px-2 py-1.5 shadow-lg backdrop-blur-md">
@@ -157,7 +157,7 @@ export function FloatingNavbar() {
                   key={tab.label}
                   to={tab.url}
                   end={tab.url === "/dashboard"}
-                  className="rounded-full px-4 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                  className="rounded-full px-4 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground whitespace-nowrap"
                   activeClassName="bg-primary text-primary-foreground"
                 >
                   {tab.label}
