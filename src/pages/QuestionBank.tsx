@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { getQuestions, addQuestion as addBankQ, updateQuestion as updateBankQ, deleteQuestion as deleteBankQ, deleteQuestions as deleteBankQs, type BankQuestion, type MCQData, type WrittenData, type CodingData } from "@/lib/questionBankStore";
 import type { QuestionType } from "@/types/exam";
 
 /* ── Mock data ── */
