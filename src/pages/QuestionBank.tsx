@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { getQuestions, addQuestion as addBankQ, updateQuestion as updateBankQ, deleteQuestion as deleteBankQ, deleteQuestions as deleteBankQs, type BankQuestion, type MCQData, type WrittenData, type CodingData } from "@/lib/questionBankStore";
 import type { QuestionType } from "@/types/exam";
 
 /* ── Mock data ── */
@@ -31,46 +32,8 @@ const mockCourses = [
   { id: "APX-CS301", name: "CS301 — Algorithms" },
 ];
 
-interface MCQData {
-  options: string[];
-  correctIndices: number[];
-  explanation: string;
-}
 
-interface WrittenData {
-  rubric: string;
-  maxWordCount: number;
-}
 
-interface CodingData {
-  description: string;
-  starterCode: string;
-  hints: string;
-}
-
-interface BankQuestion {
-  id: string;
-  type: QuestionType;
-  text: string;
-  points: number;
-  courseId: string;
-  tags: string[];
-  createdAt: string;
-  mcqData?: MCQData;
-  writtenData?: WrittenData;
-  codingData?: CodingData;
-}
-
-const initialQuestions: BankQuestion[] = [
-  { id: "qb-1", type: "mcq", text: "What is the time complexity of binary search?", points: 10, courseId: "APX-CS301", tags: ["searching", "complexity"], createdAt: "2026-03-15", mcqData: { options: ["O(n)", "O(log n)", "O(n²)", "O(1)"], correctIndices: [1], explanation: "Binary search halves the search space each step." } },
-  { id: "qb-2", type: "written", text: "Explain the difference between a stack and a queue.", points: 20, courseId: "APX-CS201", tags: ["data-structures", "fundamentals"], createdAt: "2026-03-10", writtenData: { rubric: "Must mention LIFO vs FIFO, provide examples.", maxWordCount: 500 } },
-  { id: "qb-3", type: "coding", text: "Implement a function to reverse a linked list.", points: 30, courseId: "APX-CS201", tags: ["linked-list", "implementation"], createdAt: "2026-03-08", codingData: { description: "Write a function that takes the head of a singly linked list and returns the reversed list.", starterCode: "def reverse_list(head):\n    pass", hints: "Use three pointers: prev, curr, next" } },
-  { id: "qb-4", type: "mcq", text: "Which of the following is not a primitive data type in Python?", points: 10, courseId: "APX-CS101", tags: ["python", "basics"], createdAt: "2026-03-05", mcqData: { options: ["int", "str", "list", "float"], correctIndices: [2], explanation: "list is a collection type, not a primitive." } },
-  { id: "qb-5", type: "written", text: "Describe the concept of recursion with an example.", points: 20, courseId: "APX-CS101", tags: ["recursion", "fundamentals"], createdAt: "2026-03-01", writtenData: { rubric: "Define recursion, base case, recursive case, provide code example.", maxWordCount: 400 } },
-  { id: "qb-6", type: "coding", text: "Write a function that finds the shortest path in a graph using BFS.", points: 30, courseId: "APX-CS301", tags: ["graphs", "bfs"], createdAt: "2026-02-28", codingData: { description: "Implement BFS to find shortest path from source to target in unweighted graph.", starterCode: "def bfs_shortest_path(graph, source, target):\n    pass", hints: "Use a queue and visited set" } },
-  { id: "qb-7", type: "mcq", text: "What is the worst case time complexity of quicksort?", points: 10, courseId: "APX-CS301", tags: ["sorting", "complexity"], createdAt: "2026-02-20", mcqData: { options: ["O(n log n)", "O(n²)", "O(n)", "O(log n)"], correctIndices: [1], explanation: "Worst case occurs with already sorted input and bad pivot." } },
-  { id: "qb-8", type: "written", text: "Compare and contrast arrays and linked lists.", points: 15, courseId: "APX-CS201", tags: ["data-structures", "comparison"], createdAt: "2026-02-15", writtenData: { rubric: "Compare access time, insertion, deletion, memory usage.", maxWordCount: 600 } },
-];
 
 const typeIcons: Record<QuestionType, React.ElementType> = { mcq: CheckSquare, written: FileText, coding: Code2 };
 const typeLabels: Record<QuestionType, string> = { mcq: "MCQ", written: "Written", coding: "Coding" };
@@ -107,7 +70,7 @@ function formFromQuestion(q: BankQuestion) {
 
 export default function QuestionBank() {
   const { toast } = useToast();
-  const [questions, setQuestions] = useState<BankQuestion[]>(initialQuestions);
+  const [questions, setQuestions] = useState<BankQuestion[]>(() => getQuestions());
   const [selectedCourse, setSelectedCourse] = useState<string>("");
   const [searchQuery, setSearchQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState<string>("all");
@@ -165,7 +128,8 @@ export default function QuestionBank() {
     }
 
     if (editingId) {
-      setQuestions((prev) => prev.map((q) => q.id === editingId ? { ...q, ...base, ...extras } : q));
+      const updated = updateBankQ(editingId, { ...base, ...extras });
+      setQuestions(updated);
       toast({ title: "Question updated" });
     } else {
       const newQ: BankQuestion = {
@@ -173,7 +137,8 @@ export default function QuestionBank() {
         ...base, ...extras,
         createdAt: new Date().toISOString().slice(0, 10),
       } as BankQuestion;
-      setQuestions((prev) => [newQ, ...prev]);
+      const updated = addBankQ(newQ);
+      setQuestions(updated);
       toast({ title: "Question added" });
     }
     setDialogOpen(false);
@@ -183,7 +148,8 @@ export default function QuestionBank() {
 
   const handleDelete = () => {
     if (deleteId) {
-      setQuestions((prev) => prev.filter((q) => q.id !== deleteId));
+      const updated = deleteBankQ(deleteId);
+      setQuestions(updated);
       setDeleteId(null);
       setBulkSelected((prev) => { const n = new Set(prev); n.delete(deleteId); return n; });
       toast({ title: "Question deleted" });
@@ -191,7 +157,8 @@ export default function QuestionBank() {
   };
 
   const handleBulkDelete = () => {
-    setQuestions((prev) => prev.filter((q) => !bulkSelected.has(q.id)));
+    const updated = deleteBankQs(bulkSelected);
+    setQuestions(updated);
     setBulkSelected(new Set());
     setBulkDeleteOpen(false);
     toast({ title: "Questions deleted", description: `${bulkSelected.size} question(s) removed.` });
@@ -199,7 +166,8 @@ export default function QuestionBank() {
 
   const handleDuplicate = (q: BankQuestion) => {
     const dup: BankQuestion = { ...q, id: `qb-${crypto.randomUUID().slice(0, 8)}`, text: `${q.text} (Copy)`, createdAt: new Date().toISOString().slice(0, 10) };
-    setQuestions((prev) => [dup, ...prev]);
+    const updated = addBankQ(dup);
+    setQuestions(updated);
     toast({ title: "Duplicated" });
   };
 

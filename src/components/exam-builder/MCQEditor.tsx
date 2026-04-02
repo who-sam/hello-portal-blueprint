@@ -4,16 +4,17 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Trash2, ImagePlus, X } from "lucide-react";
+import { Plus, Trash2, ImagePlus, X, BookmarkPlus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { MCQQuestion, Difficulty } from "@/types/exam";
 
 interface Props {
   question: MCQQuestion;
   onChange: (q: MCQQuestion) => void;
+  onSaveToBank?: (q: MCQQuestion) => void;
 }
 
-export default function MCQEditor({ question, onChange }: Props) {
+export default function MCQEditor({ question, onChange, onSaveToBank }: Props) {
   const { toast } = useToast();
   const fileRef = useRef<HTMLInputElement>(null);
   const update = (partial: Partial<MCQQuestion>) => onChange({ ...question, ...partial });
@@ -50,6 +51,13 @@ export default function MCQEditor({ question, onChange }: Props) {
 
   return (
     <div className="space-y-5 p-5 overflow-y-auto h-full">
+      {onSaveToBank && (
+        <div className="flex justify-end">
+          <Button variant="outline" size="sm" className="gap-1.5" onClick={() => onSaveToBank(question)}>
+            <BookmarkPlus className="h-4 w-4" /> Save to Bank
+          </Button>
+        </div>
+      )}
       <div className="grid grid-cols-2 gap-4">
         <div className="col-span-2">
           <label className="text-xs font-medium text-muted-foreground mb-1 block">Question Text</label>

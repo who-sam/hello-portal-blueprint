@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Trash2, GripVertical, Copy, ChevronDown, ChevronUp, ImagePlus, X } from "lucide-react";
+import { Plus, Trash2, GripVertical, Copy, ChevronDown, ChevronUp, ImagePlus, X, BookmarkPlus } from "lucide-react";
 import { useTheme } from "next-themes";
 import type { CodingQuestion, Difficulty } from "@/types/exam";
 
@@ -17,9 +17,10 @@ const LANGUAGES = ["python", "javascript", "c", "cpp"];
 interface Props {
   question: CodingQuestion;
   onChange: (q: CodingQuestion) => void;
+  onSaveToBank?: (q: CodingQuestion) => void;
 }
 
-export default function CodingEditor({ question, onChange }: Props) {
+export default function CodingEditor({ question, onChange, onSaveToBank }: Props) {
   const update = (partial: Partial<CodingQuestion>) => onChange({ ...question, ...partial });
   const [lang, setLang] = useState("python");
   const [expandedTC, setExpandedTC] = useState<string | null>(null);
@@ -73,6 +74,13 @@ export default function CodingEditor({ question, onChange }: Props) {
 
   return (
     <div className="space-y-5 p-5 overflow-y-auto h-full">
+      {onSaveToBank && (
+        <div className="flex justify-end">
+          <Button variant="outline" size="sm" className="gap-1.5" onClick={() => onSaveToBank(question)}>
+            <BookmarkPlus className="h-4 w-4" /> Save to Bank
+          </Button>
+        </div>
+      )}
       <div className="grid grid-cols-2 gap-4">
         <div className="col-span-2">
           <label className="text-xs font-medium text-muted-foreground mb-1 block">Problem Title</label>

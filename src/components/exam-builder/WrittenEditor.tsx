@@ -4,15 +4,16 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ImagePlus, X } from "lucide-react";
+import { ImagePlus, X, BookmarkPlus } from "lucide-react";
 import type { WrittenQuestion, Difficulty } from "@/types/exam";
 
 interface Props {
   question: WrittenQuestion;
   onChange: (q: WrittenQuestion) => void;
+  onSaveToBank?: (q: WrittenQuestion) => void;
 }
 
-export default function WrittenEditor({ question, onChange }: Props) {
+export default function WrittenEditor({ question, onChange, onSaveToBank }: Props) {
   const fileRef = useRef<HTMLInputElement>(null);
   const update = (partial: Partial<WrittenQuestion>) => onChange({ ...question, ...partial });
 
@@ -24,6 +25,13 @@ export default function WrittenEditor({ question, onChange }: Props) {
 
   return (
     <div className="space-y-5 p-5 overflow-y-auto h-full">
+      {onSaveToBank && (
+        <div className="flex justify-end">
+          <Button variant="outline" size="sm" className="gap-1.5" onClick={() => onSaveToBank(question)}>
+            <BookmarkPlus className="h-4 w-4" /> Save to Bank
+          </Button>
+        </div>
+      )}
       <div className="grid grid-cols-2 gap-4">
         <div className="col-span-2">
           <label className="text-xs font-medium text-muted-foreground mb-1 block">Question Text</label>

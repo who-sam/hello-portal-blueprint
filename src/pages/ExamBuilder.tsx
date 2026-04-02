@@ -15,6 +15,7 @@ import { Save, CalendarIcon, Search, CheckSquare, FileText, Code2 } from "lucide
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+import { getQuestions as getBankQuestions, addQuestion as addBankQuestion, type BankQuestion } from "@/lib/questionBankStore";
 import type { Question, QuestionType, MCQQuestion, WrittenQuestion, CodingQuestion } from "@/types/exam";
 import QuestionTypeDialog from "@/components/exam-builder/QuestionTypeDialog";
 import QuestionList from "@/components/exam-builder/QuestionList";
@@ -26,27 +27,6 @@ const mockCourses = [
   { id: "APX-CS101", name: "CS101 — Intro to Programming" },
   { id: "APX-CS201", name: "CS201 — Data Structures" },
   { id: "APX-CS301", name: "CS301 — Algorithms" },
-];
-
-// Mock question bank data (shared with QuestionBank page)
-interface BankQuestion {
-  id: string;
-  type: QuestionType;
-  text: string;
-  points: number;
-  courseId: string;
-  tags: string[];
-}
-
-const bankQuestions: BankQuestion[] = [
-  { id: "qb-1", type: "mcq", text: "What is the time complexity of binary search?", points: 10, courseId: "APX-CS301", tags: ["searching", "complexity"] },
-  { id: "qb-2", type: "written", text: "Explain the difference between a stack and a queue.", points: 20, courseId: "APX-CS201", tags: ["data-structures"] },
-  { id: "qb-3", type: "coding", text: "Implement a function to reverse a linked list.", points: 30, courseId: "APX-CS201", tags: ["linked-list"] },
-  { id: "qb-4", type: "mcq", text: "Which of the following is not a primitive data type in Python?", points: 10, courseId: "APX-CS101", tags: ["python", "basics"] },
-  { id: "qb-5", type: "written", text: "Describe the concept of recursion with an example.", points: 20, courseId: "APX-CS101", tags: ["recursion"] },
-  { id: "qb-6", type: "coding", text: "Write a function that finds the shortest path in a graph using BFS.", points: 30, courseId: "APX-CS301", tags: ["graphs", "bfs"] },
-  { id: "qb-7", type: "mcq", text: "What is the worst case time complexity of quicksort?", points: 10, courseId: "APX-CS301", tags: ["sorting", "complexity"] },
-  { id: "qb-8", type: "written", text: "Compare and contrast arrays and linked lists.", points: 15, courseId: "APX-CS201", tags: ["data-structures"] },
 ];
 
 const typeIcons: Record<string, React.ElementType> = {
@@ -151,7 +131,8 @@ export default function ExamBuilder() {
   };
 
   // Bank import logic
-  const filteredBankQuestions = bankQuestions.filter((bq) => {
+  const allBankQuestions = getBankQuestions();
+  const filteredBankQuestions = allBankQuestions.filter((bq) => {
     const matchesCourse = !assignedCourse || bq.courseId === assignedCourse;
     const matchesSearch = bq.text.toLowerCase().includes(bankSearch.toLowerCase()) || bq.tags.some((t) => t.toLowerCase().includes(bankSearch.toLowerCase()));
     const matchesType = bankTypeFilter === "all" || bq.type === bankTypeFilter;
@@ -167,7 +148,7 @@ export default function ExamBuilder() {
   };
 
   const importFromBank = () => {
-    const toImport = bankQuestions.filter((bq) => selectedBankIds.has(bq.id));
+    const toImport = allBankQuestions.filter((bq) => selectedBankIds.has(bq.id));
     const newQuestions = toImport.map(bankToExamQuestion);
     setQuestions((prev) => [...prev, ...newQuestions]);
     setSelectedIdx(questions.length);
@@ -176,6 +157,42 @@ export default function ExamBuilder() {
     setBankSearch("");
     setBankTypeFilter("all");
     toast({ title: "Imported", description: `${newQuestions.length} question(s) imported from the bank.` });
+  };
+
+  const handleSaveToBank = (q: Question) => {
+    if (!q.text.trim()) {
+      toast({ title: "Cannot save", description: "Please fill in the question text first.", variant: "destructive" });
+      return;
+    }
+    if (!assignedCourse) {
+      toast({ title: "Cannot save", description: "Please assign the exam to a course first.", variant: "destructive" });
+      return;
+    }
+    const bankQ: BankQuestion = {
+      id: `qb-${crypto.randomUUID().slice(0, 8)}`,
+      type: q.type,
+      text: q.text,
+      points: q.points,
+      courseId: assignedCourse,
+      tags: [],
+      createdAt: new Date().toISOString().slice(0, 10),
+    };
+    if (q.type === "mcq") {
+      const mcq = q as MCQQuestion;
+      bankQ.mcqData = {
+        options: mcq.options.map((o) => o.text).filter(Boolean),
+        correctIndices: mcq.options.map((o, i) => mcq.correctOptionIds.includes(o.id) ? i : -1).filter((i) => i >= 0),
+        explanation: mcq.explanation,
+      };
+    } else if (q.type === "written") {
+      const w = q as WrittenQuestion;
+      bankQ.writtenData = { rubric: w.rubric, maxWordCount: w.maxWordCount };
+    } else {
+      const c = q as CodingQuestion;
+      bankQ.codingData = { description: c.description, starterCode: c.starterCode.python || "", hints: c.hints };
+    }
+    addBankQuestion(bankQ);
+    toast({ title: "Saved to Question Bank", description: `"${q.text.slice(0, 50)}..." added to the bank.` });
   };
 
   const selected = questions[selectedIdx];
@@ -267,11 +284,11 @@ export default function ExamBuilder() {
         <ResizablePanel defaultSize={70} minSize={40}>
           {selected ? (
             selected.type === "mcq" ? (
-              <MCQEditor question={selected as MCQQuestion} onChange={updateQuestion} />
+              <MCQEditor question={selected as MCQQuestion} onChange={updateQuestion} onSaveToBank={handleSaveToBank} />
             ) : selected.type === "written" ? (
-              <WrittenEditor question={selected as WrittenQuestion} onChange={updateQuestion} />
+              <WrittenEditor question={selected as WrittenQuestion} onChange={updateQuestion} onSaveToBank={handleSaveToBank} />
             ) : (
-              <CodingEditorComponent question={selected as CodingQuestion} onChange={updateQuestion} />
+              <CodingEditorComponent question={selected as CodingQuestion} onChange={updateQuestion} onSaveToBank={handleSaveToBank} />
             )
           ) : (
             <div className="flex h-full items-center justify-center text-muted-foreground text-sm">
