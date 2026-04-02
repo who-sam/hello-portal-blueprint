@@ -25,7 +25,7 @@ import { useTheme } from "next-themes";
 const teacherMainItems = [
   { icon: BarChart3, url: "/dashboard", label: "Dashboard" },
   { icon: FilePlus2, url: "/dashboard/exam-builder", label: "Exam Builder" },
-  { icon: Calendar, url: "/dashboard/upcoming", label: "Upcoming Exams" },
+  { icon: Calendar, url: "/dashboard/exams", label: "Exams" },
   { icon: ClipboardCheck, url: "/dashboard/results", label: "Results" },
   { icon: Users, url: "/dashboard/team", label: "Team" },
   { icon: Mail, url: "/dashboard/messages", label: "Messages" },
@@ -37,10 +37,10 @@ const studentMainItems = [
   { icon: BarChart3, url: "/dashboard", label: "Dashboard" },
   { icon: User, url: "/dashboard/profile", label: "Profile" },
   { icon: Trophy, url: "/dashboard/leaderboard", label: "Leaderboard" },
-  { icon: Code2, url: "/dashboard/editor", label: "Code Editor" },
-  { icon: Calendar, url: "/dashboard/upcoming", label: "Upcoming Exams" },
+  { icon: Code2, url: "/dashboard/playground", label: "Code Editor" },
+  { icon: Calendar, url: "/dashboard/exams", label: "Exams" },
   { icon: ClipboardCheck, url: "/dashboard/results", label: "Results" },
-  { icon: GraduationCap, url: "/dashboard/start", label: "Practice" },
+  { icon: GraduationCap, url: "/dashboard/practice", label: "Practice" },
   { icon: Mail, url: "/dashboard/messages", label: "Messages" },
 ];
 

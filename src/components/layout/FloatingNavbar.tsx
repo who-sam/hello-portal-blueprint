@@ -1,6 +1,6 @@
-import { Bell, Clock, ChevronDown, User, Settings, LogOut, Menu, Search, Sun, Moon } from "lucide-react";
+import { Bell, ChevronDown, User, Settings, LogOut, Menu, Search, Sun, Moon } from "lucide-react";
 import ApexLogo from "@/components/ApexLogo";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { NavLink } from "@/components/NavLink";
 import {
   DropdownMenu,
@@ -18,7 +18,7 @@ import { useNotifications } from "@/contexts/NotificationContext";
 import { useIsMobile, useIsTablet } from "@/hooks/use-mobile";
 import { useTheme } from "next-themes";
 import { useState, useEffect, useRef } from "react";
-import { BookOpen, FileText, BarChart3, Code, GraduationCap } from "lucide-react";
+import { BookOpen, FileText, BarChart3, Code, GraduationCap, Trophy, Users, HelpCircle, BellRing } from "lucide-react";
 
 const teacherNavTabs = [
   { label: "Dashboard", url: "/dashboard" },
@@ -40,7 +40,7 @@ const studentNavTabs = [
 export function FloatingNavbar() {
   const navigate = useNavigate();
   const { role, clearRole } = useRole();
-  const { name, email, setUser } = useUser();
+  const { name, email, profilePhoto, setUser } = useUser();
   const { unreadCount } = useNotifications();
   const isMobile = useIsMobile();
   const isTablet = useIsTablet();
@@ -88,6 +88,14 @@ export function FloatingNavbar() {
     { label: "Question Bank", url: "/dashboard/question-bank", icon: BookOpen, category: "Pages" },
     { label: "Grade Written", url: "/dashboard/grade-written", icon: FileText, category: "Pages" },
     { label: "Results & Analytics", url: "/dashboard/results", icon: BarChart3, category: "Pages" },
+    { label: "Leaderboard", url: "/dashboard/leaderboard", icon: Trophy, category: "Pages" },
+    { label: "Practice", url: "/dashboard/practice", icon: GraduationCap, category: "Pages" },
+    { label: "Team", url: "/dashboard/team", icon: Users, category: "Pages" },
+    { label: "Messages", url: "/dashboard/messages", icon: FileText, category: "Pages" },
+    { label: "Help & Support", url: "/dashboard/help", icon: HelpCircle, category: "Pages" },
+    { label: "Notifications", url: "/dashboard/notifications", icon: BellRing, category: "Pages" },
+    { label: "Settings", url: "/dashboard/settings", icon: Settings, category: "Pages" },
+    { label: "Profile", url: "/dashboard/profile", icon: User, category: "Pages" },
     ...(role === "student" ? [
       { label: "Upcoming Exams", url: "/dashboard/exams", icon: GraduationCap, category: "Pages" },
       { label: "Playground", url: "/dashboard/playground", icon: Code, category: "Pages" },
@@ -178,6 +186,18 @@ export function FloatingNavbar() {
           >
             <Search className="h-4 w-4" />
           </button>
+          <button
+            onClick={() => navigate("/dashboard/notifications")}
+            aria-label="Notifications"
+            className="relative flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+          >
+            <Bell className="h-4 w-4" />
+            {unreadCount > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-destructive-foreground">
+                {unreadCount > 9 ? "9+" : unreadCount}
+              </span>
+            )}
+          </button>
           {!isMobile && (
             <button
               onClick={toggleTheme}
@@ -193,6 +213,7 @@ export function FloatingNavbar() {
           <DropdownMenuTrigger asChild>
             <button className="flex items-center gap-2 rounded-full border border-border bg-card/80 px-2 sm:px-3 py-1.5 shadow-lg backdrop-blur-md transition-colors hover:bg-secondary/50 focus:outline-none">
               <Avatar className="h-7 w-7">
+                {profilePhoto && <AvatarImage src={profilePhoto} alt={name} />}
                 <AvatarFallback className="bg-primary/20 text-xs font-semibold text-primary">
                   {initials}
                 </AvatarFallback>
