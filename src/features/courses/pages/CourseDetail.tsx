@@ -88,7 +88,18 @@ const gradeColor = (pct: number) => {
   return "text-destructive";
 };
 
-/* ================================================================
+/* ── Confetti helper ── */
+function ConfettiBurst({ fire, firedRef }: { fire: boolean; firedRef: React.MutableRefObject<boolean> }) {
+  useEffect(() => {
+    if (fire && !firedRef.current) {
+      firedRef.current = true;
+      confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
+    }
+  }, [fire, firedRef]);
+  return null;
+}
+
+
    STUDENT COURSE DETAIL
    ================================================================ */
 function StudentCourseDetail({ course }: { course: { name: string; teacher: string; id: string } }) {
