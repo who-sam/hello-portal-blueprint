@@ -371,16 +371,14 @@ function StudentCourses() {
               onClick={() => navigate(`/dashboard/courses/${course.id}`)}
             >
               {/* Cover image */}
-              {courseImages[course.id] && (
-                <div className="h-40 overflow-hidden">
-                  <img src={courseImages[course.id]} alt={course.name} className="w-full h-full object-cover" />
-                </div>
-              )}
-              {!courseImages[course.id] && (
-                <div className="h-40 bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
-                  <BookOpen className="h-10 w-10 text-primary/40" />
-                </div>
-              )}
+              <div className="h-40 overflow-hidden">
+                <img
+                  src={getCourseImage(initialCourseImages, course.id)}
+                  alt={course.name}
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                />
+              </div>
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg flex items-center gap-2">
                   <BookOpen className="h-5 w-5 text-primary" />
