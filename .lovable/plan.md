@@ -1,130 +1,51 @@
 
 
-## Plan: Reorganize Project into Feature-Based Module Architecture
+## Plan: Login Page Theme Toggle + Edit Functionality for Courses, Exams & Question Bank
 
-### Problem
-Currently all 27 pages sit flat in `src/pages/` and components are loosely grouped. As the project grows, this makes files hard to find and related code scattered.
+### 1. Theme toggle on the login page
 
-### Proposed Structure
+**File:** `src/features/auth/pages/AuthPage.tsx`
 
-```text
-src/
-├── app/                          # App shell
-│   ├── App.tsx
-│   ├── App.css
-│   └── routes.tsx                # All route definitions extracted
-│
-├── features/                     # Feature modules
-│   ├── auth/
-│   │   ├── pages/
-│   │   │   ├── AuthPage.tsx
-│   │   │   └── Unauthorized.tsx
-│   │   └── components/           # (future auth components)
-│   │
-│   ├── dashboard/
-│   │   ├── pages/
-│   │   │   ├── DashboardIndex.tsx
-│   │   │   ├── Dashboard.tsx          # student
-│   │   │   └── TeacherDashboard.tsx
-│   │   └── components/
-│   │       ├── PerformanceChart.tsx
-│   │       ├── RecentResults.tsx
-│   │       ├── SkillBreakdown.tsx
-│   │       ├── StatsCards.tsx
-│   │       └── UpcomingExams.tsx
-│   │
-│   ├── exams/
-│   │   ├── pages/
-│   │   │   ├── ExamBuilder.tsx
-│   │   │   ├── ExamTaking.tsx
-│   │   │   ├── ExamReview.tsx
-│   │   │   ├── UpcomingExams.tsx
-│   │   │   └── QuestionBank.tsx
-│   │   ├── components/
-│   │   │   ├── MCQEditor.tsx
-│   │   │   ├── WrittenEditor.tsx
-│   │   │   ├── CodingEditor.tsx
-│   │   │   ├── QuestionList.tsx
-│   │   │   └── QuestionTypeDialog.tsx
-│   │   └── lib/
-│   │       └── questionBankStore.ts
-│   │
-│   ├── grading/
-│   │   └── pages/
-│   │       └── GradeWritten.tsx
-│   │
-│   ├── courses/
-│   │   └── pages/
-│   │       ├── Courses.tsx
-│   │       └── CourseDetail.tsx
-│   │
-│   ├── results/
-│   │   └── pages/
-│   │       ├── Results.tsx
-│   │       ├── Results.student.tsx
-│   │       ├── TeacherResults.tsx
-│   │       └── Leaderboard.tsx
-│   │
-│   ├── playground/
-│   │   └── pages/
-│   │       └── CodeEditor.tsx
-│   │
-│   ├── settings/
-│   │   └── pages/
-│   │       ├── Settings.tsx
-│   │       └── Profile.tsx
-│   │
-│   └── social/
-│       └── pages/
-│           ├── Messages.tsx
-│           ├── Notifications.tsx
-│           ├── Help.tsx
-│           ├── Team.tsx
-│           └── Practice.tsx
-│
-├── components/                   # Shared / layout components
-│   ├── ui/                       # shadcn (unchanged)
-│   ├── layout/
-│   │   ├── DashboardLayout.tsx
-│   │   ├── FloatingNavbar.tsx
-│   │   └── AppSidebar.tsx
-│   ├── ApexLogo.tsx
-│   ├── EmptyState.tsx
-│   ├── ErrorState.tsx
-│   ├── NavLink.tsx
-│   └── PageSkeleton.tsx
-│
-├── contexts/                     # (unchanged)
-├── hooks/                        # (unchanged)
-├── lib/
-│   └── utils.ts
-├── types/
-│   └── exam.ts
-├── index.css
-├── main.tsx
-└── vite-env.d.ts
-```
+- Add a small Sun/Moon icon button in the top-right corner of the auth page (positioned absolute)
+- Use `useTheme` from `next-themes` to toggle between light and dark
+- Style it as a subtle ghost button so it doesn't distract from the auth form
 
-### What Changes
+### 2. Edit course name
 
-| Action | Count | Details |
-|--------|-------|---------|
-| Move pages into feature modules | 27 files | Each page moves to `features/<module>/pages/` |
-| Move dashboard components | 5 files | Into `features/dashboard/components/` |
-| Move exam-builder components | 5 files | Into `features/exams/components/` |
-| Move questionBankStore | 1 file | Into `features/exams/lib/` |
-| Move layout components | 3 files | Into `components/layout/` |
-| Extract routes | 1 new file | `src/app/routes.tsx` — all `<Route>` definitions |
-| Update imports | ~40 files | All cross-references updated to new paths |
+**File:** `src/features/courses/pages/Courses.tsx`
 
-### What Does NOT Change
-- `src/components/ui/` stays exactly where it is
-- `src/contexts/`, `src/hooks/`, `src/types/` stay flat (small enough)
-- No logic changes, no renames, no refactors — purely structural moves
-- `@/` path alias continues to point to `src/`
+- Wire up the existing "Edit" dropdown menu item on course cards (currently it does nothing)
+- Open a dialog pre-filled with the course name, allow the teacher to rename it and save
+- Also allow changing the cover photo from within the edit dialog
 
-### Technical Notes
-- All imports use `@/features/...`, `@/components/...` etc. via the existing `@/` alias
-- The `routes.tsx` extraction keeps `App.tsx` clean and makes it easy to see all routes at a glance
-- Each feature module is self-contained: its pages, its components, its lib utilities
+### 3. Edit exam details (title, description, questions)
+
+**File:** `src/features/courses/pages/CourseDetail.tsx`
+
+- Add an "Edit" option in the exam dropdown/actions on the teacher's course detail view
+- Clicking "Edit" navigates to the Exam Builder with the exam data pre-loaded (via route state or URL param)
+
+**File:** `src/features/exams/pages/ExamBuilder.tsx`
+
+- Accept optional initial exam data from route location state
+- Pre-populate title, description, course, duration, questions, and other settings when editing
+- Change the "Save Exam" button text to "Update Exam" when in edit mode
+
+### 4. Edit questions in the Question Bank
+
+**File:** `src/features/exams/pages/QuestionBank.tsx`
+
+- The edit functionality already exists (`openEdit` function and `editingId` state are implemented)
+- Verify the edit button in the table row actions calls `openEdit(q)` correctly and that the dialog pre-fills all fields
+- If the edit pencil icon in the table is not wired up, connect it
+
+### Technical Details
+
+| File | Change |
+|------|--------|
+| `src/features/auth/pages/AuthPage.tsx` | Add theme toggle button (Sun/Moon) using `useTheme` |
+| `src/features/courses/pages/Courses.tsx` | Add edit course dialog, wire up Edit dropdown item |
+| `src/features/courses/pages/CourseDetail.tsx` | Add Edit action on exams that navigates to ExamBuilder with state |
+| `src/features/exams/pages/ExamBuilder.tsx` | Accept and pre-populate from route state for edit mode |
+| `src/features/exams/pages/QuestionBank.tsx` | Verify/fix edit wiring in table actions |
 
