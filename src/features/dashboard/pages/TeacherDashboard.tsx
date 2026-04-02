@@ -328,29 +328,21 @@ export default function TeacherDashboard() {
                 />
                 <Tooltip
                   cursor={{ fill: "hsl(var(--muted-foreground) / 0.06)" }}
-                  contentStyle={{
-                    backgroundColor: "hsl(var(--card))",
-                    border: "1px solid hsl(var(--border))",
-                    borderRadius: "10px",
-                    color: "hsl(var(--foreground))",
-                    padding: "10px 14px",
-                    boxShadow: "0 4px 20px hsl(var(--foreground) / 0.08)",
-                  }}
-                  formatter={(value: number, _name: string, props: any) => {
-                    const entry = props.payload;
+                  content={({ active, payload }) => {
+                    if (!active || !payload?.length) return null;
+                    const entry = payload[0].payload;
                     const trendIcon = entry.trend > 0 ? "↑" : entry.trend < 0 ? "↓" : "→";
-                    const trendColor = entry.trend > 0 ? "#22c55e" : entry.trend < 0 ? "#ef4444" : "inherit";
-                    return [
-                      <span key="v">
-                        <strong>{value}%</strong>
-                        <span style={{ color: trendColor, marginLeft: 6, fontSize: 12 }}>
-                          {trendIcon} {Math.abs(entry.trend)}%
-                        </span>
-                        <br />
-                        <span style={{ fontSize: 11, opacity: 0.6 }}>{entry.students} students</span>
-                      </span>,
-                      "Score",
-                    ];
+                    const trendColor = entry.trend > 0 ? "text-green-500" : entry.trend < 0 ? "text-red-500" : "text-muted-foreground";
+                    return (
+                      <div className="rounded-xl border border-border bg-card p-3 shadow-lg">
+                        <p className="text-sm font-semibold text-foreground">{entry.name}</p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className="text-foreground font-bold">Score: {entry.avg}%</span>
+                          <span className={`text-xs font-medium ${trendColor}`}>{trendIcon} {Math.abs(entry.trend)}%</span>
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-0.5">{entry.students} students</p>
+                      </div>
+                    );
                   }}
                 />
                 <Bar dataKey="avg" radius={[8, 8, 0, 0]} maxBarSize={52}>
