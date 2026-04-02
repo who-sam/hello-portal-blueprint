@@ -179,7 +179,10 @@ function TeacherCourses() {
           <Card
             key={course.id}
             className="border-border/50 bg-card/80 backdrop-blur-sm hover:shadow-md transition-shadow cursor-pointer overflow-hidden"
-            onClick={() => navigate(`/dashboard/courses/${course.id}`)}
+            onClick={() => {
+              if (editOpen) return;
+              navigate(`/dashboard/courses/${course.id}`);
+            }}
           >
             {/* Cover image — always shown, uses default if none set */}
             <div className="relative h-40 overflow-hidden group">
