@@ -67,10 +67,11 @@ const courseGradesMap: Record<string, { exam: string; score: number; total: numb
   ],
 };
 
-// Whether grades are announced per course
-const gradesAnnouncedMap: Record<string, boolean> = {
-  "APX-CS401": false, // not announced
+// Per-course passing threshold (set by teacher)
+const passingThresholdMap: Record<string, number> = {
+  "APX-CS501": 50,  // OS course fails at 50%
 };
+const getPassingThreshold = (courseId: string) => passingThresholdMap[courseId] ?? 60;
 
 const getCourseGrades = (courseId: string) => courseGradesMap[courseId] ?? courseGradesMap.default;
 const isGradesAnnounced = (courseId: string) => gradesAnnouncedMap[courseId] ?? true;
