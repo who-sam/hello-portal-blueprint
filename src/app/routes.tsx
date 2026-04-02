@@ -52,6 +52,7 @@ export default function AppRoutes() {
         <Route path="grade-written" element={<GradeWritten />} />
         <Route path="exam/:id" element={<ExamTaking />} />
         <Route path="exam/:id/review" element={<ExamReview />} />
+        <Route path="exam-preview/:id" element={<ExamPreview />} />
         <Route path="leaderboard" element={<Leaderboard />} />
         <Route path="practice" element={<Practice />} />
         <Route path="team" element={<Team />} />
