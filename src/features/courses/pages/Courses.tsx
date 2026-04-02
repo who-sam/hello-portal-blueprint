@@ -63,6 +63,11 @@ function TeacherCourses() {
   const [newPhoto, setNewPhoto] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const editFileInputRef = useRef<HTMLInputElement>(null);
+  const [editOpen, setEditOpen] = useState(false);
+  const [editId, setEditId] = useState<string | null>(null);
+  const [editName, setEditName] = useState("");
+  const [editPhoto, setEditPhoto] = useState<string | null>(null);
 
   // Open create dialog if navigated with state
   useEffect(() => {
@@ -129,6 +134,31 @@ function TeacherCourses() {
     toast({ title: "Course deleted" });
   };
 
+  const openEditDialog = (course: typeof courses[0]) => {
+    setEditId(course.id);
+    setEditName(course.name);
+    setEditPhoto(courseImages[course.id] || null);
+    setEditOpen(true);
+  };
+
+  const handleEditPhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => setEditPhoto(reader.result as string);
+    reader.readAsDataURL(file);
+  };
+
+  const handleEditSave = () => {
+    if (!editId || !editName.trim()) return;
+    setCourses((prev) => prev.map((c) => c.id === editId ? { ...c, name: editName.trim() } : c));
+    if (editPhoto) {
+      setCourseImages((prev) => ({ ...prev, [editId]: editPhoto }));
+    }
+    setEditOpen(false);
+    toast({ title: "Course updated" });
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -182,7 +212,7 @@ function TeacherCourses() {
                   <DropdownMenuItem className="gap-2">
                     <Eye className="h-4 w-4" /> View Details
                   </DropdownMenuItem>
-                  <DropdownMenuItem className="gap-2">
+                  <DropdownMenuItem className="gap-2" onClick={(e) => { e.stopPropagation(); openEditDialog(course); }}>
                     <Pencil className="h-4 w-4" /> Edit
                   </DropdownMenuItem>
                   <DropdownMenuItem
@@ -228,6 +258,61 @@ function TeacherCourses() {
           </Card>
         ))}
       </div>
+
+      {/* Edit Course Dialog */}
+      <Dialog open={editOpen} onOpenChange={setEditOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Edit Course</DialogTitle>
+            <DialogDescription>Update the course name or cover photo.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="space-y-1.5">
+              <Label htmlFor="edit-course-name">Course Name</Label>
+              <Input
+                id="edit-course-name"
+                value={editName}
+                onChange={(e) => setEditName(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleEditSave()}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Cover Photo</Label>
+              <input
+                ref={editFileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleEditPhotoChange}
+              />
+              {editPhoto ? (
+                <div className="relative h-32 rounded-lg overflow-hidden border border-border">
+                  <img src={editPhoto} alt="Preview" className="w-full h-full object-cover" />
+                  <button
+                    onClick={() => { setEditPhoto(null); if (editFileInputRef.current) editFileInputRef.current.value = ""; }}
+                    className="absolute top-2 right-2 h-6 w-6 rounded-full bg-black/60 flex items-center justify-center hover:bg-black/80 transition-colors"
+                  >
+                    <X className="h-3.5 w-3.5 text-white" />
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => editFileInputRef.current?.click()}
+                  className="w-full h-32 rounded-lg border-2 border-dashed border-border hover:border-primary/50 flex flex-col items-center justify-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <ImagePlus className="h-6 w-6" />
+                  <span className="text-xs">Click to upload a cover photo</span>
+                </button>
+              )}
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditOpen(false)}>Cancel</Button>
+            <Button onClick={handleEditSave} disabled={!editName.trim()}>Save Changes</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Create Course Dialog */}
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>

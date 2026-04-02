@@ -4,7 +4,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Eye, EyeOff, Loader2 } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff, Loader2, Sun, Moon } from "lucide-react";
+import { useTheme } from "next-themes";
 import authBg from "@/assets/auth-bg.jpg";
 import authHero from "@/assets/auth-hero.jpg";
 import ApexLogo from "@/components/ApexLogo";
@@ -59,6 +60,7 @@ const AuthPage = () => {
   const { setUser } = useUser();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { theme, setTheme } = useTheme();
 
   const loginForm = useForm<LoginData>({ resolver: zodResolver(loginSchema) });
   const signupForm = useForm<SignupData>({
@@ -121,6 +123,15 @@ const AuthPage = () => {
     <div className="relative flex min-h-screen items-center justify-center p-4 sm:p-6 overflow-hidden">
       <img src={authBg} alt="" className="absolute inset-0 h-full w-full object-cover" />
       <div className="absolute inset-0 bg-black/65" />
+
+      {/* Theme toggle */}
+      <button
+        onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+        className="absolute top-4 right-4 z-20 flex h-9 w-9 items-center justify-center rounded-full bg-card/80 backdrop-blur-sm border border-border/50 text-muted-foreground hover:text-foreground transition-colors"
+        aria-label="Toggle theme"
+      >
+        {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+      </button>
 
       <div className="relative z-10 w-full max-w-5xl">
         <div className="grid grid-cols-1 md:grid-cols-2 overflow-hidden rounded-2xl border border-white/10 shadow-2xl">
