@@ -14,7 +14,7 @@ interface Props {
   onSaveToBank?: (q: MCQQuestion) => void;
 }
 
-export default function MCQEditor({ question, onChange }: Props) {
+export default function MCQEditor({ question, onChange, onSaveToBank }: Props) {
   const { toast } = useToast();
   const fileRef = useRef<HTMLInputElement>(null);
   const update = (partial: Partial<MCQQuestion>) => onChange({ ...question, ...partial });
