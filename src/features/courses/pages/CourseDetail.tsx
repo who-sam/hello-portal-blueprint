@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Slider } from "@/components/ui/slider";
 
 /* ── Mock data ── */
 const courseImages: Record<string, string> = {
