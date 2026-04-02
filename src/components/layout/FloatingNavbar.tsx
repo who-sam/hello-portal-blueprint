@@ -43,9 +43,12 @@ export function FloatingNavbar() {
   const { name, email, setUser } = useUser();
   const { unreadCount } = useNotifications();
   const isMobile = useIsMobile();
+  const isTablet = useIsTablet();
   const { theme, setTheme } = useTheme();
   const isDark = theme === "dark";
   const navTabs = role === "teacher" ? teacherNavTabs : studentNavTabs;
+  const showHamburger = isMobile || isTablet;
+  const showInlineNav = !isMobile && !isTablet;
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
