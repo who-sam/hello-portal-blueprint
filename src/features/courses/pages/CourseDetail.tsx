@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,13 +6,15 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { useRole } from "@/contexts/RoleContext";
 import { useToast } from "@/hooks/use-toast";
 import {
   BookOpen, ArrowLeft, Clock, FileText, Megaphone, Trophy,
   Users, Copy, Check, Upload, Plus, Search, MoreHorizontal,
-  Trash2, Eye, Download, Send, BarChart3, Pencil,
+  Trash2, Eye, Download, Send, BarChart3, Pencil, Lock, AlertCircle,
 } from "lucide-react";
+import confetti from "canvas-confetti";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -86,15 +88,32 @@ const gradeColor = (pct: number) => {
   return "text-destructive";
 };
 
+/* ── Confetti helper ── */
+function ConfettiBurst({ fire, firedRef }: { fire: boolean; firedRef: React.MutableRefObject<boolean> }) {
+  useEffect(() => {
+    if (fire && !firedRef.current) {
+      firedRef.current = true;
+      confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
+    }
+  }, [fire, firedRef]);
+  return null;
+}
+
 /* ================================================================
    STUDENT COURSE DETAIL
    ================================================================ */
 function StudentCourseDetail({ course }: { course: { name: string; teacher: string; id: string } }) {
   const navigate = useNavigate();
+  const confettiFired = useRef(false);
+
+  // Mock flag — when false, grades are not yet published by the teacher
+  const studentGradesAnnounced = true;
 
   const overallAvg = courseGrades.length
     ? Math.round(courseGrades.reduce((s, g) => s + (g.score / g.total) * 100, 0) / courseGrades.length)
     : 0;
+
+  const hasFullMark = courseGrades.some((g) => g.score === g.total);
 
   return (
     <div className="space-y-6">
@@ -174,56 +193,85 @@ function StudentCourseDetail({ course }: { course: { name: string; teacher: stri
 
         {/* GRADES TAB */}
         <TabsContent value="grades" className="space-y-4">
-          <Card className="border-border/50 bg-card/80 backdrop-blur-sm">
-            <CardContent className="p-0">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-border/50 text-muted-foreground">
-                    <th className="px-5 py-3 text-left font-medium">Assessment</th>
-                    <th className="px-3 py-3 text-left font-medium">Date</th>
-                    <th className="px-3 py-3 text-right font-medium">Score</th>
-                    <th className="px-3 py-3 text-right font-medium">Grade</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {courseGrades.map((g, i) => {
-                    const pct = Math.round((g.score / g.total) * 100);
-                    return (
-                      <tr key={i} className="border-b border-border/30 hover:bg-muted/30 transition-colors">
-                        <td className="px-5 py-3 font-medium text-foreground">{g.exam}</td>
-                        <td className="px-3 py-3 text-muted-foreground">{g.date}</td>
-                        <td className="px-3 py-3 text-right text-foreground">{g.score}/{g.total}</td>
-                        <td className={`px-3 py-3 text-right font-bold ${gradeColor(pct)}`}>{pct}%</td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </CardContent>
-          </Card>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <Card className="border-border/50 bg-card/80">
-              <CardContent className="p-4 text-center">
-                <p className="text-sm text-muted-foreground">Assessments</p>
-                <p className="text-2xl font-bold text-foreground">{courseGrades.length}</p>
-              </CardContent>
-            </Card>
-            <Card className="border-border/50 bg-card/80">
-              <CardContent className="p-4 text-center">
-                <p className="text-sm text-muted-foreground">Average</p>
-                <p className={`text-2xl font-bold ${gradeColor(overallAvg)}`}>{overallAvg}%</p>
-              </CardContent>
-            </Card>
-            <Card className="border-border/50 bg-card/80">
-              <CardContent className="p-4 text-center">
-                <p className="text-sm text-muted-foreground">Highest</p>
-                <p className="text-2xl font-bold text-green-600 dark:text-green-400">
-                  {Math.max(...courseGrades.map((g) => Math.round((g.score / g.total) * 100)))}%
+          {!studentGradesAnnounced ? (
+            <Card className="border-border/50 bg-card/80 backdrop-blur-sm">
+              <CardContent className="flex flex-col items-center justify-center py-16 text-center">
+                <div className="rounded-full bg-muted p-4 mb-4">
+                  <Lock className="h-8 w-8 text-muted-foreground" />
+                </div>
+                <h3 className="text-lg font-semibold text-foreground mb-1">Grades Not Yet Available</h3>
+                <p className="text-sm text-muted-foreground max-w-sm">
+                  Your instructor hasn't published grades for this course yet. Check back later.
                 </p>
               </CardContent>
             </Card>
-          </div>
+          ) : (
+            <>
+              {/* Confetti trigger for full marks */}
+              <ConfettiBurst fire={hasFullMark} firedRef={confettiFired} />
+
+              {overallAvg < 60 && (
+                <Alert variant="destructive" className="border-destructive/50">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertTitle>Course At Risk</AlertTitle>
+                  <AlertDescription>
+                    Your current average is below the passing threshold. Consider reviewing past material or reaching out to your instructor.
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              <Card className="border-border/50 bg-card/80 backdrop-blur-sm">
+                <CardContent className="p-0">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-border/50 text-muted-foreground">
+                        <th className="px-5 py-3 text-left font-medium">Assessment</th>
+                        <th className="px-3 py-3 text-left font-medium">Date</th>
+                        <th className="px-3 py-3 text-right font-medium">Score</th>
+                        <th className="px-3 py-3 text-right font-medium">Grade</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {courseGrades.map((g, i) => {
+                        const pct = Math.round((g.score / g.total) * 100);
+                        return (
+                          <tr key={i} className="border-b border-border/30 hover:bg-muted/30 transition-colors">
+                            <td className="px-5 py-3 font-medium text-foreground">{g.exam}</td>
+                            <td className="px-3 py-3 text-muted-foreground">{g.date}</td>
+                            <td className="px-3 py-3 text-right text-foreground">{g.score}/{g.total}</td>
+                            <td className={`px-3 py-3 text-right font-bold ${gradeColor(pct)}`}>{pct}%</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </CardContent>
+              </Card>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <Card className="border-border/50 bg-card/80">
+                  <CardContent className="p-4 text-center">
+                    <p className="text-sm text-muted-foreground">Assessments</p>
+                    <p className="text-2xl font-bold text-foreground">{courseGrades.length}</p>
+                  </CardContent>
+                </Card>
+                <Card className="border-border/50 bg-card/80">
+                  <CardContent className="p-4 text-center">
+                    <p className="text-sm text-muted-foreground">Average</p>
+                    <p className={`text-2xl font-bold ${gradeColor(overallAvg)}`}>{overallAvg}%</p>
+                  </CardContent>
+                </Card>
+                <Card className="border-border/50 bg-card/80">
+                  <CardContent className="p-4 text-center">
+                    <p className="text-sm text-muted-foreground">Highest</p>
+                    <p className="text-2xl font-bold text-green-600 dark:text-green-400">
+                      {Math.max(...courseGrades.map((g) => Math.round((g.score / g.total) * 100)))}%
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+            </>
+          )}
         </TabsContent>
 
         {/* ANNOUNCEMENTS TAB */}
