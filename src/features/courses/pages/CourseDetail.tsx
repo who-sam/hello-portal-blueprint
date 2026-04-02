@@ -527,7 +527,7 @@ function TeacherCourseDetail({ course }: { course: { name: string; teacher: stri
               <Plus className="h-4 w-4" /> Assign Exam
             </Button>
           </div>
-          {courseExams.map((exam) => (
+          {defaultCourseExams.map((exam) => (
             <Card key={exam.id} className="border-border/50 bg-card/80 backdrop-blur-sm hover:shadow-md transition-shadow cursor-pointer">
               <CardContent className="flex items-center justify-between p-4">
                 <div className="space-y-1">
