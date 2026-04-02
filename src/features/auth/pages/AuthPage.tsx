@@ -60,6 +60,7 @@ const AuthPage = () => {
   const { setUser } = useUser();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { theme, setTheme } = useTheme();
 
   const loginForm = useForm<LoginData>({ resolver: zodResolver(loginSchema) });
   const signupForm = useForm<SignupData>({
