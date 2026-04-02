@@ -93,10 +93,16 @@ const gradeColor = (pct: number) => {
    ================================================================ */
 function StudentCourseDetail({ course }: { course: { name: string; teacher: string; id: string } }) {
   const navigate = useNavigate();
+  const confettiFired = useRef(false);
+
+  // Mock flag — when false, grades are not yet published by the teacher
+  const studentGradesAnnounced = true;
 
   const overallAvg = courseGrades.length
     ? Math.round(courseGrades.reduce((s, g) => s + (g.score / g.total) * 100, 0) / courseGrades.length)
     : 0;
+
+  const hasFullMark = courseGrades.some((g) => g.score === g.total);
 
   return (
     <div className="space-y-6">
