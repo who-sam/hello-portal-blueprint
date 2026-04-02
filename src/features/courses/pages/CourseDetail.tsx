@@ -11,7 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import {
   BookOpen, ArrowLeft, Clock, FileText, Megaphone, Trophy,
   Users, Copy, Check, Upload, Plus, Search, MoreHorizontal,
-  Trash2, Eye, Download, Send, BarChart3,
+  Trash2, Eye, Download, Send, BarChart3, Pencil,
 } from "lucide-react";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
