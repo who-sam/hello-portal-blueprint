@@ -18,6 +18,12 @@ import Courses from "@/features/courses/pages/Courses";
 import CourseDetail from "@/features/courses/pages/CourseDetail";
 import QuestionBank from "@/features/exams/pages/QuestionBank";
 import GradeWritten from "@/features/grading/pages/GradeWritten";
+import { useRole } from "@/contexts/RoleContext";
+
+function ExamsPage() {
+  const { role } = useRole();
+  return role === "teacher" ? <TeacherExams /> : <UpcomingExams />;
+}
 
 export default function AppRoutes() {
   return (
@@ -27,7 +33,7 @@ export default function AppRoutes() {
       <Route path="/unauthorized" element={<Unauthorized />} />
       <Route path="/dashboard" element={<DashboardLayout />}>
         <Route index element={<DashboardIndex />} />
-        <Route path="exams" element={<UpcomingExams />} />
+        <Route path="exams" element={<ExamsPage />} />
         <Route path="playground" element={<CodeEditor />} />
         <Route path="results" element={<Results />} />
         <Route path="profile" element={<Profile />} />
