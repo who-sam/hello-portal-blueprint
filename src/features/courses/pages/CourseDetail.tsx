@@ -246,12 +246,12 @@ function StudentCourseDetail({ course }: { course: { name: string; teacher: stri
               {/* Confetti trigger for full marks */}
               <ConfettiBurst fire={hasFullMark} firedRef={confettiFired} />
 
-              {overallAvg < 60 && (
+              {overallAvg < getPassingThreshold(course.id) && (
                 <Alert variant="destructive" className="border-destructive/50">
                   <AlertCircle className="h-4 w-4" />
                   <AlertTitle>Course At Risk</AlertTitle>
                   <AlertDescription>
-                    Your current average is below the passing threshold. Consider reviewing past material or reaching out to your instructor.
+                    Your current average ({overallAvg}%) is below the passing threshold of {getPassingThreshold(course.id)}%. Consider reviewing past material or reaching out to your instructor.
                   </AlertDescription>
                 </Alert>
               )}
