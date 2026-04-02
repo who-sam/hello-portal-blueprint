@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,7 +8,7 @@ import { useRole } from "@/contexts/RoleContext";
 import { useToast } from "@/hooks/use-toast";
 import {
   BookOpen, Plus, Users, Upload, Copy, Check, Search, LogIn,
-  MoreHorizontal, Eye, Pencil, Trash2,
+  MoreHorizontal, Eye, Pencil, Trash2, ImagePlus, X,
 } from "lucide-react";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription,
@@ -17,9 +17,10 @@ import { Label } from "@/components/ui/label";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import defaultCourseCover from "@/assets/default-course-cover.jpg";
 
 /* ── mock data ── */
-const courseImages: Record<string, string> = {
+const initialCourseImages: Record<string, string> = {
   "APX-CS101": "https://images.unsplash.com/photo-1515879218367-8466d910auj7?w=400&h=200&fit=crop",
   "APX-CS201": "https://images.unsplash.com/photo-1516116216624-53e697fedbea?w=400&h=200&fit=crop",
   "APX-CS301": "https://images.unsplash.com/photo-1509228468518-180dd4864904?w=400&h=200&fit=crop",
@@ -42,6 +43,10 @@ function generateCourseId() {
   let code = "APX-";
   for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
   return code;
+}
+
+function getCourseImage(courseImages: Record<string, string>, id: string): string {
+  return courseImages[id] || defaultCourseCover;
 }
 
 /* ================================================================
