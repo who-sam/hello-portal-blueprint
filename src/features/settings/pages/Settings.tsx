@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Settings, User, Bell, Palette, Shield } from "lucide-react";
+import { useState, useRef } from "react";
+import { Settings, User, Bell, Palette, Shield, Camera, Trash2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,6 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
 import { useUser } from "@/contexts/UserContext";
 import { useRole } from "@/contexts/RoleContext";
@@ -16,9 +17,10 @@ import { Badge } from "@/components/ui/badge";
 
 export default function SettingsPage() {
   const { toast } = useToast();
-  const { firstName, middleName, lastName, studentId, email, setUser } = useUser();
+  const { firstName, middleName, lastName, studentId, email, profilePhoto, setUser, setProfilePhoto } = useUser();
   const { role } = useRole();
   const { theme, setTheme } = useTheme();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [profile, setProfile] = useState({ firstName, middleName, lastName, email, bio: "Full-stack developer passionate about clean code." });
   const [notifications, setNotifications] = useState(() => {
     const stored = localStorage.getItem("apex-notification-prefs");
@@ -78,7 +80,59 @@ export default function SettingsPage() {
               <CardTitle className="text-lg">Profile Information</CardTitle>
               <CardDescription>Update your personal details.</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-6">
+              {/* Avatar upload */}
+              <div className="flex items-center gap-5">
+                <div className="relative group">
+                  <Avatar className="h-20 w-20">
+                    {profilePhoto && <AvatarImage src={profilePhoto} alt="Profile" />}
+                    <AvatarFallback className="bg-primary/20 text-2xl font-bold text-primary">
+                      {[profile.firstName, profile.lastName].filter(Boolean).map(n => n[0]).join("").toUpperCase().slice(0, 2) || "??"}
+                    </AvatarFallback>
+                  </Avatar>
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="absolute inset-0 flex items-center justify-center rounded-full bg-background/60 opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <Camera className="h-5 w-5 text-foreground" />
+                  </button>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      if (file.size > 2 * 1024 * 1024) {
+                        toast({ title: "File too large", description: "Please choose an image under 2 MB.", variant: "destructive" });
+                        return;
+                      }
+                      const reader = new FileReader();
+                      reader.onload = () => {
+                        setProfilePhoto(reader.result as string);
+                        toast({ title: "Photo updated", description: "Your profile photo has been changed." });
+                      };
+                      reader.readAsDataURL(file);
+                      e.target.value = "";
+                    }}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-foreground">Profile Photo</p>
+                  <p className="text-xs text-muted-foreground">JPG, PNG or GIF. Max 2 MB.</p>
+                  <div className="flex gap-2 mt-1">
+                    <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()}>Upload</Button>
+                    {profilePhoto && (
+                      <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive" onClick={() => { setProfilePhoto(""); toast({ title: "Photo removed" }); }}>
+                        <Trash2 className="h-3.5 w-3.5 mr-1" /> Remove
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </div>
+              <Separator />
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                 <div className="space-y-2">
                   <Label htmlFor="firstName">First Name</Label>

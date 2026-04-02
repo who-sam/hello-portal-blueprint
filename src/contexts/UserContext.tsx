@@ -7,7 +7,9 @@ interface UserContextType {
   studentId: string;
   email: string;
   name: string;
+  profilePhoto: string;
   setUser: (data: { firstName: string; middleName?: string; lastName: string; email: string; studentId?: string }) => void;
+  setProfilePhoto: (photo: string) => void;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -22,6 +24,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const [lastName, setLastName] = useState(() => localStorage.getItem("apex-user-lastName") || "");
   const [email, setEmail] = useState(() => localStorage.getItem("apex-user-email") || "");
   const [studentId, setStudentId] = useState(() => localStorage.getItem("apex-user-studentId") || "");
+  const [profilePhoto, setProfilePhotoState] = useState(() => localStorage.getItem("apex-user-photo") || "");
 
   const name = useMemo(() => buildName(firstName, middleName, lastName), [firstName, middleName, lastName]);
 
@@ -38,8 +41,17 @@ export function UserProvider({ children }: { children: ReactNode }) {
     localStorage.setItem("apex-user-studentId", data.studentId || "");
   };
 
+  const setProfilePhoto = (photo: string) => {
+    setProfilePhotoState(photo);
+    if (photo) {
+      localStorage.setItem("apex-user-photo", photo);
+    } else {
+      localStorage.removeItem("apex-user-photo");
+    }
+  };
+
   return (
-    <UserContext.Provider value={{ firstName, middleName, lastName, studentId, email, name, setUser }}>
+    <UserContext.Provider value={{ firstName, middleName, lastName, studentId, email, name, profilePhoto, setUser, setProfilePhoto }}>
       {children}
     </UserContext.Provider>
   );

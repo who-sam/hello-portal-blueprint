@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { format, parseISO } from "date-fns";
 import { useNavigate } from "react-router-dom";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -70,7 +70,7 @@ const studentStats = [
 
 export default function Profile() {
   const navigate = useNavigate();
-  const { firstName, middleName, lastName, studentId, name, email } = useUser();
+  const { firstName, middleName, lastName, studentId, name, email, profilePhoto } = useUser();
   const { role } = useRole();
   const [tab, setTab] = useState("overview");
   const isTeacher = role === "teacher";
@@ -83,6 +83,7 @@ export default function Profile() {
       <Card className="bg-card/80 backdrop-blur-md border-border/50">
         <CardContent className="flex flex-col sm:flex-row items-start sm:items-center gap-6 pt-6">
           <Avatar className="h-20 w-20">
+            {profilePhoto && <AvatarImage src={profilePhoto} alt="Profile" />}
             <AvatarFallback className="bg-primary/20 text-2xl font-bold text-primary">{initials}</AvatarFallback>
           </Avatar>
           <div className="flex-1 space-y-1">
