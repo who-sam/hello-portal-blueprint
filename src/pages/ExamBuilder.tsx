@@ -3,12 +3,15 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { Save, CalendarIcon } from "lucide-react";
+import { Save, CalendarIcon, Search, CheckSquare, FileText, Code2 } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
@@ -24,6 +27,33 @@ const mockCourses = [
   { id: "APX-CS201", name: "CS201 — Data Structures" },
   { id: "APX-CS301", name: "CS301 — Algorithms" },
 ];
+
+// Mock question bank data (shared with QuestionBank page)
+interface BankQuestion {
+  id: string;
+  type: QuestionType;
+  text: string;
+  points: number;
+  courseId: string;
+  tags: string[];
+}
+
+const bankQuestions: BankQuestion[] = [
+  { id: "qb-1", type: "mcq", text: "What is the time complexity of binary search?", points: 10, courseId: "APX-CS301", tags: ["searching", "complexity"] },
+  { id: "qb-2", type: "written", text: "Explain the difference between a stack and a queue.", points: 20, courseId: "APX-CS201", tags: ["data-structures"] },
+  { id: "qb-3", type: "coding", text: "Implement a function to reverse a linked list.", points: 30, courseId: "APX-CS201", tags: ["linked-list"] },
+  { id: "qb-4", type: "mcq", text: "Which of the following is not a primitive data type in Python?", points: 10, courseId: "APX-CS101", tags: ["python", "basics"] },
+  { id: "qb-5", type: "written", text: "Describe the concept of recursion with an example.", points: 20, courseId: "APX-CS101", tags: ["recursion"] },
+  { id: "qb-6", type: "coding", text: "Write a function that finds the shortest path in a graph using BFS.", points: 30, courseId: "APX-CS301", tags: ["graphs", "bfs"] },
+  { id: "qb-7", type: "mcq", text: "What is the worst case time complexity of quicksort?", points: 10, courseId: "APX-CS301", tags: ["sorting", "complexity"] },
+  { id: "qb-8", type: "written", text: "Compare and contrast arrays and linked lists.", points: 15, courseId: "APX-CS201", tags: ["data-structures"] },
+];
+
+const typeIcons: Record<string, React.ElementType> = {
+  mcq: CheckSquare,
+  written: FileText,
+  coding: Code2,
+};
 
 function createQuestion(type: QuestionType): Question {
   const base = { id: crypto.randomUUID(), points: 10, difficulty: "medium" as const, text: "", imageUrl: "" };
@@ -52,6 +82,18 @@ function createQuestion(type: QuestionType): Question {
   }
 }
 
+function bankToExamQuestion(bq: BankQuestion): Question {
+  const base = { id: crypto.randomUUID(), points: bq.points, difficulty: "medium" as const, text: bq.text, imageUrl: "" };
+  switch (bq.type) {
+    case "mcq":
+      return { ...base, type: "mcq", options: [{ id: crypto.randomUUID(), text: "" }, { id: crypto.randomUUID(), text: "" }, { id: crypto.randomUUID(), text: "" }, { id: crypto.randomUUID(), text: "" }], correctOptionIds: [], multipleCorrect: false, explanation: "" } as MCQQuestion;
+    case "written":
+      return { ...base, type: "written", maxWordCount: 500, rubric: "", requireManualGrading: true } as WrittenQuestion;
+    case "coding":
+      return { ...base, type: "coding", description: "", starterCode: { python: "", javascript: "", c: "", cpp: "" }, testCases: [], hints: "", timeLimitMs: 2000, memoryLimitKb: 262144 } as CodingQuestion;
+  }
+}
+
 export default function ExamBuilder() {
   const { toast } = useToast();
   const [title, setTitle] = useState("");
@@ -67,6 +109,10 @@ export default function ExamBuilder() {
   const [startDate, setStartDate] = useState<Date>();
   const [startTime, setStartTime] = useState("09:00");
   const [assignedCourse, setAssignedCourse] = useState("");
+  const [bankDialogOpen, setBankDialogOpen] = useState(false);
+  const [bankSearch, setBankSearch] = useState("");
+  const [bankTypeFilter, setBankTypeFilter] = useState<string>("all");
+  const [selectedBankIds, setSelectedBankIds] = useState<Set<string>>(new Set());
 
   const addQuestion = (type: QuestionType) => {
     const q = createQuestion(type);
@@ -102,6 +148,34 @@ export default function ExamBuilder() {
     const examData = { title, description, duration, passingScore, shuffle, showResults, questions, startDate, startTime, assignedCourse };
     console.log("Exam saved:", examData);
     toast({ title: "Exam saved!", description: `"${title}" with ${questions.length} question(s) assigned to ${assignedCourse}.` });
+  };
+
+  // Bank import logic
+  const filteredBankQuestions = bankQuestions.filter((bq) => {
+    const matchesCourse = !assignedCourse || bq.courseId === assignedCourse;
+    const matchesSearch = bq.text.toLowerCase().includes(bankSearch.toLowerCase()) || bq.tags.some((t) => t.toLowerCase().includes(bankSearch.toLowerCase()));
+    const matchesType = bankTypeFilter === "all" || bq.type === bankTypeFilter;
+    return matchesCourse && matchesSearch && matchesType;
+  });
+
+  const toggleBankSelection = (id: string) => {
+    setSelectedBankIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
+
+  const importFromBank = () => {
+    const toImport = bankQuestions.filter((bq) => selectedBankIds.has(bq.id));
+    const newQuestions = toImport.map(bankToExamQuestion);
+    setQuestions((prev) => [...prev, ...newQuestions]);
+    setSelectedIdx(questions.length);
+    setBankDialogOpen(false);
+    setSelectedBankIds(new Set());
+    setBankSearch("");
+    setBankTypeFilter("all");
+    toast({ title: "Imported", description: `${newQuestions.length} question(s) imported from the bank.` });
   };
 
   const selected = questions[selectedIdx];
@@ -143,37 +217,24 @@ export default function ExamBuilder() {
           <label className="text-xs font-medium text-muted-foreground mb-1 block">Passing Score (%)</label>
           <Input type="number" value={passingScore} onChange={(e) => setPassingScore(Number(e.target.value))} min={0} max={100} />
         </div>
-
-        {/* Start date */}
         <div>
           <label className="text-xs font-medium text-muted-foreground mb-1 block">Start Date</label>
           <Popover>
             <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className={cn("w-full justify-start text-left font-normal", !startDate && "text-muted-foreground")}
-              >
+              <Button variant="outline" className={cn("w-full justify-start text-left font-normal", !startDate && "text-muted-foreground")}>
                 <CalendarIcon className="mr-2 h-4 w-4" />
                 {startDate ? format(startDate, "PPP") : "Pick a date"}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="single"
-                selected={startDate}
-                onSelect={setStartDate}
-                initialFocus
-                className={cn("p-3 pointer-events-auto")}
-              />
+              <Calendar mode="single" selected={startDate} onSelect={setStartDate} initialFocus className={cn("p-3 pointer-events-auto")} />
             </PopoverContent>
           </Popover>
         </div>
-        {/* Start time */}
         <div>
           <label className="text-xs font-medium text-muted-foreground mb-1 block">Start Time</label>
           <Input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} />
         </div>
-
         <div className="flex flex-col gap-2 justify-center">
           <div className="flex items-center gap-2">
             <Switch checked={shuffle} onCheckedChange={setShuffle} />
@@ -199,6 +260,7 @@ export default function ExamBuilder() {
             onSelect={setSelectedIdx}
             onAdd={() => setTypeDialogOpen(true)}
             onDelete={(idx) => setDeleteIdx(idx)}
+            onImportFromBank={() => setBankDialogOpen(true)}
           />
         </ResizablePanel>
         <ResizableHandle withHandle />
@@ -226,18 +288,101 @@ export default function ExamBuilder() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete question?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This will permanently remove this question from the exam.
-            </AlertDialogDescription>
+            <AlertDialogDescription>This will permanently remove this question from the exam.</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-              Delete
-            </AlertDialogAction>
+            <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Import from Question Bank Dialog */}
+      <Dialog open={bankDialogOpen} onOpenChange={setBankDialogOpen}>
+        <DialogContent className="sm:max-w-2xl max-h-[80vh] flex flex-col">
+          <DialogHeader>
+            <DialogTitle>Import from Question Bank</DialogTitle>
+            <DialogDescription>
+              {assignedCourse
+                ? `Showing questions for ${mockCourses.find((c) => c.id === assignedCourse)?.name || assignedCourse}. Select questions to import.`
+                : "Select a course first in the exam settings to filter questions, or browse all."}
+            </DialogDescription>
+          </DialogHeader>
+
+          {/* Filters */}
+          <div className="flex gap-2">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input placeholder="Search questions or tags..." className="pl-9" value={bankSearch} onChange={(e) => setBankSearch(e.target.value)} />
+            </div>
+            <Select value={bankTypeFilter} onValueChange={setBankTypeFilter}>
+              <SelectTrigger className="w-32">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Types</SelectItem>
+                <SelectItem value="mcq">MCQ</SelectItem>
+                <SelectItem value="written">Written</SelectItem>
+                <SelectItem value="coding">Coding</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Question list */}
+          <div className="flex-1 overflow-y-auto space-y-1 min-h-0">
+            {filteredBankQuestions.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+                <FileText className="h-8 w-8 mb-2 opacity-40" />
+                <p className="text-sm">No questions found.</p>
+              </div>
+            ) : (
+              filteredBankQuestions.map((bq) => {
+                const Icon = typeIcons[bq.type];
+                const isSelected = selectedBankIds.has(bq.id);
+                return (
+                  <div
+                    key={bq.id}
+                    className={cn(
+                      "flex items-start gap-3 rounded-lg border p-3 cursor-pointer transition-colors",
+                      isSelected ? "border-primary bg-primary/5" : "border-border/50 hover:border-primary/30 hover:bg-muted/30"
+                    )}
+                    onClick={() => toggleBankSelection(bq.id)}
+                  >
+                    <Checkbox checked={isSelected} className="mt-0.5" />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Icon className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                        <span className="text-xs font-medium text-muted-foreground uppercase">{bq.type}</span>
+                        <span className="text-xs text-muted-foreground">•</span>
+                        <span className="text-xs text-muted-foreground">{bq.points} pts</span>
+                        {!assignedCourse && (
+                          <Badge variant="secondary" className="text-[10px] font-mono ml-auto">{bq.courseId}</Badge>
+                        )}
+                      </div>
+                      <p className="text-sm text-foreground">{bq.text}</p>
+                      <div className="flex gap-1 mt-1.5">
+                        {bq.tags.map((t) => (
+                          <Badge key={t} variant="outline" className="text-[10px]">{t}</Badge>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
+
+          <DialogFooter className="border-t border-border/50 pt-3">
+            <div className="flex items-center gap-2 mr-auto text-sm text-muted-foreground">
+              {selectedBankIds.size > 0 && <span>{selectedBankIds.size} selected</span>}
+            </div>
+            <Button variant="outline" onClick={() => { setBankDialogOpen(false); setSelectedBankIds(new Set()); }}>Cancel</Button>
+            <Button onClick={importFromBank} disabled={selectedBankIds.size === 0}>
+              Import {selectedBankIds.size > 0 ? `(${selectedBankIds.size})` : ""}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

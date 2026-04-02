@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Code2, CheckSquare, FileText, Plus, Trash2 } from "lucide-react";
+import { Code2, CheckSquare, FileText, Plus, Trash2, Library } from "lucide-react";
 import type { Question } from "@/types/exam";
 import { cn } from "@/lib/utils";
 
@@ -15,16 +15,24 @@ interface Props {
   onSelect: (index: number) => void;
   onAdd: () => void;
   onDelete: (index: number) => void;
+  onImportFromBank?: () => void;
 }
 
-export default function QuestionList({ questions, selectedIndex, onSelect, onAdd, onDelete }: Props) {
+export default function QuestionList({ questions, selectedIndex, onSelect, onAdd, onDelete, onImportFromBank }: Props) {
   return (
     <div className="flex flex-col h-full">
       <div className="flex items-center justify-between px-4 py-3 border-b border-border/50">
         <h3 className="text-sm font-semibold text-foreground">Questions ({questions.length})</h3>
-        <Button variant="ghost" size="sm" className="h-7 gap-1 text-xs" onClick={onAdd}>
-          <Plus className="h-3.5 w-3.5" /> Add
-        </Button>
+        <div className="flex items-center gap-1">
+          {onImportFromBank && (
+            <Button variant="ghost" size="sm" className="h-7 gap-1 text-xs" onClick={onImportFromBank}>
+              <Library className="h-3.5 w-3.5" /> From Bank
+            </Button>
+          )}
+          <Button variant="ghost" size="sm" className="h-7 gap-1 text-xs" onClick={onAdd}>
+            <Plus className="h-3.5 w-3.5" /> New
+          </Button>
+        </div>
       </div>
       <div className="flex-1 overflow-y-auto p-2 space-y-1">
         {questions.map((q, i) => {
@@ -54,7 +62,7 @@ export default function QuestionList({ questions, selectedIndex, onSelect, onAdd
         })}
         {questions.length === 0 && (
           <p className="text-center text-sm text-muted-foreground py-8">
-            No questions yet. Click "Add" to start.
+            No questions yet. Click "New" or "From Bank" to start.
           </p>
         )}
       </div>

@@ -9,7 +9,7 @@ export default function DashboardLayout() {
 
   return (
     <div className="relative min-h-screen w-full bg-background">
-      <div className="fixed inset-0 bg-pattern opacity-[0.07]" />
+      <div className="fixed inset-0 bg-pattern opacity-[0.15]" />
       <div className="fixed inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/10" />
 
       <FloatingNavbar />
