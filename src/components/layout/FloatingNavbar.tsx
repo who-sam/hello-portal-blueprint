@@ -23,6 +23,7 @@ import { BookOpen, FileText, BarChart3, Code, GraduationCap } from "lucide-react
 const teacherNavTabs = [
   { label: "Dashboard", url: "/dashboard" },
   { label: "Courses", url: "/dashboard/courses" },
+  { label: "Exams", url: "/dashboard/exams" },
   { label: "Exam Builder", url: "/dashboard/exam-builder" },
   { label: "Question Bank", url: "/dashboard/question-bank" },
   { label: "Results", url: "/dashboard/results" },
