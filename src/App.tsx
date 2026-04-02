@@ -23,6 +23,8 @@ import Profile from "./pages/Profile";
 import ExamReview from "./pages/ExamReview";
 import Courses from "./pages/Courses";
 import CourseDetail from "./pages/CourseDetail";
+import QuestionBank from "./pages/QuestionBank";
+import GradeWritten from "./pages/GradeWritten";
 
 const queryClient = new QueryClient();
 
@@ -50,6 +52,8 @@ const App = () => (
                   <Route path="courses" element={<Courses />} />
                   <Route path="courses/:id" element={<CourseDetail />} />
                   <Route path="exam-builder" element={<ExamBuilder />} />
+                  <Route path="question-bank" element={<QuestionBank />} />
+                  <Route path="grade-written" element={<GradeWritten />} />
                   <Route path="exam/:id" element={<ExamTaking />} />
                   <Route path="exam/:id/review" element={<ExamReview />} />
                 </Route>

@@ -4,13 +4,13 @@
 
 @layer base {
   :root {
-    --background: 220 20% 96%;
+    --background: 220 16% 93%;
     --foreground: 222 15% 15%;
 
-    --card: 220 15% 98%;
+    --card: 220 14% 96%;
     --card-foreground: 222 15% 15%;
 
-    --popover: 220 15% 98%;
+    --popover: 220 14% 96%;
     --popover-foreground: 222 15% 15%;
 
     --primary: 217 92% 56%;
@@ -97,9 +97,31 @@
 
 .bg-pattern {
   background-image:
-    radial-gradient(circle at 1px 1px, hsl(217 92% 76%) 1px, transparent 0),
-    linear-gradient(135deg, hsl(217 92% 76% / 0.15) 25%, transparent 25%),
-    linear-gradient(225deg, hsl(217 80% 70% / 0.1) 25%, transparent 25%);
+    radial-gradient(circle at 1px 1px, hsl(217 92% 76% / 0.4) 1px, transparent 0),
+    linear-gradient(135deg, hsl(217 92% 76% / 0.08) 25%, transparent 25%),
+    linear-gradient(225deg, hsl(217 80% 70% / 0.06) 25%, transparent 25%);
+  background-size:
+    32px 32px,
+    64px 64px,
+    64px 64px;
+}
+
+:root .bg-pattern {
+  background-image:
+    radial-gradient(circle at 1px 1px, hsl(217 60% 70% / 0.25) 1px, transparent 0),
+    linear-gradient(135deg, hsl(217 50% 70% / 0.06) 25%, transparent 25%),
+    linear-gradient(225deg, hsl(217 45% 65% / 0.04) 25%, transparent 25%);
+  background-size:
+    32px 32px,
+    64px 64px,
+    64px 64px;
+}
+
+.dark .bg-pattern {
+  background-image:
+    radial-gradient(circle at 1px 1px, hsl(217 92% 76% / 0.4) 1px, transparent 0),
+    linear-gradient(135deg, hsl(217 92% 76% / 0.08) 25%, transparent 25%),
+    linear-gradient(225deg, hsl(217 80% 70% / 0.06) 25%, transparent 25%);
   background-size:
     32px 32px,
     64px 64px,

@@ -26,6 +26,7 @@ export default function SettingsPage() {
   });
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleSave = () => {
     setUser({ firstName: profile.firstName, middleName: profile.middleName, lastName: profile.lastName, email: profile.email, studentId });
@@ -38,17 +39,22 @@ export default function SettingsPage() {
   };
 
   const handlePasswordUpdate = () => {
-    if (!currentPassword || !newPassword) {
-      toast({ title: "Error", description: "Please fill in both password fields.", variant: "destructive" });
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      toast({ title: "Error", description: "Please fill in all password fields.", variant: "destructive" });
       return;
     }
     if (newPassword.length < 8) {
       toast({ title: "Error", description: "New password must be at least 8 characters.", variant: "destructive" });
       return;
     }
+    if (newPassword !== confirmPassword) {
+      toast({ title: "Error", description: "New password and confirmation do not match.", variant: "destructive" });
+      return;
+    }
     toast({ title: "Password updated", description: "Your password has been changed successfully." });
     setCurrentPassword("");
     setNewPassword("");
+    setConfirmPassword("");
   };
 
   return (
@@ -90,7 +96,7 @@ export default function SettingsPage() {
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
-                  <Input id="email" type="email" value={profile.email} onChange={(e) => setProfile({ ...profile, email: e.target.value })} />
+                  <Input id="email" type="email" value={profile.email} readOnly disabled className="opacity-70 cursor-not-allowed" />
                 </div>
                 <div className="space-y-2">
                   <Label>Role</Label>
@@ -169,7 +175,7 @@ export default function SettingsPage() {
               <CardDescription>Manage your password and security settings.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                 <div className="space-y-2">
                   <Label htmlFor="current-pw">Current Password</Label>
                   <Input id="current-pw" type="password" placeholder="••••••••" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} />
@@ -177,6 +183,10 @@ export default function SettingsPage() {
                 <div className="space-y-2">
                   <Label htmlFor="new-pw">New Password</Label>
                   <Input id="new-pw" type="password" placeholder="••••••••" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="confirm-pw">Confirm Password</Label>
+                  <Input id="confirm-pw" type="password" placeholder="••••••••" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
                 </div>
               </div>
               <Button onClick={handlePasswordUpdate}>Update Password</Button>

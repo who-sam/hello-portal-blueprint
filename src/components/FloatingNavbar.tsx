@@ -24,6 +24,7 @@ const teacherNavTabs = [
   { label: "Dashboard", url: "/dashboard" },
   { label: "Courses", url: "/dashboard/courses" },
   { label: "Exam Builder", url: "/dashboard/exam-builder" },
+  { label: "Question Bank", url: "/dashboard/question-bank" },
   { label: "Results", url: "/dashboard/results" },
 ];
 
@@ -80,6 +81,8 @@ export function FloatingNavbar() {
     { label: "CS201 — Data Structures", url: "/dashboard/courses/APX-CS201", icon: BookOpen, category: "Courses" },
     { label: "CS301 — Algorithms", url: "/dashboard/courses/APX-CS301", icon: BookOpen, category: "Courses" },
     { label: "Exam Builder", url: "/dashboard/exam-builder", icon: FileText, category: "Pages" },
+    { label: "Question Bank", url: "/dashboard/question-bank", icon: BookOpen, category: "Pages" },
+    { label: "Grade Written", url: "/dashboard/grade-written", icon: FileText, category: "Pages" },
     { label: "Results & Analytics", url: "/dashboard/results", icon: BarChart3, category: "Pages" },
     ...(role === "student" ? [
       { label: "Upcoming Exams", url: "/dashboard/exams", icon: GraduationCap, category: "Pages" },

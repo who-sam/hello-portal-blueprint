@@ -24,14 +24,13 @@ const stats = [
   { label: "Total Students", value: "248", icon: Users, trend: "+12%", up: true },
   { label: "Active Exams", value: "5", icon: FileText, trend: "+2", up: true },
   { label: "Classes", value: "8", icon: GraduationCap, trend: "0", up: true },
-  { label: "Average Score", value: "76%", icon: BarChart3, trend: "-3%", up: false },
 ];
 
 const quickActions = [
   { label: "Create Exam", desc: "Build a new exam", icon: Plus, route: "/dashboard/exam-builder" },
   { label: "Create Course", desc: "Start a new course", icon: BookOpen, route: "/dashboard/courses", state: { openCreate: true } },
   { label: "View Results", desc: "Check submissions", icon: BarChart3, route: "/dashboard/results" },
-  { label: "Question Bank", desc: "Manage questions", icon: BookOpen, route: "/dashboard/exam-builder" },
+  { label: "Question Bank", desc: "Manage questions", icon: BookOpen, route: "/dashboard/question-bank" },
 ];
 
 const initialActiveExams = [
@@ -84,7 +83,7 @@ export default function TeacherDashboard() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {stats.map((s) => (
           <Card key={s.label} className="bg-card/80 backdrop-blur-md border-border/50">
             <CardContent className="p-5 flex items-center gap-4">
@@ -170,7 +169,7 @@ export default function TeacherDashboard() {
               <div
                 key={i}
                 className="flex items-start gap-3 rounded-lg border border-border/30 p-3 hover:bg-muted/30 transition-colors cursor-pointer"
-                onClick={() => navigate("/dashboard/results")}
+                onClick={() => navigate("/dashboard/grade-written")}
               >
                 <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-destructive/15 text-destructive">
                   <ClipboardCheck className="h-4 w-4" />

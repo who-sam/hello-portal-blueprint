@@ -117,12 +117,12 @@ function TeacherCourses() {
           >
             {/* Cover image */}
             {courseImages[course.id] && (
-              <div className="h-32 overflow-hidden">
+              <div className="h-40 overflow-hidden">
                 <img src={courseImages[course.id]} alt={course.name} className="w-full h-full object-cover" />
               </div>
             )}
             {!courseImages[course.id] && (
-              <div className="h-32 bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+              <div className="h-40 bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
                 <BookOpen className="h-10 w-10 text-primary/40" />
               </div>
             )}
@@ -301,12 +301,12 @@ function StudentCourses() {
             >
               {/* Cover image */}
               {courseImages[course.id] && (
-                <div className="h-32 overflow-hidden">
+                <div className="h-40 overflow-hidden">
                   <img src={courseImages[course.id]} alt={course.name} className="w-full h-full object-cover" />
                 </div>
               )}
               {!courseImages[course.id] && (
-                <div className="h-32 bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+                <div className="h-40 bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
                   <BookOpen className="h-10 w-10 text-primary/40" />
                 </div>
               )}
