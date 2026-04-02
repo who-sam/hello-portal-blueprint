@@ -169,7 +169,7 @@ export default function TeacherDashboard() {
               <div
                 key={i}
                 className="flex items-start gap-3 rounded-lg border border-border/30 p-3 hover:bg-muted/30 transition-colors cursor-pointer"
-                onClick={() => navigate("/dashboard/results")}
+                onClick={() => navigate("/dashboard/grade-written")}
               >
                 <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-destructive/15 text-destructive">
                   <ClipboardCheck className="h-4 w-4" />
