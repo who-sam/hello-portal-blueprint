@@ -4,7 +4,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ImagePlus, X } from "lucide-react";
+import { ImagePlus, X, BookmarkPlus } from "lucide-react";
 import type { WrittenQuestion, Difficulty } from "@/types/exam";
 
 interface Props {
