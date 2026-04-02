@@ -212,7 +212,7 @@ function TeacherCourses() {
                   <DropdownMenuItem className="gap-2">
                     <Eye className="h-4 w-4" /> View Details
                   </DropdownMenuItem>
-                  <DropdownMenuItem className="gap-2">
+                  <DropdownMenuItem className="gap-2" onClick={(e) => { e.stopPropagation(); openEditDialog(course); }}>
                     <Pencil className="h-4 w-4" /> Edit
                   </DropdownMenuItem>
                   <DropdownMenuItem
