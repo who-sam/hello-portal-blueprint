@@ -60,13 +60,21 @@ const recentActivity = [
 ];
 
 const classPerformance = [
-  { name: "CS101-A", avg: 72 },
-  { name: "CS201-A", avg: 78 },
-  { name: "CS201-B", avg: 65 },
-  { name: "CS301-A", avg: 81 },
-  { name: "CS301-B", avg: 74 },
-  { name: "CS401-A", avg: 88 },
+  { name: "CS101-A", avg: 72, students: 45, trend: -3 },
+  { name: "CS201-A", avg: 78, students: 38, trend: 5 },
+  { name: "CS201-B", avg: 65, students: 30, trend: -8 },
+  { name: "CS301-A", avg: 81, students: 32, trend: 2 },
+  { name: "CS301-B", avg: 74, students: 28, trend: 1 },
+  { name: "CS401-A", avg: 88, students: 22, trend: 4 },
 ];
+
+const getBarColor = (avg: number) => {
+  if (avg >= 80) return "hsl(142, 71%, 45%)";
+  if (avg >= 70) return "hsl(var(--primary))";
+  return "hsl(0, 84%, 60%)";
+};
+
+const classAvg = Math.round(classPerformance.reduce((s, c) => s + c.avg, 0) / classPerformance.length);
 
 export default function TeacherDashboard() {
   const navigate = useNavigate();
