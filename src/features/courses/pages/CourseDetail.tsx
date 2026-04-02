@@ -563,12 +563,25 @@ function TeacherCourseDetail({ course }: { course: { name: string; teacher: stri
           ))}
         </TabsContent>
 
-        {/* GRADES TAB (Teacher spreadsheet view) */}
         <TabsContent value="grades" className="space-y-4">
-          <div className="flex items-center justify-between">
-            <p className="text-sm text-muted-foreground">
-              Full grade spreadsheet for all students and exams in this course.
-            </p>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-3">
+              <p className="text-sm text-muted-foreground">
+                Passing threshold:
+              </p>
+              <select
+                value={passingThreshold}
+                onChange={(e) => {
+                  setPassingThreshold(Number(e.target.value));
+                  toast({ title: "Threshold updated", description: `Passing grade set to ${e.target.value}%` });
+                }}
+                className="h-9 rounded-md border border-border bg-background px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+              >
+                {[40, 45, 50, 55, 60, 65, 70, 75].map((v) => (
+                  <option key={v} value={v}>{v}%</option>
+                ))}
+              </select>
+            </div>
             <div className="flex items-center gap-2">
               <Button variant="outline" size="sm" className="gap-1.5" onClick={exportGradesCSV}>
                 <Download className="h-4 w-4" /> Export CSV
