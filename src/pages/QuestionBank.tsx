@@ -70,7 +70,7 @@ function formFromQuestion(q: BankQuestion) {
 
 export default function QuestionBank() {
   const { toast } = useToast();
-  const [questions, setQuestions] = useState<BankQuestion[]>(initialQuestions);
+  const [questions, setQuestions] = useState<BankQuestion[]>(() => getQuestions());
   const [selectedCourse, setSelectedCourse] = useState<string>("");
   const [searchQuery, setSearchQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState<string>("all");
