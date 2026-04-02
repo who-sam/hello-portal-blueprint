@@ -1,49 +1,130 @@
 
 
-## Plan: Save Exam Builder Questions to Question Bank
+## Plan: Reorganize Project into Feature-Based Module Architecture
 
-### What
-Add a "Save to Bank" button in each question editor (MCQ, Written, Coding) within the Exam Builder, allowing teachers to save the currently edited question to the Question Bank for reuse.
+### Problem
+Currently all 27 pages sit flat in `src/pages/` and components are loosely grouped. As the project grows, this makes files hard to find and related code scattered.
 
-### How
+### Proposed Structure
 
-**1. Add "Save to Bank" button to each editor component**
+```text
+src/
+├── app/                          # App shell
+│   ├── App.tsx
+│   ├── App.css
+│   └── routes.tsx                # All route definitions extracted
+│
+├── features/                     # Feature modules
+│   ├── auth/
+│   │   ├── pages/
+│   │   │   ├── AuthPage.tsx
+│   │   │   └── Unauthorized.tsx
+│   │   └── components/           # (future auth components)
+│   │
+│   ├── dashboard/
+│   │   ├── pages/
+│   │   │   ├── DashboardIndex.tsx
+│   │   │   ├── Dashboard.tsx          # student
+│   │   │   └── TeacherDashboard.tsx
+│   │   └── components/
+│   │       ├── PerformanceChart.tsx
+│   │       ├── RecentResults.tsx
+│   │       ├── SkillBreakdown.tsx
+│   │       ├── StatsCards.tsx
+│   │       └── UpcomingExams.tsx
+│   │
+│   ├── exams/
+│   │   ├── pages/
+│   │   │   ├── ExamBuilder.tsx
+│   │   │   ├── ExamTaking.tsx
+│   │   │   ├── ExamReview.tsx
+│   │   │   ├── UpcomingExams.tsx
+│   │   │   └── QuestionBank.tsx
+│   │   ├── components/
+│   │   │   ├── MCQEditor.tsx
+│   │   │   ├── WrittenEditor.tsx
+│   │   │   ├── CodingEditor.tsx
+│   │   │   ├── QuestionList.tsx
+│   │   │   └── QuestionTypeDialog.tsx
+│   │   └── lib/
+│   │       └── questionBankStore.ts
+│   │
+│   ├── grading/
+│   │   └── pages/
+│   │       └── GradeWritten.tsx
+│   │
+│   ├── courses/
+│   │   └── pages/
+│   │       ├── Courses.tsx
+│   │       └── CourseDetail.tsx
+│   │
+│   ├── results/
+│   │   └── pages/
+│   │       ├── Results.tsx
+│   │       ├── Results.student.tsx
+│   │       ├── TeacherResults.tsx
+│   │       └── Leaderboard.tsx
+│   │
+│   ├── playground/
+│   │   └── pages/
+│   │       └── CodeEditor.tsx
+│   │
+│   ├── settings/
+│   │   └── pages/
+│   │       ├── Settings.tsx
+│   │       └── Profile.tsx
+│   │
+│   └── social/
+│       └── pages/
+│           ├── Messages.tsx
+│           ├── Notifications.tsx
+│           ├── Help.tsx
+│           ├── Team.tsx
+│           └── Practice.tsx
+│
+├── components/                   # Shared / layout components
+│   ├── ui/                       # shadcn (unchanged)
+│   ├── layout/
+│   │   ├── DashboardLayout.tsx
+│   │   ├── FloatingNavbar.tsx
+│   │   └── AppSidebar.tsx
+│   ├── ApexLogo.tsx
+│   ├── EmptyState.tsx
+│   ├── ErrorState.tsx
+│   ├── NavLink.tsx
+│   └── PageSkeleton.tsx
+│
+├── contexts/                     # (unchanged)
+├── hooks/                        # (unchanged)
+├── lib/
+│   └── utils.ts
+├── types/
+│   └── exam.ts
+├── index.css
+├── main.tsx
+└── vite-env.d.ts
+```
 
-Files: `src/components/exam-builder/MCQEditor.tsx`, `WrittenEditor.tsx`, `CodingEditor.tsx`
+### What Changes
 
-- Add an optional `onSaveToBank` callback prop to each editor's `Props` interface
-- Render a "Save to Bank" button (with a `Library` or `BookmarkPlus` icon) in the editor toolbar/header area
-- The button calls `onSaveToBank(question)` when clicked
+| Action | Count | Details |
+|--------|-------|---------|
+| Move pages into feature modules | 27 files | Each page moves to `features/<module>/pages/` |
+| Move dashboard components | 5 files | Into `features/dashboard/components/` |
+| Move exam-builder components | 5 files | Into `features/exams/components/` |
+| Move questionBankStore | 1 file | Into `features/exams/lib/` |
+| Move layout components | 3 files | Into `components/layout/` |
+| Extract routes | 1 new file | `src/app/routes.tsx` — all `<Route>` definitions |
+| Update imports | ~40 files | All cross-references updated to new paths |
 
-**2. Handle the save logic in ExamBuilder**
+### What Does NOT Change
+- `src/components/ui/` stays exactly where it is
+- `src/contexts/`, `src/hooks/`, `src/types/` stay flat (small enough)
+- No logic changes, no renames, no refactors — purely structural moves
+- `@/` path alias continues to point to `src/`
 
-File: `src/pages/ExamBuilder.tsx`
-
-- Add a `handleSaveToBank` function that:
-  - Validates the question has text filled in
-  - Validates a course is assigned (needed to categorize in the bank)
-  - Shows a small confirmation dialog or toast asking for optional tags
-  - Saves the question data to the mock bank array (or localStorage to persist across pages)
-  - Shows a success toast: "Question saved to bank"
-- Pass `onSaveToBank` to each editor component
-
-**3. Shared storage for Question Bank data**
-
-Currently both `QuestionBank.tsx` and `ExamBuilder.tsx` use separate hardcoded mock arrays. To make "Save to Bank" actually work across pages:
-
-- Create a simple shared store using `localStorage` with a key like `apex-question-bank`
-- Create a small utility file `src/lib/questionBankStore.ts` with `getQuestions()`, `addQuestion()`, `deleteQuestion()`, `updateQuestion()` functions
-- Update `QuestionBank.tsx` to read/write from this store instead of local state
-- Update `ExamBuilder.tsx` bank import dialog to read from the same store
-
-### Technical Details
-
-| File | Change |
-|------|--------|
-| `src/lib/questionBankStore.ts` | New — localStorage-backed CRUD for bank questions |
-| `src/components/exam-builder/MCQEditor.tsx` | Add `onSaveToBank` prop + button |
-| `src/components/exam-builder/WrittenEditor.tsx` | Add `onSaveToBank` prop + button |
-| `src/components/exam-builder/CodingEditor.tsx` | Add `onSaveToBank` prop + button |
-| `src/pages/ExamBuilder.tsx` | Add save-to-bank handler, pass to editors, update import to use shared store |
-| `src/pages/QuestionBank.tsx` | Migrate to shared store |
+### Technical Notes
+- All imports use `@/features/...`, `@/components/...` etc. via the existing `@/` alias
+- The `routes.tsx` extraction keeps `App.tsx` clean and makes it easy to see all routes at a glance
+- Each feature module is self-contained: its pages, its components, its lib utilities
 
