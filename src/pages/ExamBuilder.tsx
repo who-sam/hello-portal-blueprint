@@ -15,6 +15,7 @@ import { Save, CalendarIcon, Search, CheckSquare, FileText, Code2 } from "lucide
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+import { getQuestions as getBankQuestions, addQuestion as addBankQuestion, type BankQuestion } from "@/lib/questionBankStore";
 import type { Question, QuestionType, MCQQuestion, WrittenQuestion, CodingQuestion } from "@/types/exam";
 import QuestionTypeDialog from "@/components/exam-builder/QuestionTypeDialog";
 import QuestionList from "@/components/exam-builder/QuestionList";
