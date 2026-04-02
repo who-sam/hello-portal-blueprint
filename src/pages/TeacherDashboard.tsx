@@ -24,7 +24,6 @@ const stats = [
   { label: "Total Students", value: "248", icon: Users, trend: "+12%", up: true },
   { label: "Active Exams", value: "5", icon: FileText, trend: "+2", up: true },
   { label: "Classes", value: "8", icon: GraduationCap, trend: "0", up: true },
-  { label: "Average Score", value: "76%", icon: BarChart3, trend: "-3%", up: false },
 ];
 
 const quickActions = [
