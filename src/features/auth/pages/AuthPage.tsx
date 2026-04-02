@@ -7,7 +7,9 @@ import { Input } from "@/components/ui/input";
 import { ArrowLeft, Eye, EyeOff, Loader2, Sun, Moon } from "lucide-react";
 import { useTheme } from "next-themes";
 import authBg from "@/assets/auth-bg.jpg";
+import authBgLight from "@/assets/auth-bg-light.jpg";
 import authHero from "@/assets/auth-hero.jpg";
+import authHeroLight from "@/assets/auth-hero-light.jpg";
 import ApexLogo from "@/components/ApexLogo";
 import { useRole, UserRole } from "@/contexts/RoleContext";
 import { useUser } from "@/contexts/UserContext";
@@ -119,10 +121,12 @@ const AuthPage = () => {
 
   const selectedRole = signupForm.watch("role");
 
+  const isDark = theme === "dark";
+
   return (
     <div className="relative flex min-h-screen items-center justify-center p-4 sm:p-6 overflow-hidden">
-      <img src={authBg} alt="" className="absolute inset-0 h-full w-full object-cover" />
-      <div className="absolute inset-0 bg-black/65" />
+      <img src={isDark ? authBg : authBgLight} alt="" className="absolute inset-0 h-full w-full object-cover" />
+      <div className={`absolute inset-0 ${isDark ? "bg-black/65" : "bg-white/40"}`} />
 
       {/* Theme toggle */}
       <button
@@ -134,7 +138,7 @@ const AuthPage = () => {
       </button>
 
       <div className="relative z-10 w-full max-w-5xl">
-        <div className="grid grid-cols-1 md:grid-cols-2 overflow-hidden rounded-2xl border border-white/10 shadow-2xl">
+        <div className={`grid grid-cols-1 md:grid-cols-2 overflow-hidden rounded-2xl border shadow-2xl ${isDark ? "border-white/10" : "border-border"}`}>
           {/* Left: Form */}
           <div className="bg-card/95 backdrop-blur-xl p-8 flex flex-col justify-center">
             <div className="flex items-center gap-2 mb-8">
@@ -298,7 +302,7 @@ const AuthPage = () => {
 
           {/* Right: Hero Image */}
           <div className="hidden md:block">
-            <img src={authHero} alt="Kernel platform" className="h-full w-full object-cover" />
+            <img src={isDark ? authHero : authHeroLight} alt="APEX platform" className="h-full w-full object-cover" />
           </div>
         </div>
       </div>
