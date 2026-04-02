@@ -29,26 +29,60 @@ const courseImages: Record<string, string> = {
   "APX-CS101": "https://images.unsplash.com/photo-1515879218367-8466d910auj7?w=800&h=300&fit=crop",
   "APX-CS201": "https://images.unsplash.com/photo-1516116216624-53e697fedbea?w=800&h=300&fit=crop",
   "APX-CS301": "https://images.unsplash.com/photo-1509228468518-180dd4864904?w=800&h=300&fit=crop",
+  "APX-CS401": "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=800&h=300&fit=crop",
+  "APX-CS501": "https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&h=300&fit=crop",
+  "APX-CS601": "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&h=300&fit=crop",
 };
 
 const courseData: Record<string, { name: string; teacher: string; id: string }> = {
   "APX-CS101": { name: "CS101 — Intro to Programming", teacher: "Dr. Smith", id: "APX-CS101" },
   "APX-CS201": { name: "CS201 — Data Structures", teacher: "Prof. Johnson", id: "APX-CS201" },
   "APX-CS301": { name: "CS301 — Algorithms", teacher: "Dr. Williams", id: "APX-CS301" },
+  "APX-CS401": { name: "CS401 — Machine Learning", teacher: "Dr. Adams", id: "APX-CS401" },
+  "APX-CS501": { name: "CS501 — Operating Systems", teacher: "Prof. Chen", id: "APX-CS501" },
+  "APX-CS601": { name: "CS601 — Computer Networks", teacher: "Dr. Patel", id: "APX-CS601" },
 };
 
-const courseExams = [
+/* Per-course grades data for students */
+const courseGradesMap: Record<string, { exam: string; score: number; total: number; date: string }[]> = {
+  // Normal grades (default)
+  default: [
+    { exam: "Quiz 3 — Linked Lists", score: 85, total: 100, date: "Mar 20, 2026" },
+    { exam: "Quiz 2 — Stacks & Queues", score: 92, total: 100, date: "Mar 10, 2026" },
+    { exam: "Quiz 1 — Arrays", score: 78, total: 100, date: "Feb 28, 2026" },
+  ],
+  // CS401 — Grades NOT announced (empty state)
+  "APX-CS401": [],
+  // CS501 — Failed course (avg < 60%)
+  "APX-CS501": [
+    { exam: "Midterm — OS Concepts", score: 42, total: 100, date: "Mar 15, 2026" },
+    { exam: "Quiz 2 — Scheduling", score: 55, total: 100, date: "Mar 05, 2026" },
+    { exam: "Quiz 1 — Processes", score: 48, total: 100, date: "Feb 20, 2026" },
+  ],
+  // CS601 — Full marks (confetti!)
+  "APX-CS601": [
+    { exam: "Quiz 3 — TCP/IP", score: 100, total: 100, date: "Mar 20, 2026" },
+    { exam: "Quiz 2 — Routing", score: 98, total: 100, date: "Mar 10, 2026" },
+    { exam: "Quiz 1 — OSI Model", score: 100, total: 100, date: "Feb 28, 2026" },
+  ],
+};
+
+// Whether grades are announced per course
+const gradesAnnouncedMap: Record<string, boolean> = {
+  "APX-CS401": false, // not announced
+};
+
+const getCourseGrades = (courseId: string) => courseGradesMap[courseId] ?? courseGradesMap.default;
+const isGradesAnnounced = (courseId: string) => gradesAnnouncedMap[courseId] ?? true;
+
+const courseExamsMap: Record<string, typeof defaultCourseExams> = {};
+const defaultCourseExams = [
   { id: "mid-ds", name: "Midterm Exam", date: "Mar 28, 2026", duration: "90 min", status: "upcoming" as const, score: null },
   { id: "quiz-3", name: "Quiz 3 — Linked Lists", date: "Mar 20, 2026", duration: "30 min", status: "completed" as const, score: 85 },
   { id: "quiz-2", name: "Quiz 2 — Stacks & Queues", date: "Mar 10, 2026", duration: "30 min", status: "completed" as const, score: 92 },
   { id: "quiz-1", name: "Quiz 1 — Arrays", date: "Feb 28, 2026", duration: "30 min", status: "completed" as const, score: 78 },
 ];
-
-const courseGrades = [
-  { exam: "Quiz 3 — Linked Lists", score: 85, total: 100, date: "Mar 20, 2026" },
-  { exam: "Quiz 2 — Stacks & Queues", score: 92, total: 100, date: "Mar 10, 2026" },
-  { exam: "Quiz 1 — Arrays", score: 78, total: 100, date: "Feb 28, 2026" },
-];
+const getCourseExams = (courseId: string) => courseExamsMap[courseId] ?? defaultCourseExams;
 
 const courseAnnouncements = [
   { id: 1, title: "Midterm Exam Scheduled", body: "The midterm exam will be held on March 28th. It will cover all material from weeks 1–7.", date: "Mar 15, 2026" },
