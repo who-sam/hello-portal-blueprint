@@ -1,59 +1,49 @@
 
 
-## Plan: Question Bank + Exam Builder Integration, Light Mode Fix, Grading UX Overhaul
+## Plan: Save Exam Builder Questions to Question Bank
 
-### 1. Fix Light Mode Background Pattern
+### What
+Add a "Save to Bank" button in each question editor (MCQ, Written, Coding) within the Exam Builder, allowing teachers to save the currently edited question to the Question Bank for reuse.
 
-The `DashboardLayout` uses `bg-pattern` with `opacity-[0.07]` — this is too subtle. The light mode pattern CSS exists but isn't visible enough.
+### How
 
-**File: `src/index.css`**
-- Increase the light mode pattern dot opacity from `0.25` to `0.5` and gradient opacity
-- **File: `src/components/DashboardLayout.tsx`**
-- Increase `opacity-[0.07]` to `opacity-[0.15]` for the pattern layer so it's actually visible in light mode
+**1. Add "Save to Bank" button to each editor component**
 
-### 2. Add "Import from Question Bank" to Exam Builder
+Files: `src/components/exam-builder/MCQEditor.tsx`, `WrittenEditor.tsx`, `CodingEditor.tsx`
 
-**File: `src/pages/ExamBuilder.tsx`**
-- Add a new `Dialog` for browsing the question bank (triggered from QuestionList or QuestionTypeDialog)
-- Show questions filtered by the currently selected `assignedCourse`
-- Allow selecting multiple questions and importing them into the exam's question list
-- Add a "From Bank" option alongside "Add" in the question list header
+- Add an optional `onSaveToBank` callback prop to each editor's `Props` interface
+- Render a "Save to Bank" button (with a `Library` or `BookmarkPlus` icon) in the editor toolbar/header area
+- The button calls `onSaveToBank(question)` when clicked
 
-**File: `src/components/exam-builder/QuestionList.tsx`**
-- Add a second button "Import" or split the "Add" button into "New" and "From Bank"
+**2. Handle the save logic in ExamBuilder**
 
-### 3. Improve Question Bank Flow
+File: `src/pages/ExamBuilder.tsx`
 
-**File: `src/pages/QuestionBank.tsx`**
-- Improve the "Add Question" dialog to support full question editing per type (MCQ with options, Written with rubric, Coding with starter code) instead of just text + points
-- Add inline editing capability — clicking a question opens an edit dialog, not just a read-only view
-- Add bulk selection with checkboxes for batch delete
-- Add tag management (click to filter by tag)
+- Add a `handleSaveToBank` function that:
+  - Validates the question has text filled in
+  - Validates a course is assigned (needed to categorize in the bank)
+  - Shows a small confirmation dialog or toast asking for optional tags
+  - Saves the question data to the mock bank array (or localStorage to persist across pages)
+  - Shows a success toast: "Question saved to bank"
+- Pass `onSaveToBank` to each editor component
 
-### 4. Overhaul Written Grading UX
+**3. Shared storage for Question Bank data**
 
-**File: `src/pages/GradeWritten.tsx`**
-Current issues: all questions stacked vertically makes it hard to focus; navigation is clunky.
+Currently both `QuestionBank.tsx` and `ExamBuilder.tsx` use separate hardcoded mock arrays. To make "Save to Bank" actually work across pages:
 
-Redesign to a split-panel layout:
-- **Left panel**: Student list with status indicators (graded/pending), clickable to switch
-- **Right panel**: Show one question at a time with:
-  - Question text + rubric displayed prominently at top
-  - Student answer in a readable card
-  - Points slider (not just number input) with quick-grade buttons (Full marks, Half, Zero)
-  - Feedback textarea
-  - Prev/Next question navigation within the student
-- Add keyboard shortcuts: arrow keys for navigation, number keys for quick scoring
-- Show overall progress bar and auto-advance to next ungraded student
+- Create a simple shared store using `localStorage` with a key like `apex-question-bank`
+- Create a small utility file `src/lib/questionBankStore.ts` with `getQuestions()`, `addQuestion()`, `deleteQuestion()`, `updateQuestion()` functions
+- Update `QuestionBank.tsx` to read/write from this store instead of local state
+- Update `ExamBuilder.tsx` bank import dialog to read from the same store
 
-### 5. Files Changed Summary
+### Technical Details
 
 | File | Change |
 |------|--------|
-| `src/index.css` | Increase light mode pattern visibility |
-| `src/components/DashboardLayout.tsx` | Bump pattern opacity |
-| `src/pages/ExamBuilder.tsx` | Add "Import from Bank" dialog with course-filtered question browsing |
-| `src/components/exam-builder/QuestionList.tsx` | Add "From Bank" button |
-| `src/pages/QuestionBank.tsx` | Richer add/edit dialogs with per-type fields, tag filtering, bulk actions |
-| `src/pages/GradeWritten.tsx` | Full rewrite — split-panel layout, one-question-at-a-time grading, quick-grade buttons, keyboard nav |
+| `src/lib/questionBankStore.ts` | New — localStorage-backed CRUD for bank questions |
+| `src/components/exam-builder/MCQEditor.tsx` | Add `onSaveToBank` prop + button |
+| `src/components/exam-builder/WrittenEditor.tsx` | Add `onSaveToBank` prop + button |
+| `src/components/exam-builder/CodingEditor.tsx` | Add `onSaveToBank` prop + button |
+| `src/pages/ExamBuilder.tsx` | Add save-to-bank handler, pass to editors, update import to use shared store |
+| `src/pages/QuestionBank.tsx` | Migrate to shared store |
 
