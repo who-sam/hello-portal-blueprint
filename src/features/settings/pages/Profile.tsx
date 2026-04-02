@@ -70,7 +70,7 @@ const studentStats = [
 
 export default function Profile() {
   const navigate = useNavigate();
-  const { firstName, middleName, lastName, studentId, name, email } = useUser();
+  const { firstName, middleName, lastName, studentId, name, email, profilePhoto } = useUser();
   const { role } = useRole();
   const [tab, setTab] = useState("overview");
   const isTeacher = role === "teacher";
