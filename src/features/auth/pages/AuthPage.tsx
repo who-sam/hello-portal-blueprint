@@ -302,7 +302,7 @@ const AuthPage = () => {
 
           {/* Right: Hero Image */}
           <div className="hidden md:block">
-            <img src={authHero} alt="Kernel platform" className="h-full w-full object-cover" />
+            <img src={isDark ? authHero : authHeroLight} alt="APEX platform" className="h-full w-full object-cover" />
           </div>
         </div>
       </div>
