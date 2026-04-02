@@ -29,27 +29,6 @@ const mockCourses = [
   { id: "APX-CS301", name: "CS301 — Algorithms" },
 ];
 
-// Mock question bank data (shared with QuestionBank page)
-interface BankQuestion {
-  id: string;
-  type: QuestionType;
-  text: string;
-  points: number;
-  courseId: string;
-  tags: string[];
-}
-
-const bankQuestions: BankQuestion[] = [
-  { id: "qb-1", type: "mcq", text: "What is the time complexity of binary search?", points: 10, courseId: "APX-CS301", tags: ["searching", "complexity"] },
-  { id: "qb-2", type: "written", text: "Explain the difference between a stack and a queue.", points: 20, courseId: "APX-CS201", tags: ["data-structures"] },
-  { id: "qb-3", type: "coding", text: "Implement a function to reverse a linked list.", points: 30, courseId: "APX-CS201", tags: ["linked-list"] },
-  { id: "qb-4", type: "mcq", text: "Which of the following is not a primitive data type in Python?", points: 10, courseId: "APX-CS101", tags: ["python", "basics"] },
-  { id: "qb-5", type: "written", text: "Describe the concept of recursion with an example.", points: 20, courseId: "APX-CS101", tags: ["recursion"] },
-  { id: "qb-6", type: "coding", text: "Write a function that finds the shortest path in a graph using BFS.", points: 30, courseId: "APX-CS301", tags: ["graphs", "bfs"] },
-  { id: "qb-7", type: "mcq", text: "What is the worst case time complexity of quicksort?", points: 10, courseId: "APX-CS301", tags: ["sorting", "complexity"] },
-  { id: "qb-8", type: "written", text: "Compare and contrast arrays and linked lists.", points: 15, courseId: "APX-CS201", tags: ["data-structures"] },
-];
-
 const typeIcons: Record<string, React.ElementType> = {
   mcq: CheckSquare,
   written: FileText,
