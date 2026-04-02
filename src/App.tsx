@@ -2,29 +2,11 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
 import { RoleProvider } from "@/contexts/RoleContext";
 import { UserProvider } from "@/contexts/UserContext";
 import { NotificationProvider } from "@/contexts/NotificationContext";
-import Index from "./pages/Index";
-import NotFound from "./pages/NotFound";
-import AuthPage from "./pages/AuthPage";
-
-import Unauthorized from "./pages/Unauthorized";
-import DashboardLayout from "./components/DashboardLayout";
-import DashboardIndex from "./pages/DashboardIndex";
-import CodeEditor from "./pages/CodeEditor";
-import UpcomingExams from "./pages/UpcomingExams";
-import Results from "./pages/Results";
-import Settings from "./pages/Settings";
-import ExamBuilder from "./pages/ExamBuilder";
-import ExamTaking from "./pages/ExamTaking";
-import Profile from "./pages/Profile";
-import ExamReview from "./pages/ExamReview";
-import Courses from "./pages/Courses";
-import CourseDetail from "./pages/CourseDetail";
-import QuestionBank from "./pages/QuestionBank";
-import GradeWritten from "./pages/GradeWritten";
+import AppRoutes from "@/app/routes";
 
 const queryClient = new QueryClient();
 
@@ -37,28 +19,7 @@ const App = () => (
         <UserProvider>
           <NotificationProvider>
             <BrowserRouter>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/auth" element={<AuthPage />} />
-                
-                <Route path="/unauthorized" element={<Unauthorized />} />
-                <Route path="/dashboard" element={<DashboardLayout />}>
-                  <Route index element={<DashboardIndex />} />
-                  <Route path="exams" element={<UpcomingExams />} />
-                  <Route path="playground" element={<CodeEditor />} />
-                  <Route path="results" element={<Results />} />
-                  <Route path="profile" element={<Profile />} />
-                  <Route path="settings" element={<Settings />} />
-                  <Route path="courses" element={<Courses />} />
-                  <Route path="courses/:id" element={<CourseDetail />} />
-                  <Route path="exam-builder" element={<ExamBuilder />} />
-                  <Route path="question-bank" element={<QuestionBank />} />
-                  <Route path="grade-written" element={<GradeWritten />} />
-                  <Route path="exam/:id" element={<ExamTaking />} />
-                  <Route path="exam/:id/review" element={<ExamReview />} />
-                </Route>
-                <Route path="*" element={<NotFound />} />
-              </Routes>
+              <AppRoutes />
             </BrowserRouter>
           </NotificationProvider>
         </UserProvider>
