@@ -207,9 +207,18 @@ export default function ExamBuilder() {
     <div className="h-[calc(100vh-5.5rem)] flex flex-col gap-4">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">Exam Builder</h1>
+        <div className="flex items-center gap-3">
+          {isEditing && (
+            <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+          )}
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">
+            {isEditing ? "Edit Exam" : "Exam Builder"}
+          </h1>
+        </div>
         <Button className="gap-2 rounded-full" onClick={handleSave}>
-          <Save className="h-4 w-4" /> Save Exam
+          <Save className="h-4 w-4" /> {isEditing ? "Update Exam" : "Save Exam"}
         </Button>
       </div>
 

@@ -455,7 +455,25 @@ function TeacherCourseDetail({ course }: { course: { name: string; teacher: stri
                     <span>{exam.duration}</span>
                   </div>
                 </div>
-                <Badge variant="outline" className={statusColor(exam.status)}>{exam.status}</Badge>
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline" className={statusColor(exam.status)}>{exam.status}</Badge>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-7 w-7">
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem className="gap-2" onClick={() => navigate("/dashboard/exam-builder", { state: { editExam: { id: exam.id, title: exam.name, duration: parseInt(exam.duration), status: exam.status } } })}>
+                        <Pencil className="h-4 w-4" /> Edit
+                      </DropdownMenuItem>
+                      <DropdownMenuItem className="gap-2"><Eye className="h-4 w-4" /> Preview</DropdownMenuItem>
+                      <DropdownMenuItem className="gap-2 text-destructive focus:text-destructive">
+                        <Trash2 className="h-4 w-4" /> Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
               </CardContent>
             </Card>
           ))}
