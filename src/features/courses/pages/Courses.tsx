@@ -134,6 +134,31 @@ function TeacherCourses() {
     toast({ title: "Course deleted" });
   };
 
+  const openEditDialog = (course: typeof courses[0]) => {
+    setEditId(course.id);
+    setEditName(course.name);
+    setEditPhoto(courseImages[course.id] || null);
+    setEditOpen(true);
+  };
+
+  const handleEditPhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => setEditPhoto(reader.result as string);
+    reader.readAsDataURL(file);
+  };
+
+  const handleEditSave = () => {
+    if (!editId || !editName.trim()) return;
+    setCourses((prev) => prev.map((c) => c.id === editId ? { ...c, name: editName.trim() } : c));
+    if (editPhoto) {
+      setCourseImages((prev) => ({ ...prev, [editId]: editPhoto }));
+    }
+    setEditOpen(false);
+    toast({ title: "Course updated" });
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
