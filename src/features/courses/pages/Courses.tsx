@@ -35,6 +35,9 @@ const initialTeacherCourses = [
 const initialStudentCourses = [
   { id: "APX-CS101", name: "CS101 — Intro to Programming", teacher: "Dr. Smith", exams: 3 },
   { id: "APX-CS201", name: "CS201 — Data Structures", teacher: "Prof. Johnson", exams: 5 },
+  { id: "APX-CS401", name: "CS401 — Machine Learning", teacher: "Dr. Adams", exams: 2 },
+  { id: "APX-CS501", name: "CS501 — Operating Systems", teacher: "Prof. Chen", exams: 4 },
+  { id: "APX-CS601", name: "CS601 — Computer Networks", teacher: "Dr. Patel", exams: 3 },
 ];
 
 /* ── helpers ── */
