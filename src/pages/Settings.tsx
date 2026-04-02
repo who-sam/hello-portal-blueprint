@@ -175,7 +175,7 @@ export default function SettingsPage() {
               <CardDescription>Manage your password and security settings.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                 <div className="space-y-2">
                   <Label htmlFor="current-pw">Current Password</Label>
                   <Input id="current-pw" type="password" placeholder="••••••••" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} />
@@ -183,6 +183,10 @@ export default function SettingsPage() {
                 <div className="space-y-2">
                   <Label htmlFor="new-pw">New Password</Label>
                   <Input id="new-pw" type="password" placeholder="••••••••" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="confirm-pw">Confirm Password</Label>
+                  <Input id="confirm-pw" type="password" placeholder="••••••••" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
                 </div>
               </div>
               <Button onClick={handlePasswordUpdate}>Update Password</Button>

@@ -83,7 +83,7 @@ export default function TeacherDashboard() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {stats.map((s) => (
           <Card key={s.label} className="bg-card/80 backdrop-blur-md border-border/50">
             <CardContent className="p-5 flex items-center gap-4">

@@ -79,17 +79,6 @@ export default function MCQEditor({ question, onChange }: Props) {
           <label className="text-xs font-medium text-muted-foreground mb-1 block">Points</label>
           <Input type="number" value={question.points} onChange={(e) => update({ points: Number(e.target.value) })} min={1} />
         </div>
-        <div>
-          <label className="text-xs font-medium text-muted-foreground mb-1 block">Difficulty</label>
-          <Select value={question.difficulty} onValueChange={(v) => update({ difficulty: v as Difficulty })}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="easy">Easy</SelectItem>
-              <SelectItem value="medium">Medium</SelectItem>
-              <SelectItem value="hard">Hard</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
       </div>
 
       <div className="flex items-center gap-3">

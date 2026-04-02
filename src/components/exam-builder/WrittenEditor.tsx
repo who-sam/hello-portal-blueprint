@@ -53,17 +53,6 @@ export default function WrittenEditor({ question, onChange }: Props) {
           <Input type="number" value={question.points} onChange={(e) => update({ points: Number(e.target.value) })} min={1} />
         </div>
         <div>
-          <label className="text-xs font-medium text-muted-foreground mb-1 block">Difficulty</label>
-          <Select value={question.difficulty} onValueChange={(v) => update({ difficulty: v as Difficulty })}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="easy">Easy</SelectItem>
-              <SelectItem value="medium">Medium</SelectItem>
-              <SelectItem value="hard">Hard</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div>
           <label className="text-xs font-medium text-muted-foreground mb-1 block">Max Word Count</label>
           <Input type="number" value={question.maxWordCount} onChange={(e) => update({ maxWordCount: Number(e.target.value) })} min={10} />
         </div>
