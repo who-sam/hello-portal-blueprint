@@ -11,6 +11,7 @@ import type { MCQQuestion, Difficulty } from "@/types/exam";
 interface Props {
   question: MCQQuestion;
   onChange: (q: MCQQuestion) => void;
+  onSaveToBank?: (q: MCQQuestion) => void;
 }
 
 export default function MCQEditor({ question, onChange }: Props) {

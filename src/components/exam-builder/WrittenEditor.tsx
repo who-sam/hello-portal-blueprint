@@ -10,6 +10,7 @@ import type { WrittenQuestion, Difficulty } from "@/types/exam";
 interface Props {
   question: WrittenQuestion;
   onChange: (q: WrittenQuestion) => void;
+  onSaveToBank?: (q: WrittenQuestion) => void;
 }
 
 export default function WrittenEditor({ question, onChange }: Props) {

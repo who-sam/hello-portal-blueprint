@@ -17,6 +17,7 @@ const LANGUAGES = ["python", "javascript", "c", "cpp"];
 interface Props {
   question: CodingQuestion;
   onChange: (q: CodingQuestion) => void;
+  onSaveToBank?: (q: CodingQuestion) => void;
 }
 
 export default function CodingEditor({ question, onChange }: Props) {
