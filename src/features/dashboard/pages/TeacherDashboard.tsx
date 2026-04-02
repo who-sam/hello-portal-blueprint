@@ -284,7 +284,7 @@ export default function TeacherDashboard() {
       </div>
 
       {/* Class Performance Chart */}
-      <Card className="bg-card/80 backdrop-blur-md border-border/50">
+      <Card className="bg-card/80 backdrop-blur-md border-border/50 max-w-4xl">
         <CardHeader className="pb-2 flex flex-row items-start justify-between space-y-0">
           <div>
             <CardTitle className="text-base font-semibold">Class Performance</CardTitle>
