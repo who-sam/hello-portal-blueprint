@@ -23,6 +23,8 @@ import Profile from "./pages/Profile";
 import ExamReview from "./pages/ExamReview";
 import Courses from "./pages/Courses";
 import CourseDetail from "./pages/CourseDetail";
+import QuestionBank from "./pages/QuestionBank";
+import GradeWritten from "./pages/GradeWritten";
 
 const queryClient = new QueryClient();
 
