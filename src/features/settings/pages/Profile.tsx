@@ -83,6 +83,7 @@ export default function Profile() {
       <Card className="bg-card/80 backdrop-blur-md border-border/50">
         <CardContent className="flex flex-col sm:flex-row items-start sm:items-center gap-6 pt-6">
           <Avatar className="h-20 w-20">
+            {profilePhoto && <AvatarImage src={profilePhoto} alt="Profile" />}
             <AvatarFallback className="bg-primary/20 text-2xl font-bold text-primary">{initials}</AvatarFallback>
           </Avatar>
           <div className="flex-1 space-y-1">
