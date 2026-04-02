@@ -51,6 +51,13 @@ export default function MCQEditor({ question, onChange, onSaveToBank }: Props) {
 
   return (
     <div className="space-y-5 p-5 overflow-y-auto h-full">
+      {onSaveToBank && (
+        <div className="flex justify-end">
+          <Button variant="outline" size="sm" className="gap-1.5" onClick={() => onSaveToBank(question)}>
+            <BookmarkPlus className="h-4 w-4" /> Save to Bank
+          </Button>
+        </div>
+      )}
       <div className="grid grid-cols-2 gap-4">
         <div className="col-span-2">
           <label className="text-xs font-medium text-muted-foreground mb-1 block">Question Text</label>
