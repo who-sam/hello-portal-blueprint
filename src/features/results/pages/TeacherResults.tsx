@@ -89,9 +89,22 @@ const testCaseResults = [
 
 export default function TeacherResults() {
   const { toast } = useToast();
-  const [selectedCourse, setSelectedCourse] = useState<string>("");
+  const location = useLocation();
+  const routeState = location.state as { courseId?: string; examId?: string } | null;
+
+  const [selectedCourse, setSelectedCourse] = useState<string>(routeState?.courseId || "");
   const [selectedExam, setSelectedExam] = useState<string>("");
   const [viewingStudent, setViewingStudent] = useState<string | null>(null);
+
+  // When navigating with state, auto-select the first exam for that course
+  useEffect(() => {
+    if (routeState?.courseId && selectedCourse === routeState.courseId && !selectedExam) {
+      const exams = mockExamsByCourse[routeState.courseId];
+      if (exams?.length) {
+        setSelectedExam(exams[0].id);
+      }
+    }
+  }, [routeState, selectedCourse, selectedExam]);
 
   const examsForCourse = selectedCourse ? (mockExamsByCourse[selectedCourse] || []) : [];
   const exam = examsForCourse.find((e) => e.id === selectedExam);
