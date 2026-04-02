@@ -131,7 +131,8 @@ export default function ExamBuilder() {
   };
 
   // Bank import logic
-  const filteredBankQuestions = bankQuestions.filter((bq) => {
+  const allBankQuestions = getBankQuestions();
+  const filteredBankQuestions = allBankQuestions.filter((bq) => {
     const matchesCourse = !assignedCourse || bq.courseId === assignedCourse;
     const matchesSearch = bq.text.toLowerCase().includes(bankSearch.toLowerCase()) || bq.tags.some((t) => t.toLowerCase().includes(bankSearch.toLowerCase()));
     const matchesType = bankTypeFilter === "all" || bq.type === bankTypeFilter;
