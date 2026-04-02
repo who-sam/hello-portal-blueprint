@@ -40,7 +40,7 @@ const studentNavTabs = [
 export function FloatingNavbar() {
   const navigate = useNavigate();
   const { role, clearRole } = useRole();
-  const { name, email, setUser } = useUser();
+  const { name, email, profilePhoto, setUser } = useUser();
   const { unreadCount } = useNotifications();
   const isMobile = useIsMobile();
   const isTablet = useIsTablet();

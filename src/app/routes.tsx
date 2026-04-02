@@ -18,6 +18,12 @@ import Courses from "@/features/courses/pages/Courses";
 import CourseDetail from "@/features/courses/pages/CourseDetail";
 import QuestionBank from "@/features/exams/pages/QuestionBank";
 import GradeWritten from "@/features/grading/pages/GradeWritten";
+import Leaderboard from "@/features/results/pages/Leaderboard";
+import Practice from "@/features/social/pages/Practice";
+import Team from "@/features/social/pages/Team";
+import Messages from "@/features/social/pages/Messages";
+import HelpPage from "@/features/social/pages/Help";
+import Notifications from "@/features/social/pages/Notifications";
 import { useRole } from "@/contexts/RoleContext";
 
 function ExamsPage() {
@@ -45,6 +51,12 @@ export default function AppRoutes() {
         <Route path="grade-written" element={<GradeWritten />} />
         <Route path="exam/:id" element={<ExamTaking />} />
         <Route path="exam/:id/review" element={<ExamReview />} />
+        <Route path="leaderboard" element={<Leaderboard />} />
+        <Route path="practice" element={<Practice />} />
+        <Route path="team" element={<Team />} />
+        <Route path="messages" element={<Messages />} />
+        <Route path="help" element={<HelpPage />} />
+        <Route path="notifications" element={<Notifications />} />
       </Route>
       <Route path="*" element={<NotFound />} />
     </Routes>
