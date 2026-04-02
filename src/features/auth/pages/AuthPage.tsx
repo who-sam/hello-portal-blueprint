@@ -138,7 +138,7 @@ const AuthPage = () => {
       </button>
 
       <div className="relative z-10 w-full max-w-5xl">
-        <div className="grid grid-cols-1 md:grid-cols-2 overflow-hidden rounded-2xl border border-white/10 shadow-2xl">
+        <div className={`grid grid-cols-1 md:grid-cols-2 overflow-hidden rounded-2xl border shadow-2xl ${isDark ? "border-white/10" : "border-border"}`}>
           {/* Left: Form */}
           <div className="bg-card/95 backdrop-blur-xl p-8 flex flex-col justify-center">
             <div className="flex items-center gap-2 mb-8">
