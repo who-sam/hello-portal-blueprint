@@ -1,5 +1,5 @@
 import { Navigate } from "react-router-dom";
-import AuthPage from "./AuthPage";
+import AuthPage from "@/features/auth/pages/AuthPage";
 
 const Index = () => {
   const hasRole = localStorage.getItem("apex-role");
