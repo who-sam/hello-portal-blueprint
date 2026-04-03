@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router-dom";
 import { RoleProvider } from "@/contexts/RoleContext";
 import { UserProvider } from "@/contexts/UserContext";
-import { NotificationProvider } from "@/contexts/NotificationContext";
+import { NotificationProvider } from "@/features/social/contexts/NotificationContext";
 import AppRoutes from "@/app/routes";
 
 const queryClient = new QueryClient();

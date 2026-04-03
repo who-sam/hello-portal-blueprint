@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { useUser } from "@/contexts/UserContext";
 import { useRole } from "@/contexts/RoleContext";
-import type { Achievement } from "@/types/exam";
+import type { Achievement } from "@/features/settings/types/achievement";
 
 /* ── Student data ── */
 const studentActivity = [

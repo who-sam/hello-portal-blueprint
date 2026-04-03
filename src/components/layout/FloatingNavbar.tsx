@@ -14,7 +14,7 @@ import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { useNavigate } from "react-router-dom";
 import { useRole } from "@/contexts/RoleContext";
 import { useUser } from "@/contexts/UserContext";
-import { useNotifications } from "@/contexts/NotificationContext";
+import { useNotifications } from "@/features/social/contexts/NotificationContext";
 import { useIsMobile, useIsTablet } from "@/hooks/use-mobile";
 import { useTheme } from "next-themes";
 import { useState, useEffect, useRef } from "react";

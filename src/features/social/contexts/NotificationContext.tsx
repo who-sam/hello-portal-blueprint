@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, ReactNode } from "react";
 import { formatDistanceToNow } from "date-fns";
-import type { AppNotification } from "@/types/exam";
+import type { AppNotification } from "@/features/social/types/notification";
 
 interface NotificationWithDate extends Omit<AppNotification, 'timestamp'> {
   date: Date;

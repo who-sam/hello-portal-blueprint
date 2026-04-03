@@ -1,4 +1,4 @@
-import type { QuestionType } from "@/types/exam";
+import type { QuestionType } from "@/features/exams/types/exam";
 
 export interface MCQData {
   options: string[];

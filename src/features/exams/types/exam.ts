@@ -98,35 +98,3 @@ export interface ExamResult {
   rank: number;
   timeTaken: string;
 }
-
-export interface Achievement {
-  id: string;
-  name: string;
-  description: string;
-  icon: string;
-  earnedAt?: string;
-  progress?: number;
-  maxProgress: number;
-  unlocked: boolean;
-}
-
-export interface AppNotification {
-  id: string;
-  type: "exam" | "result" | "class" | "system" | "submission";
-  title: string;
-  description: string;
-  timestamp: string;
-  read: boolean;
-  linkTo: string;
-}
-
-export interface LeaderboardEntry {
-  rank: number;
-  studentName: string;
-  avatar: string;
-  score: number;
-  examsCompleted: number;
-  streak: number;
-  trend: "up" | "down" | "same";
-  isCurrentUser?: boolean;
-}

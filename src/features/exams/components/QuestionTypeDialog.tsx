@@ -1,6 +1,6 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Code2, CheckSquare, FileText } from "lucide-react";
-import type { QuestionType } from "@/types/exam";
+import type { QuestionType } from "@/features/exams/types/exam";
 
 const types: { type: QuestionType; icon: React.ElementType; label: string; desc: string }[] = [
   { type: "coding", icon: Code2, label: "Coding Problem", desc: "Students write and run code" },
