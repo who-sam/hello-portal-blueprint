@@ -6,7 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import {
   ArrowLeft, Clock, FileText, Code2, CheckSquare, HelpCircle, Eye,
 } from "lucide-react";
-import type { Question, MCQQuestion, WrittenQuestion, CodingQuestion } from "@/types/exam";
+import type { Question, MCQQuestion, WrittenQuestion, CodingQuestion } from "@/features/exams/types/exam";
 
 /* ── Mock data (mirrors ExamTaking) ── */
 const MOCK_EXAMS: Record<string, {

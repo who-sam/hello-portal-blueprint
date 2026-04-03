@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Trash2, GripVertical, Copy, ChevronDown, ChevronUp, ImagePlus, X, BookmarkPlus } from "lucide-react";
 import { useTheme } from "next-themes";
-import type { CodingQuestion, Difficulty } from "@/types/exam";
+import type { CodingQuestion, Difficulty } from "@/features/exams/types/exam";
 
 const LANGUAGES = ["python", "javascript", "c", "cpp"];
 

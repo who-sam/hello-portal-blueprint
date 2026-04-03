@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Code2, CheckSquare, FileText, Plus, Trash2, Library } from "lucide-react";
-import type { Question } from "@/types/exam";
+import type { Question } from "@/features/exams/types/exam";
 import { cn } from "@/lib/utils";
 
 const typeIcons: Record<string, React.ElementType> = {

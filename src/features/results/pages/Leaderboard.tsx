@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Medal, TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { useUser } from "@/contexts/UserContext";
-import type { LeaderboardEntry } from "@/types/exam";
+import type { LeaderboardEntry } from "@/features/results/types/leaderboard";
 
 interface ExtendedEntry extends LeaderboardEntry {
   class: string;

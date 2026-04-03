@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Bell, Clock, CheckCircle, Megaphone, UserPlus, Send } from "lucide-react";
-import { useNotifications } from "@/contexts/NotificationContext";
+import { useNotifications } from "@/features/social/contexts/NotificationContext";
 
 const typeConfig: Record<string, { icon: React.ElementType; color: string }> = {
   exam: { icon: Clock, color: "text-amber-500 bg-amber-500/10" },

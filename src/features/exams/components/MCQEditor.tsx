@@ -6,7 +6,7 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Trash2, ImagePlus, X, BookmarkPlus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import type { MCQQuestion, Difficulty } from "@/types/exam";
+import type { MCQQuestion, Difficulty } from "@/features/exams/types/exam";
 
 interface Props {
   question: MCQQuestion;
