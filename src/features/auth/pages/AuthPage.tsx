@@ -195,14 +195,9 @@ const AuthPage = () => {
                 </div>
 
                 {/* Social buttons */}
-                <div className="grid grid-cols-2 gap-3">
-                  <Button type="button" variant="outline" className="h-11 gap-2" onClick={() => handleSocialLogin("google")}>
-                    <GoogleIcon /> Google
-                  </Button>
-                  <Button type="button" variant="outline" className="h-11 gap-2" onClick={() => handleSocialLogin("github")}>
-                    <GitHubIcon /> GitHub
-                  </Button>
-                </div>
+                <Button type="button" variant="outline" className="h-11 w-full gap-2" onClick={() => handleSocialLogin("google")}>
+                  <GoogleIcon /> Continue with Google
+                </Button>
 
                 <div className="relative">
                   <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-border" /></div>
