@@ -17,7 +17,7 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { getQuestions as getBankQuestions, addQuestion as addBankQuestion, type BankQuestion } from "@/features/exams/lib/questionBankStore";
-import type { Question, QuestionType, MCQQuestion, WrittenQuestion, CodingQuestion } from "@/types/exam";
+import type { Question, QuestionType, MCQQuestion, WrittenQuestion, CodingQuestion } from "@/features/exams/types/exam";
 import QuestionTypeDialog from "@/features/exams/components/QuestionTypeDialog";
 import QuestionList from "@/features/exams/components/QuestionList";
 import MCQEditor from "@/features/exams/components/MCQEditor";

@@ -43,7 +43,7 @@ import type {
   WrittenQuestion,
   CodingQuestion,
   StudentAnswer,
-} from "@/types/exam";
+} from "@/features/exams/types/exam";
 
 /* ───────────────── Mock Exam Data ───────────────── */
 
